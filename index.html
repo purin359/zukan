@@ -67,7 +67,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
 
-<h2>味方文字検索 vol.2.0.3</h2>
+<h2>味方文字検索 vol.2.0.4</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -283,37 +283,35 @@ function search(keyword) {
 
   const key = normalize(keyword);
 
-  const results = data.map(ch => {
-    const forms = ch.forms.filter(f => {
+  let total = 0;
+
+  data.forEach(ch => {
+    ch.forms.forEach(f => {
       const name = normalize(f.name);
       const desc = normalize(f.description);
-      return name.includes(key) || desc.includes(key);
-    });
-    return { ...ch, forms };
-  }).filter(ch => ch.forms.length > 0);
 
-  const count = results.reduce((sum, ch) => sum + ch.forms.length, 0);
+      if (name.includes(key) || desc.includes(key)) {
 
-  document.getElementById("selectedText").textContent =
-    `検索: ${keyword}　${count}件見つかりました`;
+        total++;
 
-  if (count === 0) {
-    resultDiv.textContent = "該当なし";
-    return;
-  }
+        const div = document.createElement("div");
+        div.className = "result";
 
-  results.forEach(ch => {
-    ch.forms.forEach(f => {
-      const div = document.createElement("div");
-      div.className = "result";
+        div.innerHTML =
+          `<b>${highlight(f.name, keyword)}</b><br>` +
+          highlight(f.description, keyword).replace(/\n/g, "<br>");
 
-      div.innerHTML =
-        `<b>${highlight(f.name, keyword)}</b><br>` +
-        highlight(f.description, keyword).replace(/\n/g, "<br>");
-
-      resultDiv.appendChild(div);
+        resultDiv.appendChild(div);
+      }
     });
   });
+
+  document.getElementById("selectedText").textContent =
+    `検索: ${keyword}　${total}件見つかりました`;
+
+  if (total === 0) {
+    resultDiv.textContent = "該当なし";
+  }
 }
   
 function back(){
