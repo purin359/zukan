@@ -7,19 +7,32 @@
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
-/* 検索ボックス */
+/* 検索 */
+.searchWrap {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
 .searchBox {
-  width: 100%;
+  flex: 1;
   padding: 8px;
   font-size: 16px;
-  margin-bottom: 10px;
+}
+
+/* 折りたたみボタン */
+.gradeHeader {
+  background: #eee;
+  padding: 8px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
 /* カウント */
 .countText {
   text-align: center;
-  font-size: 18px;
-  margin: 10px 0;
+  font-size: 16px;
+  margin: 5px 0;
 }
 
 /* グリッド */
@@ -27,7 +40,7 @@ body { font-family: sans-serif; padding: 10px; }
   display: grid;
   grid-template-columns: repeat(20, 1fr);
   gap: 4px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 /* ボタン */
@@ -63,7 +76,6 @@ body { font-family: sans-serif; padding: 10px; }
 
 .backBtn {
   margin-bottom: 10px;
-  padding: 6px 10px;
 }
 </style>
 </head>
@@ -73,21 +85,26 @@ body { font-family: sans-serif; padding: 10px; }
 <!-- 検索画面 -->
 <div id="searchScreen">
 
-  <h2>味方文字検索v1.1.2</h2>
+<h2>味方文字検索 v1.2</h2>
 
-  <!-- ★ 検索ボックス -->
-  <div style="display:flex; gap:5px; margin-bottom:10px;">
+<div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox" placeholder="文字を入力">
   <button onclick="searchFromInput()">検索</button>
 </div>
 
-  <!-- 1年 -->
+<!-- 1年 -->
+<div class="gradeHeader" onclick="toggle('g1')">▼ 1年生</div>
+<div id="g1">
   <div id="countText1" class="countText"></div>
   <div id="grid1" class="grid"></div>
+</div>
 
-  <!-- 2年 -->
+<!-- 2年 -->
+<div class="gradeHeader" onclick="toggle('g2')">▼ 2年生</div>
+<div id="g2">
   <div id="countText2" class="countText"></div>
   <div id="grid2" class="grid"></div>
+</div>
 
 </div>
 
@@ -101,7 +118,7 @@ body { font-family: sans-serif; padding: 10px; }
 <script>
 let data = [];
 
-// ===== 1年 =====
+// ===== 文字 =====
 const chars1 = `
 一二三四五六七八九十百千日月火水木金土田
 山川林森石天気空雨夕草花竹文字本円玉年音
@@ -109,7 +126,6 @@ const chars1 = `
 力町村車大中小上下左右正出入立見休早名糸
 `.replace(/\n/g, "").split("");
 
-// ===== 2年 =====
 const chars2 = `
 引羽雲園遠何科夏家歌画回会海絵外角楽活間
 丸岩顔汽記帰弓牛魚京強教近兄形計元言原戸
@@ -121,36 +137,45 @@ const chars2 = `
 歩母方北毎妹万明鳴毛門夜野友用曜来里理話
 `.replace(/\n/g, "").split("");
 
-// JSON読み込み
+// ===== JSON =====
 fetch("kihon.json")
-  .then(res => res.json())
-  .then(json => {
-    data = json;
-    init();
-  });
+.then(res => res.json())
+.then(json => {
+  data = json;
+  init();
+});
 
 // ===== 初期化 =====
 function init() {
   createGrid(chars1, "grid1", "countText1", "1年生で習う漢字");
   createGrid(chars2, "grid2", "countText2", "2年生で習う漢字");
 
-  // ★ 入力検索
-  function searchFromInput() {
-  const val = document.getElementById("searchInput").value.trim();
-  if (val) {
-    search(val);
-  }
+  // Enterキー検索
+  document.getElementById("searchInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") searchFromInput();
+  });
 }
-// ===== グリッド生成 =====
+
+// ===== 折りたたみ =====
+function toggle(id) {
+  const el = document.getElementById(id);
+  el.style.display = (el.style.display === "none") ? "block" : "none";
+}
+
+// ===== 入力検索 =====
+function searchFromInput() {
+  const val = document.getElementById("searchInput").value.trim();
+  if (val) search(val);
+}
+
+// ===== グリッド =====
 function createGrid(chars, gridId, countId, title) {
   const usedChars = new Set();
 
   data.forEach(ch => {
     ch.forms.forEach(f => {
       const text = f.name + f.description;
-      for (let char of text) {
-        usedChars.add(char);
-      }
+      for (let c of text) usedChars.add(c);
     });
   });
 
@@ -194,17 +219,17 @@ function search(keyword) {
   resultDiv.innerHTML = "";
 
   const results = data.map(ch => {
-    const matchedForms = ch.forms.filter(f =>
+    const forms = ch.forms.filter(f =>
       f.name.includes(keyword) ||
       f.description.includes(keyword)
     );
-    return { ...ch, forms: matchedForms };
+    return { ...ch, forms };
   }).filter(ch => ch.forms.length > 0);
 
   const count = results.reduce((sum, ch) => sum + ch.forms.length, 0);
 
   document.getElementById("selectedText").textContent =
-    "検索: " + keyword + "　" + count + "件見つかりました";
+    `検索: ${keyword}　${count}件見つかりました`;
 
   if (count === 0) {
     resultDiv.textContent = "該当なし";
