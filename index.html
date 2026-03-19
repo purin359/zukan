@@ -7,7 +7,6 @@
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
-/* 検索 */
 .searchWrap {
   display: flex;
   gap: 5px;
@@ -20,7 +19,6 @@ body { font-family: sans-serif; padding: 10px; }
   font-size: 16px;
 }
 
-/* 折りたたみボタン */
 .gradeHeader {
   background: #eee;
   padding: 8px;
@@ -28,14 +26,6 @@ body { font-family: sans-serif; padding: 10px; }
   margin-top: 10px;
 }
 
-/* カウント */
-.countText {
-  text-align: center;
-  font-size: 16px;
-  margin: 5px 0;
-}
-
-/* グリッド */
 .grid {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
@@ -43,7 +33,6 @@ body { font-family: sans-serif; padding: 10px; }
   margin-bottom: 10px;
 }
 
-/* ボタン */
 .char {
   border: 1px solid #ccc;
   text-align: center;
@@ -62,65 +51,52 @@ body { font-family: sans-serif; padding: 10px; }
   color: white;
 }
 
-/* ハイライト */
 .hit {
   color: blue;
   font-weight: bold;
 }
 
-/* 結果 */
 .result {
   border-bottom: 1px solid #ccc;
   padding: 8px 0;
-}
-
-.backBtn {
-  margin-bottom: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 検索画面 -->
 <div id="searchScreen">
 
-<h2>味方文字検索 v1.5</h2>
+<h2>味方文字検索 v2</h2>
 
 <div class="searchWrap">
-  <input type="text" id="searchInput" class="searchBox" placeholder="文字を入力">
+  <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
 </div>
 
-<!-- 常用漢字 全体 -->
+<!-- 常用漢字 -->
 <div class="gradeHeader" onclick="toggle('gAll', this)">▼ 常用漢字</div>
 <div id="gAll">
 
   <!-- 小学生 -->
-  <div class="gradeHeader" onclick="toggle('gElem', this)">▼ 小学生で習う漢字</div>
+  <div class="gradeHeader" onclick="toggle('gElem', this)">▼ 小学生</div>
   <div id="gElem">
 
-    <!-- 1年 -->
     <div class="gradeHeader" onclick="toggle('g1', this)">▼ 1年生</div>
     <div id="g1"><div id="grid1" class="grid"></div></div>
 
-    <!-- 2年 -->
     <div class="gradeHeader" onclick="toggle('g2', this)">▼ 2年生</div>
     <div id="g2"><div id="grid2" class="grid"></div></div>
 
-    <!-- 3年 -->
     <div class="gradeHeader" onclick="toggle('g3', this)">▼ 3年生</div>
     <div id="g3"><div id="grid3" class="grid"></div></div>
 
-    <!-- 4年 -->
     <div class="gradeHeader" onclick="toggle('g4', this)">▼ 4年生</div>
     <div id="g4"><div id="grid4" class="grid"></div></div>
 
-    <!-- 5年 -->
     <div class="gradeHeader" onclick="toggle('g5', this)">▼ 5年生</div>
     <div id="g5"><div id="grid5" class="grid"></div></div>
 
-    <!-- 6年 -->
     <div class="gradeHeader" onclick="toggle('g6', this)">▼ 6年生</div>
     <div id="g6"><div id="grid6" class="grid"></div></div>
 
@@ -132,9 +108,9 @@ body { font-family: sans-serif; padding: 10px; }
 
 </div>
 
-<!-- 結果画面 -->
+<!-- 結果 -->
 <div id="resultScreen" style="display:none;">
-  <button class="backBtn" onclick="back()">← 戻る</button>
+  <button onclick="back()">← 戻る</button>
   <h2 id="selectedText"></h2>
   <div id="result"></div>
 </div>
@@ -144,392 +120,243 @@ let data = [];
 
 // ===== 文字 =====
 const chars1 = `
-一二三四五六七八九十百千日月火水木金土田
-山川林森石天気空雨夕草花竹文字本円玉年音
-学校先生赤白青人男女子目耳口手足犬貝虫王
-力町村車大中小上下左右正出入立見休早名糸
+一二三四五六七八九十百千日月火水木金土田山川林森石天気空雨夕草花竹文字本円玉年音学校先生赤白青人男女子目耳口手足犬貝虫王力町村車大中小上下左右正出入立見休早名糸
 `.replace(/\n/g, "").split("");
 
 const chars2 = `
-引羽雲園遠何科夏家歌画回会海絵外角楽活間
-丸岩顔汽記帰弓牛魚京強教近兄形計元言原戸
-古午後語工公広交光考行高黄合谷国黒今才細
-作算止市矢姉思紙寺自時室社弱首秋週春書少
-場色食心新親図数西声星晴切雪船線前組走多
-太体台地池知茶昼長鳥朝直通弟店点電刀冬当
-東答頭同道読内南肉馬売買麦半番父風分聞米
-歩母方北毎妹万明鳴毛門夜野友用曜来里理話
+引羽雲園遠何科夏家歌画回会海絵外角楽活間丸岩顔汽記帰弓牛魚京強教近兄形計元言原戸古午後語工公広交光考行高黄合谷国黒今才細作算止市矢姉思紙寺自時室社弱首秋週春書少
+場色食心新親図数西声星晴切雪船線前組走多太体台地池知茶昼長鳥朝直通弟店点電刀冬当東答頭同道読内南肉馬売買麦半番父風分聞米歩母方北毎妹万明鳴毛門夜野友用曜来里理話
 `.replace(/\n/g, "").split("");
 
 const chars3 = `
-悪安暗医委意育員院飲運泳駅央横屋温化荷界
-開階寒感漢館岸起期客究急級宮球去橋業曲局
-銀区苦具君係軽血決研県庫湖向幸港号根祭皿
-仕死使始指歯詩次事持式実写者主守取酒受州
-拾終習集住重宿所暑助昭消商章勝乗植申身神
-真深進世整昔全相送想息速族他打対待代第題
-炭短談着注柱丁帳調追定庭笛鉄転都度投豆島
-湯登等動童農波配倍箱畑発反坂板皮悲美鼻筆
-氷表秒病品負部服福物平返勉放味命面問役薬
-由油有遊予羊洋葉陽様落流旅両緑礼列練路和
+悪安暗医委意育員院飲運泳駅央横屋温化荷界開階寒感漢館岸起期客究急級宮球去橋業曲局銀区苦具君係軽血決研県庫湖向幸港号根祭皿仕死使始指歯詩次事持式実写者主守取酒受州
+拾終習集住重宿所暑助昭消商章勝乗植申身神真深進世整昔全相送想息速族他打対待代第題炭短談着注柱丁帳調追定庭笛鉄転都度投豆島湯登等動童農波配倍箱畑発反坂板皮悲美鼻筆
+氷表秒病品負部服福物平返勉放味命面問役薬由油有遊予羊洋葉陽様落流旅両緑礼列練路和
 `.replace(/\n/g, "").split("");
 
 const chars4 = `
-愛案以衣位茨印英栄媛塩岡億加果貨課芽賀改
-械害街各覚潟完官管関観願岐希季旗器機議求
-泣給挙漁共協鏡競極熊訓軍郡群径景芸欠結建
-健験固功好香候康佐差菜最埼材崎昨札刷察参
-産散残氏司試児治滋辞鹿失借種周祝順初松笑
-唱焼照城縄臣信井成省清静席積折節説浅戦選
-然争倉巣束側続卒孫帯隊達単置仲沖兆低底的
-典伝徒努灯働特徳栃奈梨熱念敗梅博阪飯飛必
-票標不夫付府阜富副兵別辺変便包法望牧末満
-未民無約勇要養浴利陸良料量輪類令冷例連老
-労録
+愛案以衣位茨印英栄媛塩岡億加果貨課芽賀改械害街各覚潟完官管関観願岐希季旗器機議求泣給挙漁共協鏡競極熊訓軍郡群径景芸欠結建健験固功好香候康佐差菜最埼材崎昨札刷察参
+産散残氏司試児治滋辞鹿失借種周祝順初松笑唱焼照城縄臣信井成省清静席積折節説浅戦選然争倉巣束側続卒孫帯隊達単置仲沖兆低底的典伝徒努灯働特徳栃奈梨熱念敗梅博阪飯飛必
+票標不夫付府阜富副兵別辺変便包法望牧末満未民無約勇要養浴利陸良料量輪類令冷例連老労録
 `.replace(/\n/g, "").split("");
 
 const chars5 = `
-圧囲移因永営衛易益液演応往桜可仮価河過快
-解格確額刊幹慣眼紀基寄規喜技義逆久旧救居
-許境均禁句型経潔件険検限現減故個護効厚耕
-航鉱構興講告混査再災妻採際在財罪殺雑酸賛
-士支史志枝師資飼示似識質舎謝授修述術準序
-招証象賞条状常情織職制性政勢精製税責績接
-設絶祖素総造像増則測属率損貸態団断築貯張
-停提程適統堂銅導得毒独任燃能破犯判版比肥
-非費備評貧布婦武復複仏粉編弁保墓報豊防貿
-暴脈務夢迷綿輸余容略留領歴
+圧囲移因永営衛易益液演応往桜可仮価河過快解格確額刊幹慣眼紀基寄規喜技義逆久旧救居許境均禁句型経潔件険検限現減故個護効厚耕航鉱構興講告混査再災妻採際在財罪殺雑酸賛
+士支史志枝師資飼示似識質舎謝授修述術準序招証象賞条状常情織職制性政勢精製税責績接設絶祖素総造像増則測属率損貸態団断築貯張停提程適統堂銅導得毒独任燃能破犯判版比肥
+非費備評貧布婦武復複仏粉編弁保墓報豊防貿暴脈務夢迷綿輸余容略留領歴
 `.replace(/\n/g, "").split("");
 
 const chars6 = `
-胃異遺域宇映延沿恩我灰拡革閣割株干巻看簡
-危机揮貴疑吸供胸郷勤筋系敬警劇激穴券絹権
-憲源厳己呼誤后孝皇紅降鋼刻穀骨困砂座済裁
-策冊蚕至私姿視詞誌磁射捨尺若樹収宗就衆従
-縦縮熟純処署諸除承将傷障蒸針仁垂推寸盛聖
-誠舌宣専泉洗染銭善奏窓創装層操蔵臓存尊退
-宅担探誕段暖値宙忠著庁頂腸潮賃痛敵展討党
-糖届難乳認納脳派拝背肺俳班晩否批秘俵腹奮
-並陛閉片補暮宝訪亡忘棒枚幕密盟模訳郵優預
-幼欲翌乱卵覧裏律臨朗論
+胃異遺域宇映延沿恩我灰拡革閣割株干巻看簡危机揮貴疑吸供胸郷勤筋系敬警劇激穴券絹権憲源厳己呼誤后孝皇紅降鋼刻穀骨困砂座済裁策冊蚕至私姿視詞誌磁射捨尺若樹収宗就衆従
+縦縮熟純処署諸除承将傷障蒸針仁垂推寸盛聖誠舌宣専泉洗染銭善奏窓創装層操蔵臓存尊退宅担探誕段暖値宙忠著庁頂腸潮賃痛敵展討党糖届難乳認納脳派拝背肺俳班晩否批秘俵腹奮
+並陛閉片補暮宝訪亡忘棒枚幕密盟模訳郵優預幼欲翌乱卵覧裏律臨朗論
 `.replace(/\n/g, "").split("");
 
 const chars7 = `
-亜哀挨曖握扱宛嵐依威為畏尉萎偉椅彙違維慰
-緯壱逸芋咽姻淫陰隠韻唄鬱畝浦詠影鋭疫悦越
-謁閲炎怨宴援煙猿鉛縁艶汚凹押旺欧殴翁奥憶
-臆虞乙俺卸穏佳苛架華菓渦嫁暇禍靴寡箇稼蚊
-牙瓦雅餓介戒怪拐悔皆塊楷潰壊懐諧劾崖涯慨
-蓋該概骸垣柿核殻郭較隔獲嚇穫岳顎掛括喝渇
-葛滑褐轄且釜鎌刈甘汗缶肝冠陥乾勘患貫喚堪
-換敢棺款閑勧寛歓監緩憾還環韓艦鑑含玩頑企
-伎忌奇祈軌既飢鬼亀幾棋棄毀畿輝騎宜偽欺儀
-戯擬犠菊吉喫詰却脚虐及丘朽臼糾嗅窮巨拒拠
-虚距御凶叫狂享況峡挟狭恐恭脅矯響驚仰暁凝
-巾斤菌琴僅緊錦謹襟吟駆惧愚偶遇隅串屈掘窟
-繰勲薫刑茎契恵啓掲渓蛍傾携継詣慶憬稽憩鶏
-迎鯨隙撃桁傑肩倹兼剣拳軒圏堅嫌献遣賢謙鍵
-繭顕懸幻玄弦舷股虎孤弧枯雇誇鼓錮顧互呉娯
-悟碁勾孔巧甲江坑抗攻更拘肯侯恒洪荒郊貢控
-梗喉慌硬絞項溝綱酵稿衡購乞拷剛傲豪克酷獄
-駒込頃昆恨婚痕紺魂墾懇沙唆詐鎖挫采砕宰栽
-彩斎債催塞歳載剤削柵索酢搾錯咲刹拶撮擦桟
-惨傘斬暫旨伺刺祉肢施恣脂紫嗣雌摯賜諮侍慈
-餌璽軸叱疾執湿嫉漆芝赦斜煮遮邪蛇酌釈爵寂
-朱狩殊珠腫趣寿呪需儒囚舟秀臭袖羞愁酬醜蹴
-襲汁充柔渋銃獣叔淑粛塾俊瞬旬巡盾准殉循潤
-遵庶緒如叙徐升召匠床抄肖尚昇沼宵症祥称渉
-紹訟掌晶焦硝粧詔奨詳彰憧衝償礁鐘丈冗浄剰
-畳壌嬢錠譲醸拭殖飾触嘱辱尻伸芯辛侵津唇娠
-振浸紳診寝慎審震薪刃尽迅甚陣尋腎須吹炊帥
-粋衰酔遂睡穂随髄枢崇据杉裾瀬是姓征斉牲凄
-逝婿誓請醒斥析脊隻惜戚跡籍拙窃摂仙占扇栓
-旋煎羨腺詮践箋潜遷薦繊鮮禅漸膳繕狙阻租措
-粗疎訴塑遡礎双壮荘捜挿桑掃曹曽爽喪痩葬僧
-遭槽踪燥霜騒藻憎贈即促捉俗賊遜汰妥唾堕惰
-駄耐怠胎泰堆袋逮替滞戴滝択沢卓拓託濯諾濁
-但脱奪棚誰丹旦胆淡嘆端綻鍛弾壇恥致遅痴稚
-緻畜逐蓄秩窒嫡抽衷酎鋳駐弔挑彫眺釣貼超跳
-徴嘲澄聴懲勅捗沈珍朕陳鎮椎墜塚漬坪爪鶴呈
-廷抵邸亭貞帝訂逓偵堤艇締諦泥摘滴溺迭哲徹
-撤添塡殿斗吐妬途渡塗賭奴怒到逃倒凍唐桃透
-悼盗陶塔搭棟痘筒稲踏謄藤闘騰洞胴瞳峠匿督
-篤凸突屯豚頓貪鈍曇丼那謎鍋軟尼弐匂虹尿妊
-忍寧捻粘悩濃把覇婆罵杯排廃輩培陪媒賠伯拍
-泊迫剝舶薄漠縛爆箸肌鉢髪伐抜罰閥氾帆汎伴
-畔般販斑搬煩頒範繁藩蛮盤妃彼披卑疲被扉碑
-罷避尾眉微膝肘匹泌姫漂苗描猫浜賓頻敏瓶扶
-怖附訃赴浮符普腐敷膚賦譜侮舞封伏幅覆払沸
-紛雰噴墳憤丙併柄塀幣弊蔽餅壁璧癖蔑偏遍哺
-捕舗募慕簿芳邦奉抱泡胞俸倣峰砲崩蜂飽褒縫
-乏忙坊妨房肪某冒剖紡傍帽貌膨謀頬朴睦僕墨
-撲没勃堀奔翻凡盆麻摩磨魔昧埋膜枕又抹慢漫
-魅岬蜜妙眠矛霧娘冥銘滅免麺茂妄盲耗猛網黙
-紋冶弥厄躍闇喩愉諭癒唯幽悠湧猶裕雄誘憂融
-与誉妖庸揚揺溶腰瘍踊窯擁謡抑沃翼拉裸羅雷
-頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜
-慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴
-零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊
-楼漏籠麓賄脇惑枠湾腕
+亜哀挨曖握扱宛嵐依威為畏尉萎偉椅彙違維慰緯壱逸芋咽姻淫陰隠韻唄鬱畝浦詠影鋭疫悦越謁閲炎怨宴援煙猿鉛縁艶汚凹押旺欧殴翁奥憶臆虞乙俺卸穏佳苛架華菓渦嫁暇禍靴寡箇稼蚊
+牙瓦雅餓介戒怪拐悔皆塊楷潰壊懐諧劾崖涯慨蓋該概骸垣柿核殻郭較隔獲嚇穫岳顎掛括喝渇葛滑褐轄且釜鎌刈甘汗缶肝冠陥乾勘患貫喚堪換敢棺款閑勧寛歓監緩憾還環韓艦鑑含玩頑企
+伎忌奇祈軌既飢鬼亀幾棋棄毀畿輝騎宜偽欺儀戯擬犠菊吉喫詰却脚虐及丘朽臼糾嗅窮巨拒拠虚距御凶叫狂享況峡挟狭恐恭脅矯響驚仰暁凝巾斤菌琴僅緊錦謹襟吟駆惧愚偶遇隅串屈掘窟
+繰勲薫刑茎契恵啓掲渓蛍傾携継詣慶憬稽憩鶏迎鯨隙撃桁傑肩倹兼剣拳軒圏堅嫌献遣賢謙鍵繭顕懸幻玄弦舷股虎孤弧枯雇誇鼓錮顧互呉娯悟碁勾孔巧甲江坑抗攻更拘肯侯恒洪荒郊貢控
+梗喉慌硬絞項溝綱酵稿衡購乞拷剛傲豪克酷獄駒込頃昆恨婚痕紺魂墾懇沙唆詐鎖挫采砕宰栽彩斎債催塞歳載剤削柵索酢搾錯咲刹拶撮擦桟惨傘斬暫旨伺刺祉肢施恣脂紫嗣雌摯賜諮侍慈
+餌璽軸叱疾執湿嫉漆芝赦斜煮遮邪蛇酌釈爵寂朱狩殊珠腫趣寿呪需儒囚舟秀臭袖羞愁酬醜蹴襲汁充柔渋銃獣叔淑粛塾俊瞬旬巡盾准殉循潤遵庶緒如叙徐升召匠床抄肖尚昇沼宵症祥称渉
+紹訟掌晶焦硝粧詔奨詳彰憧衝償礁鐘丈冗浄剰畳壌嬢錠譲醸拭殖飾触嘱辱尻伸芯辛侵津唇娠振浸紳診寝慎審震薪刃尽迅甚陣尋腎須吹炊帥粋衰酔遂睡穂随髄枢崇据杉裾瀬是姓征斉牲凄
+逝婿誓請醒斥析脊隻惜戚跡籍拙窃摂仙占扇栓旋煎羨腺詮践箋潜遷薦繊鮮禅漸膳繕狙阻租措粗疎訴塑遡礎双壮荘捜挿桑掃曹曽爽喪痩葬僧遭槽踪燥霜騒藻憎贈即促捉俗賊遜汰妥唾堕惰
+駄耐怠胎泰堆袋逮替滞戴滝択沢卓拓託濯諾濁但脱奪棚誰丹旦胆淡嘆端綻鍛弾壇恥致遅痴稚緻畜逐蓄秩窒嫡抽衷酎鋳駐弔挑彫眺釣貼超跳徴嘲澄聴懲勅捗沈珍朕陳鎮椎墜塚漬坪爪鶴呈
+廷抵邸亭貞帝訂逓偵堤艇締諦泥摘滴溺迭哲徹撤添塡殿斗吐妬途渡塗賭奴怒到逃倒凍唐桃透悼盗陶塔搭棟痘筒稲踏謄藤闘騰洞胴瞳峠匿督篤凸突屯豚頓貪鈍曇丼那謎鍋軟尼弐匂虹尿妊
+忍寧捻粘悩濃把覇婆罵杯排廃輩培陪媒賠伯拍泊迫剝舶薄漠縛爆箸肌鉢髪伐抜罰閥氾帆汎伴畔般販斑搬煩頒範繁藩蛮盤妃彼披卑疲被扉碑罷避尾眉微膝肘匹泌姫漂苗描猫浜賓頻敏瓶扶
+怖附訃赴浮符普腐敷膚賦譜侮舞封伏幅覆払沸紛雰噴墳憤丙併柄塀幣弊蔽餅壁璧癖蔑偏遍哺捕舗募慕簿芳邦奉抱泡胞俸倣峰砲崩蜂飽褒縫乏忙坊妨房肪某冒剖紡傍帽貌膨謀頬朴睦僕墨
+撲没勃堀奔翻凡盆麻摩磨魔昧埋膜枕又抹慢漫魅岬蜜妙眠矛霧娘冥銘滅免麺茂妄盲耗猛網黙紋冶弥厄躍闇喩愉諭癒唯幽悠湧猶裕雄誘憂融与誉妖庸揚揺溶腰瘍踊窯擁謡抑沃翼拉裸羅雷
+頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊楼漏籠麓賄脇惑枠湾腕
 `.replace(/\n/g, "").split("");
-
+  
 // ===== JSON =====
 const files = [
-  "kihon.json",
-  "ex.json",
-  "rare.json",
-  "superrare.json",
-  "ultrarare.json",
-  "legendrare.json"
+  "kihon.json","ex.json","rare.json",
+  "superrare.json","ultrarare.json","legendrare.json"
 ];
 
-Promise.all(
-  files.map(f => fetch(f).then(r => r.json()))
-)
-.then(results => {
-  data = results.flat();
-  init();
-});
+Promise.all(files.map(f => fetch(f).then(r => r.json())))
+.then(res => { data = res.flat(); init(); });
 
 // ===== 初期化 =====
 function init() {
-  createGrid(chars1, "grid1", "countText1", "1年生で習う漢字");
-  createGrid(chars2, "grid2", "countText2", "2年生で習う漢字");
-  createGrid(chars3, "grid3", "countText3", "3年生で習う漢字");
-  createGrid(chars4, "grid4", "countText4", "4年生で習う漢字");
-  createGrid(chars5, "grid5", "countText5", "5年生で習う漢字");
-  createGrid(chars6, "grid6", "countText6", "6年生で習う漢字");
-  createGrid(chars7, "grid7", "countText7", "中学校で習う漢字");
+  createGrid(chars1,"grid1","1年生");
+  createGrid(chars2,"grid2","2年生");
+  createGrid(chars3,"grid3","3年生");
+  createGrid(chars4,"grid4","4年生");
+  createGrid(chars5,"grid5","5年生");
+  createGrid(chars6,"grid6","6年生");
+  createGrid(chars7,"grid7","中学生");
+
   createExtraKanji();
 
-  // Enterキー検索
-  document.getElementById("searchInput").addEventListener("keydown", e => {
-    if (e.key === "Enter") searchFromInput();
-  });
+  updateElementaryCount();
+  updateAllCount();
+
+  document.getElementById("searchInput")
+    .addEventListener("keydown",e=>{
+      if(e.key==="Enter") searchFromInput();
+    });
 }
 
 // ===== 折りたたみ =====
 function toggle(id, el) {
   const box = document.getElementById(id);
-  const isOpen = box.style.display !== "none";
-
-  box.style.display = isOpen ? "none" : "block";
+  const open = box.style.display !== "none";
+  box.style.display = open ? "none" : "block";
 
   const text = el.innerHTML.slice(2);
-  el.innerHTML = (isOpen ? "▶ " : "▼ ") + text;
-}
-// ===== 入力検索 =====
-function searchFromInput() {
-  const val = document.getElementById("searchInput").value.trim();
-  if (val) search(val);
+  el.innerHTML = (open ? "▶ " : "▼ ") + text;
 }
 
 // ===== グリッド =====
-function createGrid(chars, gridId, countId, title) {
-  const usedChars = new Set();
+function createGrid(chars, gridId, title) {
+  const used = new Set();
 
-  data.forEach(ch => {
-    ch.forms.forEach(f => {
-      const text = f.name + f.description;
-      for (let c of text) usedChars.add(c);
+  data.forEach(ch=>{
+    ch.forms.forEach(f=>{
+      for(let c of f.name+f.description) used.add(c);
     });
   });
 
   const grid = document.getElementById(gridId);
-  let activeCount = 0;
+  let count = 0;
 
-  chars.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "char";
-    div.textContent = c;
+  chars.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="char";
+    d.textContent=c;
 
-    if (usedChars.has(c)) {
-      div.classList.add("active");
-      activeCount++;
-    }
+    if(used.has(c)){ d.classList.add("active"); count++; }
 
-    div.onclick = () => {
-      document.querySelectorAll(".char").forEach(e => e.classList.remove("selected"));
-      div.classList.add("selected");
-      search(c);
-    };
-
-    grid.appendChild(div);
+    d.onclick=()=>search(c);
+    grid.appendChild(d);
   });
 
-  updateElementaryCount();
-updateAllCount();
-
-  // ★ここ追加（ヘッダーを書き換える）
- const header = grid.parentElement.previousElementSibling;
+  const header = grid.parentElement.previousElementSibling;
   header.innerHTML =
-    `▼ ${title} <span style="color:blue">${activeCount}</span> / ${chars.length}`;
-}
-
-// ===== ハイライト =====
-function highlight(text, keyword) {
-  return text.replaceAll(keyword, `<span class="hit">${keyword}</span>`);
+    `▼ ${title} <span style="color:blue">${count}</span> / ${chars.length}`;
 }
 
 // ===== 検索 =====
-function search(keyword) {
-  document.getElementById("searchScreen").style.display = "none";
-  document.getElementById("resultScreen").style.display = "block";
+function searchFromInput(){
+  const v=document.getElementById("searchInput").value.trim();
+  if(v) search(v);
+}
 
-  const resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = "";
+function search(keyword){
+  document.getElementById("searchScreen").style.display="none";
+  document.getElementById("resultScreen").style.display="block";
 
-  const results = data.map(ch => {
-    const forms = ch.forms.filter(f =>
-      f.name.includes(keyword) ||
-      f.description.includes(keyword)
-    );
-    return { ...ch, forms };
-  }).filter(ch => ch.forms.length > 0);
-
-  const count = results.reduce((sum, ch) => sum + ch.forms.length, 0);
+  const res=data.flatMap(ch =>
+    ch.forms.filter(f =>
+      f.name.includes(keyword)||f.description.includes(keyword)
+    ).map(f=>({f}))
+  );
 
   document.getElementById("selectedText").textContent =
-    `検索: ${keyword}　${count}件見つかりました`;
+    `検索: ${keyword} ${res.length}件`;
 
-  if (count === 0) {
-    resultDiv.textContent = "該当なし";
-    return;
-  }
+  const box=document.getElementById("result");
+  box.innerHTML="";
 
-  results.forEach(ch => {
-    ch.forms.forEach(f => {
-      const div = document.createElement("div");
-      div.className = "result";
+  if(!res.length){ box.textContent="該当なし"; return; }
 
-      div.innerHTML =
-        `<b>${highlight(f.name, keyword)}</b><br>` +
-        highlight(f.description, keyword).replace(/\n/g, "<br>");
-
-      resultDiv.appendChild(div);
-    });
+  res.forEach(r=>{
+    const d=document.createElement("div");
+    d.className="result";
+    d.innerHTML=r.f.name+"<br>"+r.f.description;
+    box.appendChild(d);
   });
 }
 
-// ===== 戻る =====
-function back() {
-  document.getElementById("searchScreen").style.display = "block";
-  document.getElementById("resultScreen").style.display = "none";
+function back(){
+  document.getElementById("searchScreen").style.display="block";
+  document.getElementById("resultScreen").style.display="none";
 }
 
-function createExtraKanji() {
-
-  // ===== 学年漢字まとめ =====
-  const allLearned = new Set([
-    ...chars1, ...chars2, ...chars3,
-    ...chars4, ...chars5, ...chars6, ...chars7
+// ===== 常用外漢字 =====
+function createExtraKanji(){
+  const learned=new Set([
+    ...chars1,...chars2,...chars3,
+    ...chars4,...chars5,...chars6,...chars7
   ]);
 
-  // ===== 出現漢字 =====
-  const usedMap = new Map(); // 漢字 → 最初に出たキャラ
+  const map=new Map();
 
-  data.forEach(ch => {
-    ch.forms.forEach(f => {
-      const text = f.name + f.description;
-
-      for (let c of text) {
-
-        // 漢字だけ判定（ざっくり）
-        if (!c.match(/[一-龯]/)) continue;
-
-        // 学年漢字は除外
-        if (allLearned.has(c)) continue;
-
-        // 初出のみ登録（レアリティ順優先）
-        if (!usedMap.has(c)) {
-          usedMap.set(c, ch);
-        }
+  data.forEach(ch=>{
+    ch.forms.forEach(f=>{
+      for(let c of f.name+f.description){
+        if(!c.match(/[一-龯]/)) continue;
+        if(learned.has(c)) continue;
+        if(!map.has(c)) map.set(c,ch);
       }
     });
   });
 
-  // ===== レアリティ順で並べ替え =====
-  const rarityOrder = [0,1,2,3,4,5];
+  const sorted=[...map.keys()];
 
-  const sorted = Array.from(usedMap.entries())
-    .sort((a,b) => {
-      return rarityOrder.indexOf(a[1].rarity) - rarityOrder.indexOf(b[1].rarity);
-    });
+  const header=document.createElement("div");
+  header.className="gradeHeader";
+  header.textContent = `▼ 常用漢字外 ${sorted.length}種類`;
 
-  // ===== 表示 =====
-  const container = document.createElement("div");
+  const box=document.createElement("div");
+  box.id="gExtra";
 
-  const header = document.createElement("div");
-  header.className = "gradeHeader";
-  header.textContent =　`▼ 常用外漢字 ${sorted.length}種類`;
-  header.onclick = () => toggle("gExtra", header);
+  const grid=document.createElement("div");
+  grid.className="grid";
 
-  const box = document.createElement("div");
-  box.id = "gExtra";
-
-  const grid = document.createElement("div");
-  grid.className = "grid";
-
-  sorted.forEach(([char]) => {
-    const div = document.createElement("div");
-    div.className = "char active";
-    div.textContent = char;
-
-    div.onclick = () => {
-      document.querySelectorAll(".char").forEach(e => e.classList.remove("selected"));
-      div.classList.add("selected");
-      search(char);
-    };
-
-    grid.appendChild(div);
+  sorted.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="char active";
+    d.textContent=c;
+    d.onclick=()=>search(c);
+    grid.appendChild(d);
   });
 
   box.appendChild(grid);
 
-  // 画面に追加（中学の下）
-  document.getElementById("searchScreen").appendChild(header);
-  document.getElementById("searchScreen").appendChild(box);
+  const g7 = document.getElementById("g7").parentElement;
+  g7.after(header);
+  header.after(box);
+
+  header.onclick=()=>toggle("gExtra",header);
 }
 
-function updateElementaryCount() {
-  const all = [...chars1, ...chars2, ...chars3, ...chars4, ...chars5, ...chars6];
+// ===== カウント =====
+function updateElementaryCount(){
+  const all=[...chars1,...chars2,...chars3,...chars4,...chars5,...chars6];
+  const used=new Set();
 
-  const used = new Set();
-
-  data.forEach(ch => {
-    ch.forms.forEach(f => {
-      const text = f.name + f.description;
-      for (let c of text) {
-        if (all.includes(c)) used.add(c);
+  data.forEach(ch=>{
+    ch.forms.forEach(f=>{
+      for(let c of f.name+f.description){
+        if(all.includes(c)) used.add(c);
       }
     });
   });
 
-  const header = document.querySelector('[onclick*="gElem"]');
-  header.innerHTML =
-    `▼ 小学生で習う漢字 <span style="color:blue">${used.size}</span> / ${all.length}`;
+  document.querySelector('[onclick*="gElem"]').innerHTML =
+    `▼ 小学生で習う漢字 ${used.size} / ${all.length}`;
 }
 
-function updateAllCount() {
-  const all = [
-    ...chars1, ...chars2, ...chars3,
-    ...chars4, ...chars5, ...chars6, ...chars7
+function updateAllCount(){
+  const all=[
+    ...chars1,...chars2,...chars3,
+    ...chars4,...chars5,...chars6,...chars7
   ];
+  const used=new Set();
 
-  const used = new Set();
-
-  data.forEach(ch => {
-    ch.forms.forEach(f => {
-      const text = f.name + f.description;
-      for (let c of text) {
-        if (all.includes(c)) used.add(c);
+  data.forEach(ch=>{
+    ch.forms.forEach(f=>{
+      for(let c of f.name+f.description){
+        if(all.includes(c)) used.add(c);
       }
     });
   });
 
-  const header = document.querySelector('[onclick*="gAll"]');
-  header.innerHTML =
-    `▼ 常用漢字 <span style="color:blue">${used.size}</span> / ${all.length}`;
+  document.querySelector('[onclick*="gAll"]').innerHTML =
+    `▼ 常用漢字 ${used.size} / ${all.length}`;
 }
 </script>
 
