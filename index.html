@@ -93,49 +93,49 @@ body { font-family: sans-serif; padding: 10px; }
 </div>
 
 <!-- 1年 -->
-<div class="gradeHeader" onclick="toggle('g1')">▼ 1年生</div>
+<div class="gradeHeader" onclick="toggle('g1', this)">▼ 1年生</div>
 <div id="g1">
   <div id="countText1" class="countText"></div>
   <div id="grid1" class="grid"></div>
 </div>
 
 <!-- 2年 -->
-<div class="gradeHeader" onclick="toggle('g2')">▼ 2年生</div>
+<div class="gradeHeader" onclick="toggle('g2', this)">▼ 2年生</div>
 <div id="g2">
   <div id="countText2" class="countText"></div>
   <div id="grid2" class="grid"></div>
 </div>
 
 <!-- 3年 -->
-<div class="gradeHeader" onclick="toggle('g3')">▼ 3年生</div>
+<div class="gradeHeader" onclick="toggle('g3', this)">▼ 3年生</div>
 <div id="g3">
   <div id="countText3" class="countText"></div>
   <div id="grid3" class="grid"></div>
 </div>
 
 <!-- 4年 -->
-<div class="gradeHeader" onclick="toggle('g4')">▼ 4年生</div>
+<div class="gradeHeader" onclick="toggle('g4', this)">▼ 4年生</div>
 <div id="g4">
   <div id="countText4" class="countText"></div>
   <div id="grid4" class="grid"></div>
 </div>
 
 <!-- 5年 -->
-<div class="gradeHeader" onclick="toggle('g5')">▼ 5年生</div>
+<div class="gradeHeader" onclick="toggle('g5', this)">▼ 5年生</div>
 <div id="g5">
   <div id="countText5" class="countText"></div>
   <div id="grid5" class="grid"></div>
 </div>
 
 <!-- 6年 -->
-<div class="gradeHeader" onclick="toggle('g6')">▼ 6年生</div>
+<div class="gradeHeader" onclick="toggle('g6', this)">▼ 6年生</div>
 <div id="g6">
   <div id="countText6" class="countText"></div>
   <div id="grid6" class="grid"></div>
 </div>
 
 <!-- 中学 -->
-<div class="gradeHeader" onclick="toggle('g7')">▼ 中学生</div>
+<div class="gradeHeader" onclick="toggle('g7', this)">▼ 中学生</div>
 <div id="g7">
   <div id="countText7" class="countText"></div>
   <div id="grid7" class="grid"></div>
@@ -320,11 +320,16 @@ function init() {
 }
 
 // ===== 折りたたみ =====
-function toggle(id) {
-  const el = document.getElementById(id);
-  el.style.display = (el.style.display === "none") ? "block" : "none";
-}
+function toggle(id, el) {
+  const box = document.getElementById(id);
+  const isOpen = box.style.display !== "none";
 
+  box.style.display = isOpen ? "none" : "block";
+
+  // ▼▶切り替え
+  const text = el.textContent.slice(2);
+  el.textContent = (isOpen ? "▶ " : "▼ ") + text;
+}
 // ===== 入力検索 =====
 function searchFromInput() {
   const val = document.getElementById("searchInput").value.trim();
