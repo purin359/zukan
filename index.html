@@ -85,7 +85,7 @@ body { font-family: sans-serif; padding: 10px; }
 <!-- 検索画面 -->
 <div id="searchScreen">
 
-<h2>味方文字検索 v1.3.5</h2>
+<h2>味方文字検索 v1.4</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox" placeholder="文字を入力">
@@ -362,7 +362,7 @@ function createGrid(chars, gridId, countId, title) {
   });
 
   // ★ここ追加（ヘッダーを書き換える）
-  const header = grid.previousElementSibling;
+ const header = grid.parentElement.previousElementSibling;
   header.innerHTML =
     `▼ ${title} <span style="color:blue">${activeCount}</span> / ${chars.length}`;
 }
