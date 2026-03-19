@@ -36,16 +36,16 @@ body { font-family: sans-serif; padding: 10px; }
 <body>
 
 <div id="searchScreen">
-<h2>味方文字検索 vol.2.0.18</h2>
+<h2>味方文字検索 2.0.19</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
 </div>
 
-<div class="gradeHeader" id="headerGAll" onclick="toggle('gAll', this)">▼ 常用漢字</div>
+<div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll', this)">▼ 常用漢字</div>
 <div id="gAll">
-  <div class="gradeHeader" id="headerGElem" onclick="toggle('gElem', this)">▼ 小学生</div>
+  <div class="gradeHeader" id="headerGElem" data-base="小学生" onclick="toggle('gElem', this)">▼ 小学生</div>
   <div id="gElem">
     <div id="g1"><div id="grid1" class="grid"></div></div>
     <div id="g2"><div id="grid2" class="grid"></div></div>
@@ -55,11 +55,11 @@ body { font-family: sans-serif; padding: 10px; }
     <div id="g6"><div id="grid6" class="grid"></div></div>
   </div>
 
-  <div class="gradeHeader" id="headerG7" onclick="toggle('g7', this)">▼ 中学生</div>
+  <div class="gradeHeader" id="headerG7" data-base="中学生" onclick="toggle('g7', this)">▼ 中学生</div>
   <div id="g7"><div id="grid7" class="grid"></div></div>
 </div>
 
-<div class="gradeHeader" id="headerExtra">▼ 常用漢字外 0種類</div>
+<div class="gradeHeader" id="headerExtra" data-base="常用漢字外">▼ 常用漢字外 0種類</div>
 <div id="extraGrid" class="grid"></div>
 
 </div>
@@ -73,7 +73,7 @@ body { font-family: sans-serif; padding: 10px; }
 <script>
 let data=[];
 
-// ===== 文字 =====
+// ===== 文字（chars1〜chars7は例省略） =====
 const chars1 = `
 一二三四五六七八九十百千日月火水木金土田山川林森石天気空雨夕草花竹文字本円玉年音学校先生赤白青人男女子目耳口手足犬貝虫王力町村車大中小上下左右正出入立見休早名糸
 `.replace(/\n/g, "").split("");
@@ -122,14 +122,11 @@ const chars7 = `
 撲没勃堀奔翻凡盆麻摩磨魔昧埋膜枕又抹慢漫魅岬蜜妙眠矛霧娘冥銘滅免麺茂妄盲耗猛網黙紋冶弥厄躍闇喩愉諭癒唯幽悠湧猶裕雄誘憂融与誉妖庸揚揺溶腰瘍踊窯擁謡抑沃翼拉裸羅雷
 頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊楼漏籠麓賄脇惑枠湾腕
 `.replace(/\n/g, "").split("");
-  
-// ===== JSONファイル（例：kihon.json 他は空配列） =====
+
+// ===== JSONファイル =====
 const files=["kihon.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
 Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
-.then(r=>{
-  data=r.flat();
-  init();
-});
+.then(r=>{ data=r.flat(); init(); });
 
 // ===== 初期化 =====
 function init(){
@@ -139,12 +136,11 @@ function init(){
   createGridWithHeader(chars4,"grid4","4年で習う漢字");
   createGridWithHeader(chars5,"grid5","5年で習う漢字");
   createGridWithHeader(chars6,"grid6","6年で習う漢字");
-  createGridWithHeader(chars7,"grid7","中学生"); // ヘッダーはJSで作らない
+  createGridWithHeader(chars7,"grid7","中学生"); // ヘッダーHTML側で管理
 
   createExtraKanji();
 
-  document.getElementById("searchInput")
-    .addEventListener("keydown",e=>{ if(e.key==="Enter") searchFromInput(); });
+  document.getElementById("searchInput").addEventListener("keydown",e=>{ if(e.key==="Enter") searchFromInput(); });
 
   updateGroupHeader();
 }
@@ -157,16 +153,8 @@ function toggle(id,header){
 
 // ===== 検索 =====
 function normalize(str){ return (str||"").toLowerCase(); }
-function highlight(text,keyword){ 
-  const re = new RegExp(`(${keyword})`,"gi");
-  return text.replace(re,`<span class="hit">$1</span>`); 
-}
-
-function searchFromInput(){
-  const v=document.getElementById("searchInput").value.trim();
-  if(v) search(v);
-}
-
+function highlight(text,keyword){ const re=new RegExp(`(${keyword})`,"gi"); return text.replace(re,`<span class="hit">$1</span>`); }
+function searchFromInput(){ const v=document.getElementById("searchInput").value.trim(); if(v) search(v); }
 function search(keyword){
   document.getElementById("searchScreen").style.display="none";
   document.getElementById("resultScreen").style.display="block";
@@ -191,35 +179,30 @@ function search(keyword){
     });
   });
 
-  document.getElementById("selectedText").innerText = `"${keyword}" の検索結果 (${total})`;
+  document.getElementById("selectedText").innerText=`"${keyword}" の検索結果 (${total})`;
 }
 
 // ===== 戻る =====
-function back(){
-  document.getElementById("resultScreen").style.display="none";
-  document.getElementById("searchScreen").style.display="block";
-}
+function back(){ document.getElementById("resultScreen").style.display="none"; document.getElementById("searchScreen").style.display="block"; }
 
 // ===== 使用済み判定 =====
-function isUsed(c){
-  return data.some(ch=>ch.forms.some(f=>f.name.includes(c) || f.description.includes(c)));
-}
+function isUsed(c){ return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.description.includes(c))); }
 
 // ===== グリッド生成（n/m付き） =====
 function createGridWithHeader(chars,id,name){
   const grid=document.getElementById(id);
   grid.innerHTML="";
 
-  // grid7（中学生）はヘッダーHTML側で管理
   if(id!=="grid7"){
     let header = grid.parentNode.querySelector(".gradeHeader");
     if(!header){
       header=document.createElement("div");
       header.className="gradeHeader";
+      header.dataset.base=name;
       grid.parentNode.insertBefore(header, grid);
     }
-    const used = chars.filter(isUsed).length;
-    header.innerText=`▼ ${name} (${used}/${chars.length})`;
+    const used=chars.filter(isUsed).length;
+    header.innerText=`▼ ${header.dataset.base} (${used}/${chars.length})`;
     header.onclick=()=>{grid.style.display=(grid.style.display==="none"||grid.style.display==="")?"grid":"none";};
   }
 
@@ -241,7 +224,7 @@ function updateGroupHeader(){
     const used=Array.from(grids).reduce((a,g)=>a+g.querySelectorAll(".active").length,0);
     const total=Array.from(grids).reduce((a,g)=>a+g.children.length,0);
     const header=g.parentNode.querySelector(`#header${id}`) || g.previousElementSibling;
-    if(header) header.innerText=`▼${header.innerText.split(" ")[0]} (${used}/${total})`;
+    if(header && header.dataset.base) header.innerText=`▼ ${header.dataset.base} (${used}/${total})`;
   });
 }
 
@@ -251,13 +234,13 @@ function createExtraKanji(){
   extraGrid.innerHTML="";
   const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
 
-  const usedChars = data.flatMap(ch=>ch.forms.flatMap(f=>f.name.split("").concat(f.description.split(""))));
-  const extra = Array.from(new Set(
-    usedChars.filter(c=>!allChars.includes(c) && /[\u4E00-\u9FFF]/.test(c)) // 漢字のみ
+  const usedChars=data.flatMap(ch=>ch.forms.flatMap(f=>f.name.split("").concat(f.description.split(""))));
+  const extra=Array.from(new Set(
+    usedChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
   ));
 
-  const header = document.getElementById("headerExtra");
-  header.innerText = `▼ 常用漢字外 ${extra.length}種類`;
+  const header=document.getElementById("headerExtra");
+  header.innerText=`▼ ${header.dataset.base} ${extra.length}種類`;
 
   extra.forEach(c=>{
     const div=document.createElement("div");
