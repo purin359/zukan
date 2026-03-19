@@ -36,13 +36,14 @@ body { font-family: sans-serif; padding: 10px; }
 <body>
 
 <div id="searchScreen">
-<h2>味方文字検索 vol.2.0.13</h2>
+<h2>味方文字検索 vol.2.0.14</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
 </div>
 
+<!-- 常用漢字 -->
 <div class="gradeHeader" id="headerGAll" onclick="toggle('gAll', this)">▼ 常用漢字</div>
 <div id="gAll">
   <div class="gradeHeader" id="headerGElem" onclick="toggle('gElem', this)">▼ 小学生</div>
@@ -54,9 +55,12 @@ body { font-family: sans-serif; padding: 10px; }
     <div id="g5"><div id="grid5" class="grid"></div></div>
     <div id="g6"><div id="grid6" class="grid"></div></div>
   </div>
+  <div class="gradeHeader" id="headerG7" onclick="toggle('g7', this)">▼ 中学生</div>
   <div id="g7"><div id="grid7" class="grid"></div></div>
 </div>
 
+<!-- 常用漢字外 -->
+<div class="gradeHeader" id="headerExtra">▼ 常用漢字外 0種類</div>
 <div id="gridExtra" class="grid"></div>
 
 </div>
@@ -119,8 +123,8 @@ const chars7 = `
 撲没勃堀奔翻凡盆麻摩磨魔昧埋膜枕又抹慢漫魅岬蜜妙眠矛霧娘冥銘滅免麺茂妄盲耗猛網黙紋冶弥厄躍闇喩愉諭癒唯幽悠湧猶裕雄誘憂融与誉妖庸揚揺溶腰瘍踊窯擁謡抑沃翼拉裸羅雷
 頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊楼漏籠麓賄脇惑枠湾腕
 `.replace(/\n/g, "").split("");
-  
-// ===== JSONファイル（例：kihon.json 他は空配列） =====
+
+// ===== JSONファイル =====
 const files=["kihon.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
 Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
 .then(r=>{
@@ -200,7 +204,7 @@ function isUsed(c){
   return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.description.includes(c)));
 }
 
-// ===== グリッド生成（n/m付き） =====
+// ===== グリッド生成 =====
 function createGridWithHeader(chars,id,name){
   const grid=document.getElementById(id);
   grid.innerHTML="";
@@ -213,7 +217,6 @@ function createGridWithHeader(chars,id,name){
     grid.appendChild(div);
   });
 
-  // ヘッダー n/m
   const parentDiv = grid.parentNode;
   let header = parentDiv.querySelector(".gradeHeader");
   if(header) header.innerText = `▼ ${name} (${chars.filter(isUsed).length}/${chars.length})`;
@@ -242,19 +245,23 @@ function createExtraKanji(){
   data.forEach(ch=>{
     ch.forms.forEach(f=>{
       (f.name+f.description).split("").forEach(c=>{
-        // 漢字のみ (Unicode CJK)
         if(/[一-龯]/.test(c) && !allChars.has(c)) extraChars.push(c);
       });
     });
   });
 
-  [...new Set(extraChars)].forEach(c=>{
+  const uniqueChars = [...new Set(extraChars)];
+
+  uniqueChars.forEach(c=>{
     const div=document.createElement("div");
     div.className="char active";
     div.innerText=c;
     div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
     extraGrid.appendChild(div);
   });
+
+  // ヘッダーに件数表示
+  document.getElementById("headerExtra").innerText = `▼ 常用漢字外 ${uniqueChars.length}種類`;
 }
 </script>
 
