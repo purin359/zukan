@@ -31,14 +31,12 @@ body { font-family: sans-serif; padding: 10px; }
 .hit { color:blue; font-weight:bold; }
 
 .result { border-bottom:1px solid #ccc; padding:8px 0; }
-
-button.extraBtn { margin:5px 0; padding:5px 10px; cursor:pointer; }
 </style>
 </head>
 <body>
 
 <div id="searchScreen">
-<h2>味方文字検索 vol.2.0.12</h2>
+<h2>味方文字検索 vol.2.0.13</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -56,14 +54,10 @@ button.extraBtn { margin:5px 0; padding:5px 10px; cursor:pointer; }
     <div id="g5"><div id="grid5" class="grid"></div></div>
     <div id="g6"><div id="grid6" class="grid"></div></div>
   </div>
-  <div class="gradeHeader" id="headerG7" onclick="toggle('g7', this)">▼ 中学生</div>
   <div id="g7"><div id="grid7" class="grid"></div></div>
 </div>
 
-<div>
-  <button class="extraBtn" onclick="showExtra()">▼ 常用漢字外を表示</button>
-  <div id="gridExtra" class="grid" style="display:none;"></div>
-</div>
+<div id="gridExtra" class="grid"></div>
 
 </div>
 
@@ -144,6 +138,8 @@ function init(){
   createGridWithHeader(chars6,"grid6","6年で習う漢字");
   createGridWithHeader(chars7,"grid7","中学生");
 
+  createExtraKanji();
+
   document.getElementById("searchInput").addEventListener("keydown",e=>{
     if(e.key==="Enter") searchFromInput();
   });
@@ -220,14 +216,7 @@ function createGridWithHeader(chars,id,name){
   // ヘッダー n/m
   const parentDiv = grid.parentNode;
   let header = parentDiv.querySelector(".gradeHeader");
-  if(!header){
-    header=document.createElement("div");
-    header.className="gradeHeader";
-    parentDiv.insertBefore(header, grid);
-  }
-  const used = chars.filter(isUsed).length;
-  header.innerText = `▼ ${name} (${used}/${chars.length})`;
-  header.onclick = ()=>{grid.style.display=(grid.style.display==="none"||grid.style.display==="")?"grid":"none";};
+  if(header) header.innerText = `▼ ${name} (${chars.filter(isUsed).length}/${chars.length})`;
 }
 
 // ===== 各グループ n/m ヘッダー更新 =====
@@ -242,20 +231,19 @@ function updateGroupHeader(){
   });
 }
 
-// ===== 常用漢字外ボタン =====
-function showExtra(){
+// ===== 常用漢字外作成（漢字のみ） =====
+function createExtraKanji(){
   const extraGrid = document.getElementById("gridExtra");
-  extraGrid.style.display = (extraGrid.style.display==="none"?"grid":"none");
   extraGrid.innerHTML = "";
 
-  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
-  const usedChars = new Set(allChars);
+  const allChars = new Set(chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7));
 
   const extraChars = [];
   data.forEach(ch=>{
     ch.forms.forEach(f=>{
       (f.name+f.description).split("").forEach(c=>{
-        if(!usedChars.has(c)) extraChars.push(c);
+        // 漢字のみ (Unicode CJK)
+        if(/[一-龯]/.test(c) && !allChars.has(c)) extraChars.push(c);
       });
     });
   });
