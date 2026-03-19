@@ -36,15 +36,13 @@ body { font-family: sans-serif; padding: 10px; }
 <body>
 
 <div id="searchScreen">
-<h2>味方文字検索 vol.2.0.16</h2>
+<h2>味方文字検索 vol.2.0.17</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
 </div>
 
-<!-- 常用漢字 -->
-<div class="gradeHeader" id="headerGAll" onclick="toggle('gAll', this)">▼ 常用漢字</div>
 <div id="gAll">
   <div class="gradeHeader" id="headerGElem" onclick="toggle('gElem', this)">▼ 小学生</div>
   <div id="gElem">
@@ -59,9 +57,8 @@ body { font-family: sans-serif; padding: 10px; }
   <div id="g7"><div id="grid7" class="grid"></div></div>
 </div>
 
-<!-- 常用漢字外 -->
-<div class="gradeHeader" id="headerExtra">▼ 常用漢字外 0種類</div>
-<div id="gridExtra" class="grid"></div>
+<div class="gradeHeader" id="headerExtra">▼ 常用漢字外</div>
+<div id="extraGrid" class="grid"></div>
 
 </div>
 
@@ -124,7 +121,7 @@ const chars7 = `
 頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊楼漏籠麓賄脇惑枠湾腕
 `.replace(/\n/g, "").split("");
 
-// ===== JSONファイル =====
+// ===== JSONファイル（例：kihon.json 他は空配列） =====
 const files=["kihon.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
 Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
 .then(r=>{
@@ -134,19 +131,18 @@ Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
 
 // ===== 初期化 =====
 function init(){
-  createGridWithHeader(chars1,"grid1","1年で習う漢字");
-  createGridWithHeader(chars2,"grid2","2年で習う漢字");
-  createGridWithHeader(chars3,"grid3","3年で習う漢字");
-  createGridWithHeader(chars4,"grid4","4年で習う漢字");
-  createGridWithHeader(chars5,"grid5","5年で習う漢字");
-  createGridWithHeader(chars6,"grid6","6年で習う漢字");
+  createGridWithHeader(chars1,"grid1","1年生");
+  createGridWithHeader(chars2,"grid2","2年生");
+  createGridWithHeader(chars3,"grid3","3年生");
+  createGridWithHeader(chars4,"grid4","4年生");
+  createGridWithHeader(chars5,"grid5","5年生");
+  createGridWithHeader(chars6,"grid6","6年生");
   createGridWithHeader(chars7,"grid7","中学生");
 
   createExtraKanji();
 
-  document.getElementById("searchInput").addEventListener("keydown",e=>{
-    if(e.key==="Enter") searchFromInput();
-  });
+  document.getElementById("searchInput")
+    .addEventListener("keydown",e=>{ if(e.key==="Enter") searchFromInput(); });
 
   updateGroupHeader();
 }
@@ -201,79 +197,64 @@ function back(){
 
 // ===== 使用済み判定 =====
 function isUsed(c){
-  return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.description.includes(c)));
+  return data.some(ch=>ch.forms.some(f=>f.name.includes(c) || f.description.includes(c)));
 }
 
-// ===== グリッド生成 =====
-function createGridWithHeader(chars, id, name) {
-  const grid = document.getElementById(id);
-  grid.innerHTML = "";
+// ===== グリッド生成（n/m付き） =====
+function createGridWithHeader(chars,id,name){
+  const grid=document.getElementById(id);
+  grid.innerHTML="";
 
-  // ヘッダーを必ず作成
+  // ヘッダー作成
   let header = grid.parentNode.querySelector(".gradeHeader");
-  if (!header) {
+  if(!header){
     header = document.createElement("div");
-    header.className = "gradeHeader";
+    header.className="gradeHeader";
     grid.parentNode.insertBefore(header, grid);
   }
+  const used = chars.filter(isUsed).length;
+  header.innerText = `▼ ${name} (${used}/${chars.length})`;
+  header.onclick = ()=>{grid.style.display=(grid.style.display==="none"||grid.style.display==="")?"grid":"none";};
 
-  const usedCount = chars.filter(isUsed).length;
-  header.innerText = `▼ ${name} (${usedCount}/${chars.length})`;
-  header.onclick = () => {
-    grid.style.display = (grid.style.display === "none" || grid.style.display === "") ? "grid" : "none";
-  };
-
-  // 文字を配置
-  chars.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "char";
-    if (isUsed(c)) div.classList.add("active");
-    div.innerText = c;
-    div.onclick = () => { document.getElementById("searchInput").value = c; searchFromInput(); };
+  chars.forEach(c=>{
+    const div=document.createElement("div");
+    div.className="char";
+    if(isUsed(c)) div.classList.add("active");
+    div.innerText=c;
+    div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
     grid.appendChild(div);
   });
 }
 
 // ===== 各グループ n/m ヘッダー更新 =====
 function updateGroupHeader(){
-  ["gAll","gElem","g7"].forEach(id=>{
+  ["gElem","g7"].forEach(id=>{
     const g=document.getElementById(id);
     const grids=g.querySelectorAll(".grid");
     const used=Array.from(grids).reduce((a,g)=>a+g.querySelectorAll(".active").length,0);
     const total=Array.from(grids).reduce((a,g)=>a+g.children.length,0);
-    const header=g.parentNode.querySelector(`#header${id}`) || g.previousElementSibling;
+    const header=g.parentNode.querySelector(`.gradeHeader`);
     if(header) header.innerText=`▼ ${header.innerText.split(" ")[1]} (${used}/${total})`;
   });
 }
 
-// ===== 常用漢字外作成（漢字のみ、常時表示） =====
+// ===== 常用漢字外 =====
 function createExtraKanji(){
-  const extraGrid = document.getElementById("gridExtra");
-  extraGrid.innerHTML = "";
+  const extraGrid=document.getElementById("extraGrid");
+  extraGrid.innerHTML="";
+  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+  const usedChars = data.flatMap(ch=>ch.forms.flatMap(f=>f.name.split("").concat(f.description.split(""))));
+  const extra = Array.from(new Set(usedChars.filter(c=>!allChars.includes(c))));
+  const header = document.getElementById("headerExtra");
+  header.innerText = `▼ 常用漢字外 ${extra.length}種類`;
 
-  const allChars = new Set(chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7));
-
-  const extraChars = [];
-  data.forEach(ch=>{
-    ch.forms.forEach(f=>{
-      (f.name+f.description).split("").forEach(c=>{
-        if(/[一-龯]/.test(c) && !allChars.has(c)) extraChars.push(c);
-      });
-    });
-  });
-
-  const uniqueChars = [...new Set(extraChars)];
-
-  uniqueChars.forEach(c=>{
+  extra.forEach(c=>{
     const div=document.createElement("div");
-    div.className="char active";
+    div.className="char";
     div.innerText=c;
     div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
     extraGrid.appendChild(div);
   });
-
-  // ヘッダーに件数表示
-  document.getElementById("headerExtra").innerText = `▼ 常用漢字外 ${uniqueChars.length}種類`;
 }
 </script>
 
