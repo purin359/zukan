@@ -67,7 +67,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
 
-<h2>味方文字検索 v2.0.2</h2>
+<h2>味方文字検索 vol.2.0.3</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -259,6 +259,13 @@ function normalize(str) {
     .replace(/[Ａ-Ｚａ-ｚ０-９]/g, s =>
       String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
     );
+}
+
+function highlight(text, keyword) {
+  return text.replaceAll(
+    keyword,
+    `<span class="hit">${keyword}</span>`
+  );
 }
   
 // ===== 検索 =====
