@@ -76,7 +76,10 @@ body { font-family: sans-serif; padding: 10px; }
   <h2>味方文字検索v1.1.2</h2>
 
   <!-- ★ 検索ボックス -->
-  <input type="text" id="searchInput" class="searchBox" placeholder="文字を入力して検索">
+  <div style="display:flex; gap:5px; margin-bottom:10px;">
+  <input type="text" id="searchInput" class="searchBox" placeholder="文字を入力">
+  <button onclick="searchFromInput()">検索</button>
+</div>
 
   <!-- 1年 -->
   <div id="countText1" class="countText"></div>
@@ -132,12 +135,12 @@ function init() {
   createGrid(chars2, "grid2", "countText2", "2年生で習う漢字");
 
   // ★ 入力検索
-  document.getElementById("searchInput").addEventListener("input", e => {
-    const val = e.target.value.trim();
-    if (val) search(val);
-  });
+  function searchFromInput() {
+  const val = document.getElementById("searchInput").value.trim();
+  if (val) {
+    search(val);
+  }
 }
-
 // ===== グリッド生成 =====
 function createGrid(chars, gridId, countId, title) {
   const usedChars = new Set();
