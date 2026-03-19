@@ -67,7 +67,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
 
-<h2>味方文字検索 v2.0.1</h2>
+<h2>味方文字検索 v2.0.2</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -253,38 +253,62 @@ function createGrid(chars, gridId, title) {
     `▼ ${title} <span style="color:blue">${count}</span> / ${chars.length}`;
 }
 
+function normalize(str) {
+  return str
+    .toLowerCase()
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, s =>
+      String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
+    );
+}
+  
 // ===== 検索 =====
 function searchFromInput(){
   const v=document.getElementById("searchInput").value.trim();
   if(v) search(v);
 }
 
-function search(keyword){
-  document.getElementById("searchScreen").style.display="none";
-  document.getElementById("resultScreen").style.display="block";
+function search(keyword) {
+  document.getElementById("searchScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "block";
 
-  const res=data.flatMap(ch =>
-    ch.forms.filter(f =>
-      f.name.includes(keyword)||f.description.includes(keyword)
-    ).map(f=>({f}))
-  );
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const key = normalize(keyword);
+
+  const results = data.map(ch => {
+    const forms = ch.forms.filter(f => {
+      const name = normalize(f.name);
+      const desc = normalize(f.description);
+      return name.includes(key) || desc.includes(key);
+    });
+    return { ...ch, forms };
+  }).filter(ch => ch.forms.length > 0);
+
+  const count = results.reduce((sum, ch) => sum + ch.forms.length, 0);
 
   document.getElementById("selectedText").textContent =
-    `検索: ${keyword} ${res.length}件`;
+    `検索: ${keyword}　${count}件見つかりました`;
 
-  const box=document.getElementById("result");
-  box.innerHTML="";
+  if (count === 0) {
+    resultDiv.textContent = "該当なし";
+    return;
+  }
 
-  if(!res.length){ box.textContent="該当なし"; return; }
+  results.forEach(ch => {
+    ch.forms.forEach(f => {
+      const div = document.createElement("div");
+      div.className = "result";
 
-  res.forEach(r=>{
-    const d=document.createElement("div");
-    d.className="result";
-    d.innerHTML=r.f.name+"<br>"+r.f.description;
-    box.appendChild(d);
+      div.innerHTML =
+        `<b>${highlight(f.name, keyword)}</b><br>` +
+        highlight(f.description, keyword).replace(/\n/g, "<br>");
+
+      resultDiv.appendChild(div);
+    });
   });
 }
-
+  
 function back(){
   document.getElementById("searchScreen").style.display="block";
   document.getElementById("resultScreen").style.display="none";
