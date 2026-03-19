@@ -7,8 +7,14 @@
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
-  <h3 id="countText" style="text-align:center;"></h3>
+/* カウント表示 */
+#countText {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
 
+/* グリッド */
 .grid {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
@@ -16,6 +22,7 @@ body { font-family: sans-serif; padding: 10px; }
   margin-bottom: 20px;
 }
 
+/* ボタン */
 .char {
   border: 1px solid #ccc;
   text-align: center;
@@ -57,7 +64,11 @@ body { font-family: sans-serif; padding: 10px; }
 
 <!-- 検索画面 -->
 <div id="searchScreen">
-  <h2>文字検索v1.1</h2>
+  <h2>文字検索v1.1.1</h2>
+
+  <!-- ★ カウント表示 -->
+  <div id="countText"></div>
+
   <div id="grid" class="grid"></div>
 </div>
 
@@ -71,7 +82,7 @@ body { font-family: sans-serif; padding: 10px; }
 <script>
 let data = [];
 
-// ★ ここが今回のポイント（そのまま貼れる）
+// ★ コピペ用文字列
 const chars = `
 一二三四五六七八九十百千日月火水木金土田
 山川林森石天気空雨夕草花竹文字本円玉年音
@@ -102,7 +113,7 @@ function init() {
 
   const grid = document.getElementById("grid");
 
-  let activeCount = 0; // ★追加
+  let activeCount = 0;
 
   chars.forEach(c => {
     const div = document.createElement("div");
@@ -111,7 +122,7 @@ function init() {
 
     if (usedChars.has(c)) {
       div.classList.add("active");
-      activeCount++; // ★カウント
+      activeCount++;
     }
 
     div.onclick = () => {
@@ -123,30 +134,9 @@ function init() {
     grid.appendChild(div);
   });
 
-  // ★ ここで表示
-  document.getElementById("countText").textContent =
-    "1年生で習う漢字 " + activeCount + " / " + chars.length;
-}
-
-  const grid = document.getElementById("grid");
-
-  chars.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "char";
-    div.textContent = c;
-
-    if (usedChars.has(c)) {
-      div.classList.add("active");
-    }
-
-    div.onclick = () => {
-      document.querySelectorAll(".char").forEach(e => e.classList.remove("selected"));
-      div.classList.add("selected");
-      search(c);
-    };
-
-    grid.appendChild(div);
-  });
+  // ★ カウント表示（数字だけ青）
+  document.getElementById("countText").innerHTML =
+    `1年生で習う漢字 <span style="color:blue">${activeCount}</span> / ${chars.length}`;
 }
 
 // ハイライト
@@ -170,11 +160,10 @@ function search(keyword) {
     return { ...ch, forms: matchedForms };
   }).filter(ch => ch.forms.length > 0);
 
-  // 件数（ヒット形態のみ）
   const count = results.reduce((sum, ch) => sum + ch.forms.length, 0);
 
   document.getElementById("selectedText").textContent =
-    "検索: " + keyword + " " + count + "件見つかりました";
+    "検索: " + keyword + "　" + count + "件見つかりました";
 
   if (count === 0) {
     resultDiv.textContent = "該当なし";
