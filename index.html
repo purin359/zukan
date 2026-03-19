@@ -39,7 +39,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
 
-<h2>味方文字検索 vol.2.0.6</h2>
+<h2>味方文字検索 vol.2.0.7</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -135,13 +135,12 @@ const chars7 = `
 廷抵邸亭貞帝訂逓偵堤艇締諦泥摘滴溺迭哲徹撤添塡殿斗吐妬途渡塗賭奴怒到逃倒凍唐桃透悼盗陶塔搭棟痘筒稲踏謄藤闘騰洞胴瞳峠匿督篤凸突屯豚頓貪鈍曇丼那謎鍋軟尼弐匂虹尿妊
 忍寧捻粘悩濃把覇婆罵杯排廃輩培陪媒賠伯拍泊迫剝舶薄漠縛爆箸肌鉢髪伐抜罰閥氾帆汎伴畔般販斑搬煩頒範繁藩蛮盤妃彼披卑疲被扉碑罷避尾眉微膝肘匹泌姫漂苗描猫浜賓頻敏瓶扶
 怖附訃赴浮符普腐敷膚賦譜侮舞封伏幅覆払沸紛雰噴墳憤丙併柄塀幣弊蔽餅壁璧癖蔑偏遍哺捕舗募慕簿芳邦奉抱泡胞俸倣峰砲崩蜂飽褒縫乏忙坊妨房肪某冒剖紡傍帽貌膨謀頬朴睦僕墨
-撲没勃堀奔翻凡盆麻摩磨魔昧埋膜枕又抹慢漫魅岬蜜妙眠矛霧娘冥銘滅免麺茂妄盲耗猛網黙紋冶弥厄躍闇喩愉諭癒唯幽悠湧猶裕雄誘憂融与誉妖庸揚揺溶腰瘍踊窯擁謡抑沃翼拉裸羅雷
+撲没勃堀奔翻凡盆麻摩磨魔昧埋膜枕又抹慢漫魅岬蜜妙眠矛霧娘冥銘滅免麺茂妄盲耗猛網黙紋冶弥厄躍闇喩愉諭癒唯幽悠湧猶裕雄誘憂融与誉妖庸揚揺溶腰瘍踊窯擁謡抑沃翼拉裸羅雷 
 頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊楼漏籠麓賄脇惑枠湾腕
 `.replace(/\n/g, "").split("");
   
 // ===== JSON =====
 const files=["kihon.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
-
 Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
 .then(r=>{
   data=r.flat();
@@ -156,110 +155,67 @@ function init(){
   createGrid(chars4,"grid4","4年");
   createGrid(chars5,"grid5","5年");
   createGrid(chars6,"grid6","6年");
+  createGrid(chars7,"grid7","中学生");
   createExtraKanji();
 
   document.getElementById("searchInput")
-    .addEventListener("keydown",e=>{
-      if(e.key==="Enter") searchFromInput();
-    });
+    .addEventListener("keydown",e=>{if(e.key==="Enter") searchFromInput();});
+}
+
+// ===== 折りたたみ =====
+function toggle(id, el){
+  const div = document.getElementById(id);
+  if(div.style.display === "none") { div.style.display = "block"; el.textContent = el.textContent.replace("▼","▲"); }
+  else { div.style.display = "none"; el.textContent = el.textContent.replace("▲","▼"); }
 }
 
 // ===== 検索 =====
-function searchFromInput(){
-  const v=document.getElementById("searchInput").value.trim();
-  if(v) search(v);
-}
-
-function normalize(str){
-  return (str||"").toLowerCase()
-    .replace(/[Ａ-Ｚａ-ｚ０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0));
-}
-
-function highlight(text,keyword){
-  return text.replaceAll(keyword,`<span class="hit">${keyword}</span>`);
-}
-
+function searchFromInput(){const v=document.getElementById("searchInput").value.trim(); if(v) search(v);}
+function normalize(str){return (str||"").toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0));}
+function highlight(text,keyword){return text.replaceAll(keyword,`<span class="hit">${keyword}</span>`);}
 function search(keyword){
   document.getElementById("searchScreen").style.display="none";
   document.getElementById("resultScreen").style.display="block";
-
-  const resultDiv=document.getElementById("result");
-  resultDiv.innerHTML="";
-
-  const key=normalize(keyword);
-  let total=0;
-
-  data.forEach(ch=>{
-    ch.forms.forEach(f=>{
-      const name=normalize(f.name);
-      const desc=normalize(f.description);
-
-      if(name.includes(key)||desc.includes(key)){
-        total++;
-
-        const div=document.createElement("div");
-        div.className="result";
-        div.innerHTML=`<b>${highlight(f.name,keyword)}</b><br>`+
-                      highlight(f.description,keyword).replace(/\n/g,"<br>");
-        resultDiv.appendChild(div);
-      }
-    });
-  });
-
-  document.getElementById("selectedText").textContent=
-    `検索: ${keyword} ${total}件`;
-
+  const resultDiv=document.getElementById("result"); resultDiv.innerHTML="";
+  const key=normalize(keyword); let total=0;
+  data.forEach(ch=>{ch.forms.forEach(f=>{
+    const name=normalize(f.name); const desc=normalize(f.description);
+    if(name.includes(key)||desc.includes(key)){total++;
+      const div=document.createElement("div");
+      div.className="result";
+      div.innerHTML=`<b>${highlight(f.name,keyword)}</b><br>`+highlight(f.description,keyword).replace(/\n/g,"<br>");
+      resultDiv.appendChild(div);
+    }
+  })});
+  document.getElementById("selectedText").textContent=`検索: ${keyword} ${total}件`;
   if(total===0) resultDiv.textContent="該当なし";
 }
+function back(){document.getElementById("searchScreen").style.display="block";document.getElementById("resultScreen").style.display="none";}
 
-function back(){
-  document.getElementById("searchScreen").style.display="block";
-  document.getElementById("resultScreen").style.display="none";
-}
-
-// ===== グリッド =====
+// ===== グリッド作成 =====
 function createGrid(chars,id,title){
   const grid=document.getElementById(id);
-  chars.forEach(c=>{
-    const d=document.createElement("div");
-    d.className="char active";
-    d.textContent=c;
-    d.onclick=()=>search(c);
-    grid.appendChild(d);
+  const usedChars=new Set(); data.forEach(ch=>{ch.forms.forEach(f=>{for(let c of f.name) usedChars.add(c);});});
+  let count=0; chars.forEach(c=>{
+    const d=document.createElement("div"); d.className="char"; 
+    if(usedChars.has(c)){ d.classList.add("active"); count++; } 
+    d.textContent=c; d.onclick=()=>search(c); grid.appendChild(d);
   });
+  const header=document.querySelector(`#${id}`).previousElementSibling;
+  header.textContent=`${header.textContent.split(" ")[0]} ${count}/${chars.length}`;
 }
 
-// ===== 常用外 =====
+// ===== 常用漢字外 =====
 function createExtraKanji(){
-  const set=new Set();
-  data.forEach(ch=>{
-    ch.forms.forEach(f=>{
-      for(let c of f.name+f.description){
-        if(c.match(/[一-龯]/)) set.add(c);
-      }
-    });
-  });
-
-  const header=document.createElement("div");
-  header.className="gradeHeader";
-  header.textContent=`▼ 常用漢字外 ${set.size}`;
-
-  const grid=document.createElement("div");
-  grid.className="grid";
-
-  set.forEach(c=>{
-    const d=document.createElement("div");
-    d.className="char active";
-    d.textContent=c;
-    d.onclick=()=>search(c);
-    grid.appendChild(d);
-  });
-
-  header.onclick=()=>grid.style.display=
-    grid.style.display==="none"?"grid":"none";
-
-  document.getElementById("searchScreen").appendChild(header);
-  document.getElementById("searchScreen").appendChild(grid);
+  const usedChars=new Set(); for(let i=1;i<=7;i++){document.querySelectorAll(`#grid${i} .char`).forEach(d=>usedChars.add(d.textContent));}
+  const rarityOrder=[0,1,2,3,4,5,6]; const extra=[];
+  rarityOrder.forEach(r=>{data.filter(ch=>ch.rarity===r).forEach(ch=>{ch.forms.forEach(f=>{for(let c of f.name){if(!usedChars.has(c)&&c.match(/[一-龯]/)){extra.push({char:c,rarity:r});usedChars.add(c);}}});});});
+  if(extra.length===0) return;
+  const header=document.createElement("div"); header.className="gradeHeader"; header.textContent=`▼ 常用漢字外 ${extra.length}`;
+  const grid=document.createElement("div"); grid.className="grid";
+  extra.forEach(e=>{const d=document.createElement("div"); d.className="char active"; d.textContent=e.char; d.onclick=()=>search(e.char); grid.appendChild(d);});
+  header.onclick=()=>grid.style.display=grid.style.display==="none"?"grid":"none";
+  document.getElementById("searchScreen").appendChild(header); document.getElementById("searchScreen").appendChild(grid);
 }
 </script>
 
