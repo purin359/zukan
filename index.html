@@ -254,7 +254,7 @@ function createGrid(chars, gridId, title) {
 }
 
 function normalize(str) {
-  return str
+  return (str || "")
     .toLowerCase()
     .replace(/[Ａ-Ｚａ-ｚ０-９]/g, s =>
       String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
