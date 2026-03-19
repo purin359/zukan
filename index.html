@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>にゃんこ検索</title>
+
+<style>
+body { font-family: sans-serif; padding: 10px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.char {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.char:hover {
+  background: #eee;
+}
+
+.result {
+  border-bottom: 1px solid #ccc;
+  padding: 8px 0;
+}
+</style>
+</head>
+
+<body>
+
+<h2>文字検索</h2>
+<div id="grid" class="grid"></div>
+
+<h2>検索結果</h2>
+<div id="result"></div>
+
+<script>
+// ===== ここにJSON読み込み =====
+let data = [];
+
+// ファイル名は自分のJSONに合わせて変更
+fetch("kihon.json")
+  .then(res => res.json())
+  .then(json => {
+    data = json;
+  });
+
+// ===== 文字一覧（好きに増やせる）=====
+const chars = "一ニ三四五六七八九十百千日月火水木金土田山川林森石天気空雨夕草花竹文字本円玉年音学校先生赤白青人男女子目耳口手足犬貝虫王力町村車大中小上下左右正出入立見休早名糸".split("");
+
+const grid = document.getElementById("grid");
+
+chars.forEach(c => {
+  const div = document.createElement("div");
+  div.className = "char";
+  div.textContent = c;
+
+  div.onclick = () => search(c);
+
+  grid.appendChild(div);
+});
+
+// ===== 検索処理 =====
+function search(keyword) {
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const results = data.filter(ch =>
+    ch.forms.some(f =>
+      f.name.includes(keyword) ||
+      f.description.includes(keyword)
+    )
+  );
+
+  if (results.length === 0) {
+    resultDiv.textContent = "該当なし";
+    return;
+  }
+
+  results.forEach(ch => {
+    ch.forms.forEach(f => {
+      const div = document.createElement("div");
+      div.className = "result";
+
+      div.innerHTML =
+        `<b>${f.name}</b><br>` +
+        f.description.replace(/\n/g, "<br>");
+
+      resultDiv.appendChild(div);
+    });
+  });
+}
+</script>
+
+</body>
+</html>
