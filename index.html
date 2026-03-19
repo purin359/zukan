@@ -144,7 +144,7 @@ function search(keyword) {
   const count = results.reduce((sum, ch) => sum + ch.forms.length, 0);
 
   document.getElementById("selectedText").textContent =
-    "検索: " + keyword + "、" + count + "件見つかりました";
+    "検索: " + keyword + " " + count + "件見つかりました";
 
   if (count === 0) {
     resultDiv.textContent = "該当なし";
