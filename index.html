@@ -7,11 +7,19 @@
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
-/* カウント表示 */
-#countText {
+/* 検索ボックス */
+.searchBox {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* カウント */
+.countText {
   text-align: center;
   font-size: 18px;
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 
 /* グリッド */
@@ -28,7 +36,6 @@ body { font-family: sans-serif; padding: 10px; }
   text-align: center;
   padding: 6px;
   cursor: pointer;
-  user-select: none;
 }
 
 .char.active {
@@ -42,11 +49,13 @@ body { font-family: sans-serif; padding: 10px; }
   color: white;
 }
 
+/* ハイライト */
 .hit {
   color: blue;
   font-weight: bold;
 }
 
+/* 結果 */
 .result {
   border-bottom: 1px solid #ccc;
   padding: 8px 0;
@@ -55,7 +64,6 @@ body { font-family: sans-serif; padding: 10px; }
 .backBtn {
   margin-bottom: 10px;
   padding: 6px 10px;
-  cursor: pointer;
 }
 </style>
 </head>
@@ -64,12 +72,20 @@ body { font-family: sans-serif; padding: 10px; }
 
 <!-- 検索画面 -->
 <div id="searchScreen">
-  <h2>文字検索v1.1.1</h2>
 
-  <!-- ★ カウント表示 -->
-  <div id="countText"></div>
+  <h2>味方文字検索v1.1.2</h2>
 
-  <div id="grid" class="grid"></div>
+  <!-- ★ 検索ボックス -->
+  <input type="text" id="searchInput" class="searchBox" placeholder="文字を入力して検索">
+
+  <!-- 1年 -->
+  <div id="countText1" class="countText"></div>
+  <div id="grid1" class="grid"></div>
+
+  <!-- 2年 -->
+  <div id="countText2" class="countText"></div>
+  <div id="grid2" class="grid"></div>
+
 </div>
 
 <!-- 結果画面 -->
@@ -82,12 +98,24 @@ body { font-family: sans-serif; padding: 10px; }
 <script>
 let data = [];
 
-// ★ コピペ用文字列
-const chars = `
+// ===== 1年 =====
+const chars1 = `
 一二三四五六七八九十百千日月火水木金土田
 山川林森石天気空雨夕草花竹文字本円玉年音
 学校先生赤白青人男女子目耳口手足犬貝虫王
 力町村車大中小上下左右正出入立見休早名糸
+`.replace(/\n/g, "").split("");
+
+// ===== 2年 =====
+const chars2 = `
+引羽雲園遠何科夏家歌画回会海絵外角楽活間
+丸岩顔汽記帰弓牛魚京強教近兄形計元言原戸
+古午後語工公広交光考行高黄合谷国黒今才細
+作算止市矢姉思紙寺自時室社弱首秋週春書少
+場色食心新親図数西声星晴切雪船線前組走多
+太体台地池知茶昼長鳥朝直通弟店点電刀冬当
+東答頭同道読内南肉馬売買麦半番父風分聞米
+歩母方北毎妹万明鳴毛門夜野友用曜来里理話
 `.replace(/\n/g, "").split("");
 
 // JSON読み込み
@@ -98,8 +126,20 @@ fetch("kihon.json")
     init();
   });
 
-// 初期化
+// ===== 初期化 =====
 function init() {
+  createGrid(chars1, "grid1", "countText1", "1年生で習う漢字");
+  createGrid(chars2, "grid2", "countText2", "2年生で習う漢字");
+
+  // ★ 入力検索
+  document.getElementById("searchInput").addEventListener("input", e => {
+    const val = e.target.value.trim();
+    if (val) search(val);
+  });
+}
+
+// ===== グリッド生成 =====
+function createGrid(chars, gridId, countId, title) {
   const usedChars = new Set();
 
   data.forEach(ch => {
@@ -111,8 +151,7 @@ function init() {
     });
   });
 
-  const grid = document.getElementById("grid");
-
+  const grid = document.getElementById(gridId);
   let activeCount = 0;
 
   chars.forEach(c => {
@@ -134,17 +173,16 @@ function init() {
     grid.appendChild(div);
   });
 
-  // ★ カウント表示（数字だけ青）
-  document.getElementById("countText").innerHTML =
-    `1年生で習う漢字 <span style="color:blue">${activeCount}</span> / ${chars.length}`;
+  document.getElementById(countId).innerHTML =
+    `${title} <span style="color:blue">${activeCount}</span> / ${chars.length}`;
 }
 
-// ハイライト
+// ===== ハイライト =====
 function highlight(text, keyword) {
   return text.replaceAll(keyword, `<span class="hit">${keyword}</span>`);
 }
 
-// 検索
+// ===== 検索 =====
 function search(keyword) {
   document.getElementById("searchScreen").style.display = "none";
   document.getElementById("resultScreen").style.display = "block";
@@ -184,7 +222,7 @@ function search(keyword) {
   });
 }
 
-// 戻る
+// ===== 戻る =====
 function back() {
   document.getElementById("searchScreen").style.display = "block";
   document.getElementById("resultScreen").style.display = "none";
