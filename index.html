@@ -36,13 +36,14 @@ body { font-family: sans-serif; padding: 10px; }
 <body>
 
 <div id="searchScreen">
-<h2>味方文字検索 vol.2.0.17</h2>
+<h2>味方文字検索 vol.2.0.18</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
 </div>
 
+<div class="gradeHeader" id="headerGAll" onclick="toggle('gAll', this)">▼ 常用漢字</div>
 <div id="gAll">
   <div class="gradeHeader" id="headerGElem" onclick="toggle('gElem', this)">▼ 小学生</div>
   <div id="gElem">
@@ -53,11 +54,12 @@ body { font-family: sans-serif; padding: 10px; }
     <div id="g5"><div id="grid5" class="grid"></div></div>
     <div id="g6"><div id="grid6" class="grid"></div></div>
   </div>
+
   <div class="gradeHeader" id="headerG7" onclick="toggle('g7', this)">▼ 中学生</div>
   <div id="g7"><div id="grid7" class="grid"></div></div>
 </div>
 
-<div class="gradeHeader" id="headerExtra">▼ 常用漢字外</div>
+<div class="gradeHeader" id="headerExtra">▼ 常用漢字外 0種類</div>
 <div id="extraGrid" class="grid"></div>
 
 </div>
@@ -120,7 +122,7 @@ const chars7 = `
 撲没勃堀奔翻凡盆麻摩磨魔昧埋膜枕又抹慢漫魅岬蜜妙眠矛霧娘冥銘滅免麺茂妄盲耗猛網黙紋冶弥厄躍闇喩愉諭癒唯幽悠湧猶裕雄誘憂融与誉妖庸揚揺溶腰瘍踊窯擁謡抑沃翼拉裸羅雷
 頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊楼漏籠麓賄脇惑枠湾腕
 `.replace(/\n/g, "").split("");
-
+  
 // ===== JSONファイル（例：kihon.json 他は空配列） =====
 const files=["kihon.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
 Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
@@ -131,13 +133,13 @@ Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
 
 // ===== 初期化 =====
 function init(){
-  createGridWithHeader(chars1,"grid1","1年生");
-  createGridWithHeader(chars2,"grid2","2年生");
-  createGridWithHeader(chars3,"grid3","3年生");
-  createGridWithHeader(chars4,"grid4","4年生");
-  createGridWithHeader(chars5,"grid5","5年生");
-  createGridWithHeader(chars6,"grid6","6年生");
-  createGridWithHeader(chars7,"grid7","中学生");
+  createGridWithHeader(chars1,"grid1","1年で習う漢字");
+  createGridWithHeader(chars2,"grid2","2年で習う漢字");
+  createGridWithHeader(chars3,"grid3","3年で習う漢字");
+  createGridWithHeader(chars4,"grid4","4年で習う漢字");
+  createGridWithHeader(chars5,"grid5","5年で習う漢字");
+  createGridWithHeader(chars6,"grid6","6年で習う漢字");
+  createGridWithHeader(chars7,"grid7","中学生"); // ヘッダーはJSで作らない
 
   createExtraKanji();
 
@@ -155,7 +157,10 @@ function toggle(id,header){
 
 // ===== 検索 =====
 function normalize(str){ return (str||"").toLowerCase(); }
-function highlight(text,keyword){ return text.replaceAll(keyword,`<span class="hit">${keyword}</span>`); }
+function highlight(text,keyword){ 
+  const re = new RegExp(`(${keyword})`,"gi");
+  return text.replace(re,`<span class="hit">$1</span>`); 
+}
 
 function searchFromInput(){
   const v=document.getElementById("searchInput").value.trim();
@@ -205,16 +210,18 @@ function createGridWithHeader(chars,id,name){
   const grid=document.getElementById(id);
   grid.innerHTML="";
 
-  // ヘッダー作成
-  let header = grid.parentNode.querySelector(".gradeHeader");
-  if(!header){
-    header = document.createElement("div");
-    header.className="gradeHeader";
-    grid.parentNode.insertBefore(header, grid);
+  // grid7（中学生）はヘッダーHTML側で管理
+  if(id!=="grid7"){
+    let header = grid.parentNode.querySelector(".gradeHeader");
+    if(!header){
+      header=document.createElement("div");
+      header.className="gradeHeader";
+      grid.parentNode.insertBefore(header, grid);
+    }
+    const used = chars.filter(isUsed).length;
+    header.innerText=`▼ ${name} (${used}/${chars.length})`;
+    header.onclick=()=>{grid.style.display=(grid.style.display==="none"||grid.style.display==="")?"grid":"none";};
   }
-  const used = chars.filter(isUsed).length;
-  header.innerText = `▼ ${name} (${used}/${chars.length})`;
-  header.onclick = ()=>{grid.style.display=(grid.style.display==="none"||grid.style.display==="")?"grid":"none";};
 
   chars.forEach(c=>{
     const div=document.createElement("div");
@@ -228,23 +235,27 @@ function createGridWithHeader(chars,id,name){
 
 // ===== 各グループ n/m ヘッダー更新 =====
 function updateGroupHeader(){
-  ["gElem","g7"].forEach(id=>{
+  ["gAll","gElem","g7"].forEach(id=>{
     const g=document.getElementById(id);
     const grids=g.querySelectorAll(".grid");
     const used=Array.from(grids).reduce((a,g)=>a+g.querySelectorAll(".active").length,0);
     const total=Array.from(grids).reduce((a,g)=>a+g.children.length,0);
-    const header=g.parentNode.querySelector(`.gradeHeader`);
-    if(header) header.innerText=`▼ ${header.innerText.split(" ")[1]} (${used}/${total})`;
+    const header=g.parentNode.querySelector(`#header${id}`) || g.previousElementSibling;
+    if(header) header.innerText=`▼${header.innerText.split(" ")[0]} (${used}/${total})`;
   });
 }
 
-// ===== 常用漢字外 =====
+// ===== 常用漢字外をまとめて左詰め表示 =====
 function createExtraKanji(){
   const extraGrid=document.getElementById("extraGrid");
   extraGrid.innerHTML="";
   const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+
   const usedChars = data.flatMap(ch=>ch.forms.flatMap(f=>f.name.split("").concat(f.description.split(""))));
-  const extra = Array.from(new Set(usedChars.filter(c=>!allChars.includes(c))));
+  const extra = Array.from(new Set(
+    usedChars.filter(c=>!allChars.includes(c) && /[\u4E00-\u9FFF]/.test(c)) // 漢字のみ
+  ));
+
   const header = document.getElementById("headerExtra");
   header.innerText = `▼ 常用漢字外 ${extra.length}種類`;
 
