@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>にゃんこ文字検索</title>
-
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -39,7 +38,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
 
-<h2>味方文字検索 vol.2.0.8</h2>
+<h2>味方文字検索 vol.2.0.9</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -138,39 +137,37 @@ const chars7 = `
 頼絡酪辣濫藍欄吏痢履璃離慄柳竜粒隆硫侶虜慮了涼猟陵僚寮療瞭糧厘倫隣瑠涙累塁励戻鈴零霊隷齢麗暦劣烈裂恋廉錬呂炉賂露弄郎浪廊楼漏籠麓賄脇惑枠湾腕
 `.replace(/\n/g, "").split("");
   
-// ===== JSON =====
+// ===== JSON 読み込み =====
 const files=["kihon.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
 Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
-.then(r=>{
-  data=r.flat();
-  init();
-});
+.then(r=>{data=r.flat(); init();});
 
 // ===== 初期化 =====
 function init(){
-  createGrid(chars1,"grid1","1年");
-  createGrid(chars2,"grid2","2年");
-  createGrid(chars3,"grid3","3年");
-  createGrid(chars4,"grid4","4年");
-  createGrid(chars5,"grid5","5年");
-  createGrid(chars6,"grid6","6年");
-  createGrid(chars7,"grid7","中学生");
+  createGridWithHeader(chars1,"grid1","1年");
+  createGridWithHeader(chars2,"grid2","2年");
+  createGridWithHeader(chars3,"grid3","3年");
+  createGridWithHeader(chars4,"grid4","4年");
+  createGridWithHeader(chars5,"grid5","5年");
+  createGridWithHeader(chars6,"grid6","6年");
+  createGridWithHeader(chars7,"grid7","中学生");
   createExtraKanji();
 
-  document.getElementById("searchInput")
-    .addEventListener("keydown",e=>{if(e.key==="Enter") searchFromInput();});
+  document.getElementById("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter") searchFromInput();});
 }
 
 // ===== 折りたたみ =====
 function toggle(id, el){
-  const div = document.getElementById(id);
-  if(div.style.display === "none") { div.style.display = "block"; el.textContent = el.textContent.replace("▼","▲"); }
-  else { div.style.display = "none"; el.textContent = el.textContent.replace("▲","▼"); }
+  const div=document.getElementById(id);
+  div.style.display=(div.style.display==="none"||div.style.display==="")?"block":"none";
 }
 
 // ===== 検索 =====
-function searchFromInput(){const v=document.getElementById("searchInput").value.trim(); if(v) search(v);}
-function normalize(str){return (str||"").toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0));}
+function searchFromInput(){
+  const v=document.getElementById("searchInput").value.trim();
+  if(v) search(v);
+}
+function normalize(str){return (str||"").toLowerCase();}
 function highlight(text,keyword){return text.replaceAll(keyword,`<span class="hit">${keyword}</span>`);}
 function search(keyword){
   document.getElementById("searchScreen").style.display="none";
@@ -178,45 +175,59 @@ function search(keyword){
   const resultDiv=document.getElementById("result"); resultDiv.innerHTML="";
   const key=normalize(keyword); let total=0;
   data.forEach(ch=>{ch.forms.forEach(f=>{
-    const name=normalize(f.name); const desc=normalize(f.description);
-    if(name.includes(key)||desc.includes(key)){total++;
-      const div=document.createElement("div");
-      div.className="result";
-      div.innerHTML=`<b>${highlight(f.name,keyword)}</b><br>`+highlight(f.description,keyword).replace(/\n/g,"<br>");
-      resultDiv.appendChild(div);
+    const desc=normalize(f.description); const name=normalize(f.name);
+    if(desc.includes(key)||name.includes(key)){
+      total++; resultDiv.innerHTML+=`<div class="result"><b>${f.name}</b><br>${highlight(f.description,keyword)}</div>`;
     }
   })});
-  document.getElementById("selectedText").textContent=`検索: ${keyword} ${total}件`;
-  if(total===0) resultDiv.textContent="該当なし";
+  document.getElementById("selectedText").innerText=keyword+(total?" ("+total+"件)":"");
 }
-function back(){document.getElementById("searchScreen").style.display="block";document.getElementById("resultScreen").style.display="none";}
+function back(){
+  document.getElementById("searchScreen").style.display="block";
+  document.getElementById("resultScreen").style.display="none";
+}
 
 // ===== グリッド作成 =====
-function createGrid(chars,id,title){
+function createGridWithHeader(chars,id,name){
   const grid=document.getElementById(id);
-  const usedChars=new Set(); data.forEach(ch=>{ch.forms.forEach(f=>{for(let c of f.name) usedChars.add(c);});});
-  let count=0; chars.forEach(c=>{
-    const d=document.createElement("div"); d.className="char"; 
-    if(usedChars.has(c)){ d.classList.add("active"); count++; } 
-    d.textContent=c; d.onclick=()=>search(c); grid.appendChild(d);
+  chars.forEach(c=>{
+    const div=document.createElement("div");
+    div.className="char";
+    if(isUsed(c)) div.classList.add("active");
+    div.innerText=c;
+    div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
+    grid.appendChild(div);
   });
-  const header=document.querySelector(`#${id}`).previousElementSibling;
-  header.textContent=`${header.textContent.split(" ")[0]} ${count}/${chars.length}`;
+  // n/m 表示
+  const used=chars.filter(isUsed).length;
+  const header=document.createElement("div");
+  header.innerText=`${name} (${used}/${chars.length})`;
+  grid.parentNode.insertBefore(header,grid);
 }
 
-// ===== 常用漢字外 =====
+// ===== 使用済み判定 =====
+function isUsed(c){
+  return data.some(d=>d.forms.some(f=>f.name.includes(c) || f.description.includes(c)));
+}
+
+// ===== 常用漢字外を左詰め追加 =====
 function createExtraKanji(){
-  const usedChars=new Set(); for(let i=1;i<=7;i++){document.querySelectorAll(`#grid${i} .char`).forEach(d=>usedChars.add(d.textContent));}
-  const rarityOrder=[0,1,2,3,4,5,6]; const extra=[];
-  rarityOrder.forEach(r=>{data.filter(ch=>ch.rarity===r).forEach(ch=>{ch.forms.forEach(f=>{for(let c of f.name){if(!usedChars.has(c)&&c.match(/[一-龯]/)){extra.push({char:c,rarity:r});usedChars.add(c);}}});});});
-  if(extra.length===0) return;
-  const header=document.createElement("div"); header.className="gradeHeader"; header.textContent=`▼ 常用漢字外 ${extra.length}`;
-  const grid=document.createElement("div"); grid.className="grid";
-  extra.forEach(e=>{const d=document.createElement("div"); d.className="char active"; d.textContent=e.char; d.onclick=()=>search(e.char); grid.appendChild(d);});
-  header.onclick=()=>grid.style.display=grid.style.display==="none"?"grid":"none";
-  document.getElementById("searchScreen").appendChild(header); document.getElementById("searchScreen").appendChild(grid);
+  const usedChars = new Set(data.flatMap(d=>d.forms.flatMap(f=>f.name+f.description)));
+  const allChars = new Set([...chars1,...chars2,...chars3,...chars4,...chars5,...chars6,...chars7]);
+  const extraChars = [...usedChars].filter(c=>!allChars.has(c));
+  if(extraChars.length===0) return;
+  const grid=document.createElement("div"); grid.className="grid"; grid.id="extraGrid";
+  extraChars.forEach(c=>{
+    const div=document.createElement("div"); div.className="char active"; div.innerText=c;
+    div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
+    grid.appendChild(div);
+  });
+  const header=document.createElement("div"); header.className="gradeHeader"; header.innerText="▼ 常用漢字外"; 
+  header.onclick=()=>{grid.style.display=(grid.style.display==="none"||grid.style.display==="")?"block":"none";};
+  document.getElementById("searchScreen").appendChild(header);
+  document.getElementById("searchScreen").appendChild(grid);
 }
-</script>
 
+</script>
 </body>
 </html>
