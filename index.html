@@ -7,6 +7,7 @@
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
+/* グリッド */
 .grid {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
@@ -14,18 +15,29 @@ body { font-family: sans-serif; padding: 10px; }
   margin-bottom: 20px;
 }
 
+/* ボタン */
 .char {
   border: 1px solid #ccc;
   text-align: center;
-  padding: 8px;
+  padding: 6px;
   cursor: pointer;
   user-select: none;
 }
 
-.char:hover {
-  background: #eee;
+/* 使用されている文字 */
+.char.active {
+  color: blue;
+  background: #e0f0ff;
+  font-weight: bold;
 }
 
+/* 選択中 */
+.char.selected {
+  background: blue;
+  color: white;
+}
+
+/* 結果 */
 .result {
   border-bottom: 1px solid #ccc;
   padding: 8px 0;
@@ -38,36 +50,71 @@ body { font-family: sans-serif; padding: 10px; }
 <h2>文字検索</h2>
 <div id="grid" class="grid"></div>
 
+<h2 id="selectedText"></h2>
+
 <h2>検索結果</h2>
 <div id="result"></div>
 
 <script>
-// ===== ここにJSON読み込み =====
 let data = [];
 
-// ファイル名は自分のJSONに合わせて変更
+// 文字一覧（自由に追加OK）
+const chars = [
+"一","二","三","四","五","六","七","八","九","十","百","千","日","月","火","水","木","金","土","田",
+"山","川","林","森","石","天","気","空","雨","夕","草","花","竹","文","字","本","円","玉","年","音",
+"学","校","先","生","赤","白","青","人","男","女","子","目","耳","口","手","足","犬","貝","虫","王",
+"力","町","村","車","大","中","小","上","下","左","右","正","出","入","立","見","休","早","名","糸"
+];
+
+// ===== 初期化 =====
 fetch("kihon.json")
   .then(res => res.json())
   .then(json => {
     data = json;
+    init();
   });
 
-// ===== 文字一覧（好きに増やせる）=====
-const chars = "一ニ三四五六七八九十百千日月火水木金土田山川林森石天気空雨夕草花竹文字本円玉年音学校先生赤白青人男女子目耳口手足犬貝虫王力町村車大中小上下左右正出入立見休早名糸".split("");
+// ===== メイン処理 =====
+function init() {
+  const usedChars = new Set();
 
-const grid = document.getElementById("grid");
+  // 使用文字収集
+  data.forEach(ch => {
+    ch.forms.forEach(f => {
+      const text = f.name + f.description;
+      for (let char of text) {
+        usedChars.add(char);
+      }
+    });
+  });
 
-chars.forEach(c => {
-  const div = document.createElement("div");
-  div.className = "char";
-  div.textContent = c;
+  const grid = document.getElementById("grid");
 
-  div.onclick = () => search(c);
+  chars.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "char";
+    div.textContent = c;
 
-  grid.appendChild(div);
-});
+    // 使用されてる文字を青に
+    if (usedChars.has(c)) {
+      div.classList.add("active");
+    }
 
-// ===== 検索処理 =====
+    // クリック処理
+    div.onclick = () => {
+      document.querySelectorAll(".char").forEach(e => e.classList.remove("selected"));
+      div.classList.add("selected");
+
+      document.getElementById("selectedText").textContent = "選択: " + c;
+
+      search(c);
+    };
+
+    grid.appendChild(div);
+  });
+}
+
+// ===== 検索 =====
 function search(keyword) {
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
