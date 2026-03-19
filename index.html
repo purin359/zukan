@@ -286,10 +286,20 @@ const chars7 = `
 `.replace(/\n/g, "").split("");
 
 // ===== JSON =====
-fetch("kihon.json")
-.then(res => res.json())
-.then(json => {
-  data = json;
+const files = [
+  "kihon.json",
+  "ex.json",
+  "rare.json",
+  "superrare.json"
+  "ultrarare.json"
+  "legendrare.json"
+];
+
+Promise.all(
+  files.map(f => fetch(f).then(r => r.json()))
+)
+.then(results => {
+  data = results.flat();
   init();
 });
 
