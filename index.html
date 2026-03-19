@@ -305,6 +305,7 @@ function init() {
   createGrid(chars5, "grid5", "countText5", "5年生で習う漢字");
   createGrid(chars6, "grid6", "countText6", "6年生で習う漢字");
   createGrid(chars7, "grid7", "countText7", "中学校で習う漢字");
+  createExtraKanji();
 
   // Enterキー検索
   document.getElementById("searchInput").addEventListener("keydown", e => {
@@ -417,6 +418,81 @@ function back() {
   document.getElementById("searchScreen").style.display = "block";
   document.getElementById("resultScreen").style.display = "none";
 }
+
+function createExtraKanji() {
+
+  // ===== 学年漢字まとめ =====
+  const allLearned = new Set([
+    ...chars1, ...chars2, ...chars3,
+    ...chars4, ...chars5, ...chars6, ...chars7
+  ]);
+
+  // ===== 出現漢字 =====
+  const usedMap = new Map(); // 漢字 → 最初に出たキャラ
+
+  data.forEach(ch => {
+    ch.forms.forEach(f => {
+      const text = f.name + f.description;
+
+      for (let c of text) {
+
+        // 漢字だけ判定（ざっくり）
+        if (!c.match(/[一-龯]/)) continue;
+
+        // 学年漢字は除外
+        if (allLearned.has(c)) continue;
+
+        // 初出のみ登録（レアリティ順優先）
+        if (!usedMap.has(c)) {
+          usedMap.set(c, ch);
+        }
+      }
+    });
+  });
+
+  // ===== レアリティ順で並べ替え =====
+  const rarityOrder = [0,1,2,3,4,5];
+
+  const sorted = Array.from(usedMap.entries())
+    .sort((a,b) => {
+      return rarityOrder.indexOf(a[1].rarity) - rarityOrder.indexOf(b[1].rarity);
+    });
+
+  // ===== 表示 =====
+  const container = document.createElement("div");
+
+  const header = document.createElement("div");
+  header.className = "gradeHeader";
+  header.textContent = `▼ 常用外漢字 ${sorted.length}`;
+  header.onclick = () => toggle("gExtra", header);
+
+  const box = document.createElement("div");
+  box.id = "gExtra";
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
+
+  sorted.forEach(([char]) => {
+    const div = document.createElement("div");
+    div.className = "char active";
+    div.textContent = char;
+
+    div.onclick = () => {
+      document.querySelectorAll(".char").forEach(e => e.classList.remove("selected"));
+      div.classList.add("selected");
+      search(char);
+    };
+
+    grid.appendChild(div);
+  });
+
+  box.appendChild(grid);
+
+  // 画面に追加（中学の下）
+  document.getElementById("searchScreen").appendChild(header);
+  document.getElementById("searchScreen").appendChild(box);
+}
+  
 </script>
 
 </body>
