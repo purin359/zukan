@@ -36,7 +36,7 @@ body { font-family: sans-serif; padding: 10px; }
 <body>
 
 <div id="searchScreen">
-<h2>味方文字検索 vol.2.0.14</h2>
+<h2>味方文字検索 vol.2.0.15</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -208,6 +208,11 @@ function isUsed(c){
 function createGridWithHeader(chars,id,name){
   const grid=document.getElementById(id);
   grid.innerHTML="";
+
+  // ヘッダー作成
+  let header = grid.parentNode.querySelector(".gradeHeader");
+  if(header) header.innerText = `▼ ${name} (${chars.filter(isUsed).length}/${chars.length})`;
+
   chars.forEach(c=>{
     const div=document.createElement("div");
     div.className="char";
@@ -216,10 +221,6 @@ function createGridWithHeader(chars,id,name){
     div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
     grid.appendChild(div);
   });
-
-  const parentDiv = grid.parentNode;
-  let header = parentDiv.querySelector(".gradeHeader");
-  if(header) header.innerText = `▼ ${name} (${chars.filter(isUsed).length}/${chars.length})`;
 }
 
 // ===== 各グループ n/m ヘッダー更新 =====
@@ -234,7 +235,7 @@ function updateGroupHeader(){
   });
 }
 
-// ===== 常用漢字外作成（漢字のみ） =====
+// ===== 常用漢字外作成（漢字のみ、常時表示） =====
 function createExtraKanji(){
   const extraGrid = document.getElementById("gridExtra");
   extraGrid.innerHTML = "";
