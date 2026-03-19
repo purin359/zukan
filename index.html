@@ -7,7 +7,6 @@
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
-/* グリッド */
 .grid {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
@@ -15,7 +14,6 @@ body { font-family: sans-serif; padding: 10px; }
   margin-bottom: 20px;
 }
 
-/* ボタン */
 .char {
   border: 1px solid #ccc;
   text-align: center;
@@ -24,32 +22,27 @@ body { font-family: sans-serif; padding: 10px; }
   user-select: none;
 }
 
-/* 使用されている文字 */
 .char.active {
   color: blue;
   background: #e0f0ff;
   font-weight: bold;
 }
 
-/* 選択中 */
 .char.selected {
   background: blue;
   color: white;
 }
 
-/* 検索ヒット文字 */
 .hit {
   color: blue;
   font-weight: bold;
 }
 
-/* 結果 */
 .result {
   border-bottom: 1px solid #ccc;
   padding: 8px 0;
 }
 
-/* 戻るボタン */
 .backBtn {
   margin-bottom: 10px;
   padding: 6px 10px;
@@ -62,7 +55,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <!-- 検索画面 -->
 <div id="searchScreen">
-  <h2>文字検索　v1</h2>
+  <h2>文字検索</h2>
   <div id="grid" class="grid"></div>
 </div>
 
@@ -76,7 +69,6 @@ body { font-family: sans-serif; padding: 10px; }
 <script>
 let data = [];
 
-// 文字一覧
 const chars = [
 "一","二","三","四","五","六","七","八","九","十","百","千","日","月","火","水","木","金","土","田",
 "山","川","林","森","石","天","気","空","雨","夕","草","花","竹","文","字","本","円","玉","年","音",
@@ -126,46 +118,40 @@ function init() {
   });
 }
 
-// ハイライト関数
+// ハイライト
 function highlight(text, keyword) {
   return text.replaceAll(keyword, `<span class="hit">${keyword}</span>`);
 }
 
-// 検索処理
+// 検索
 function search(keyword) {
-  // 画面切り替え
   document.getElementById("searchScreen").style.display = "none";
   document.getElementById("resultScreen").style.display = "block";
 
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
-  const results = data.filter(ch =>
-    ch.forms.some(f =>
+  const results = data.map(ch => {
+    const matchedForms = ch.forms.filter(f =>
       f.name.includes(keyword) ||
       f.description.includes(keyword)
-    )
-  );
+    );
+    return { ...ch, forms: matchedForms };
+  }).filter(ch => ch.forms.length > 0);
 
-  // 件数（進化含む）
+  // 件数（ヒット形態のみ）
   const count = results.reduce((sum, ch) => sum + ch.forms.length, 0);
 
   document.getElementById("selectedText").textContent =
     "検索: " + keyword + "（" + count + "件）";
 
-  if (results.length === 0) {
+  if (count === 0) {
     resultDiv.textContent = "該当なし";
     return;
   }
 
   results.forEach(ch => {
-  ch.forms
-    .filter(f =>
-      f.name.includes(keyword) ||
-      f.description.includes(keyword)
-    )
-    .forEach(f => {
-
+    ch.forms.forEach(f => {
       const div = document.createElement("div");
       div.className = "result";
 
@@ -175,9 +161,10 @@ function search(keyword) {
 
       resultDiv.appendChild(div);
     });
-});
-      
-// 戻る処理
+  });
+}
+
+// 戻る
 function back() {
   document.getElementById("searchScreen").style.display = "block";
   document.getElementById("resultScreen").style.display = "none";
