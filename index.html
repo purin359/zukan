@@ -67,7 +67,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
 
-<h2>味方文字検索 v2</h2>
+<h2>味方文字検索 v2.0.1</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -175,9 +175,24 @@ const files = [
   "superrare.json","ultrarare.json","legendrare.json"
 ];
 
-Promise.all(files.map(f => fetch(f).then(r => r.json())))
-.then(res => { data = res.flat(); init(); });
-
+Promise.all(
+  files.map(f =>
+    fetch(f)
+      .then(r => {
+        if (!r.ok) throw new Error(f + " 読み込み失敗");
+        return r.json();
+      })
+      .catch(e => {
+        console.error(e);
+        return []; // ← ここ重要（失敗しても空で続行）
+      })
+  )
+)
+.then(results => {
+  data = results.flat();
+  console.log("読み込みデータ数:", data.length); // デバッグ用
+  init();
+});
 // ===== 初期化 =====
 function init() {
   createGrid(chars1,"grid1","1年生");
