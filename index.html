@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.3.1</h2>
+<h2>味方文字検索 ver.2.3.2</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -240,6 +240,11 @@ function createGridWithHeader(chars,id,name){
   container.innerHTML = "";
 
   // ヘッダー作成
+  function createGridWithHeader(chars,id,name){
+  const container = document.getElementById(id).parentNode;
+  container.innerHTML = "";
+
+  // ヘッダー
   const header = document.createElement("div");
   header.className = "gradeHeader";
   header.dataset.base = name;
@@ -247,10 +252,10 @@ function createGridWithHeader(chars,id,name){
   const used = chars.filter(isUsed).length;
   header.innerHTML = `▼ ${name} (${used}/${chars.length})`;
 
-  // ←ここが重要（toggleに統一）
-  header.setAttribute("onclick", `toggle('${container.id}', this)`);
+  // ★ここ重要：gridだけを開閉する
+  header.setAttribute("onclick", `toggle('${id}', this)`);
 
-  // グリッド作成
+  // グリッド
   const grid = document.createElement("div");
   grid.id = id;
   grid.className = "grid";
@@ -267,6 +272,7 @@ function createGridWithHeader(chars,id,name){
   container.appendChild(header);
   container.appendChild(grid);
 }
+  
 // ===== 各グループ n/m ヘッダー更新 =====
 function updateGroupHeader(){
   ["gAll","gElem","g7"].forEach(id=>{
