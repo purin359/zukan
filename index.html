@@ -253,8 +253,52 @@ function search(keyword){
   const key=normalize(keyword);
   let total=0;
 
-  // ★ ここ追加！！！
   const showAll = (keyword === "全キャラ");
+
+  const showSingle = (keyword === "1件");
+
+if(showSingle){
+  const resultDiv = document.getElementById("result");
+  let total = 0;
+
+  // ★ 使用されている漢字だけ（isUsedベース）
+const allChars = chars1
+  .concat(chars2, chars3, chars4, chars5, chars6, chars7)
+  .filter(c => isUsed(c));
+
+  allChars.forEach(c=>{
+    let count = 0;
+
+    data.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        if(f.name.includes(c) || f.description.includes(c)){
+          count++;
+        }
+      });
+    });
+
+    // ★ 1件だけ
+    if(count === 1){
+      total++;
+
+      const div = document.createElement("div");
+      div.className = "result";
+      div.innerHTML = `<strong>${c}</strong>（1件）`;
+
+      div.onclick = ()=>{
+        document.getElementById("searchInput").value = c;
+        searchFromInput();
+      };
+
+      resultDiv.appendChild(div);
+    }
+  });
+
+  document.getElementById("selectedText").innerText =
+    `1件しかヒットしない文字一覧 (${total}件)`;
+
+  return;
+}
 
   data.forEach(ch=>{
     ch.forms.forEach(f=>{
