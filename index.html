@@ -205,6 +205,12 @@ function init(){
   updateGroupHeader();
 }
 
+const segmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
+
+function splitChars(str){
+  return Array.from(segmenter.segment(str), s => s.segment);
+}
+
 // ===== 折りたたみ =====
 function toggle(id, header){
   const el = document.getElementById(id);
@@ -346,7 +352,7 @@ function createExtraKanji(){
 
   const usedChars = data.flatMap(ch =>
   ch.forms.flatMap(f =>
-    Array.from(f.name).concat(Array.from(f.description))
+    splitChars(f.name).concat(splitChars(f.description))
   )
 );
   const extra=Array.from(new Set(
