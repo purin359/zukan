@@ -146,9 +146,17 @@ function init(){
 }
 
 // ===== 折りたたみ =====
-function toggle(id,header){
-  const el=document.getElementById(id);
-  el.style.display=(el.style.display==="none"||el.style.display==="")?"block":"none";
+function toggle(id, header){
+  const el = document.getElementById(id);
+
+  const isOpen = el.style.display === "block";
+
+  // 表示切り替え
+  el.style.display = isOpen ? "none" : "block";
+
+  // ▼▶切り替え
+  const base = header.dataset.base || header.innerText.slice(2);
+  header.innerText = (isOpen ? "▶ " : "▼ ") + base;
 }
 
 // ===== 検索 =====
