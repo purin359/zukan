@@ -26,6 +26,15 @@ body { font-family: sans-serif; padding: 10px; }
   padding: 5px;
 }
 
+#menu div{
+  padding:5px 10px;
+  cursor:pointer;
+}
+
+#menu div:hover{
+  background:#eee;
+}
+
 .gradeHeader { background:#eee; padding:8px; cursor:pointer; margin-top:10px; }
 
 .grid {
@@ -73,6 +82,23 @@ body { font-family: sans-serif; padding: 10px; }
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
+</div>
+
+    <div style="position:relative; margin-bottom:10px;">
+  <button onclick="toggleMenu()">・・・</button>
+
+  <div id="menu" style="
+    display:none;
+    position:absolute;
+    background:white;
+    border:1px solid #ccc;
+    padding:5px;
+    z-index:100;
+  ">
+    <div onclick="runCommand('全キャラ')">全キャラ表示</div>
+    <div onclick="runCommand('1件')">1件のみ検索</div>
+    <div onclick="runCommand('ランキング')">使用数ランキング</div>
+  </div>
 </div>
 
 <div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll', this)">▼ 常用漢字</div>
@@ -455,7 +481,6 @@ function updateGroupHeader(){
   });
 
   // グループ（小学生・全体）
-  // グループ（小学生・全体）
 ["gElem","gAll"].forEach(id=>{
   const g = document.getElementById(id);
   if(!g) return;
@@ -517,6 +542,20 @@ function createExtraKanji(){
     extraGrid.appendChild(div);
   });
 }
+
+// ===== メニュー欄 =====
+  function toggleMenu(){
+  const menu = document.getElementById("menu");
+  menu.style.display = (menu.style.display === "none") ? "block" : "none";
+}
+
+function runCommand(cmd){
+  document.getElementById("menu").style.display = "none";
+
+  document.getElementById("searchInput").value = cmd;
+  searchFromInput();
+}
+  
 </script>
 
 </body>
