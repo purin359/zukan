@@ -241,11 +241,10 @@ function highlight(text,keyword){ const re=new RegExp(`(${keyword})`,"gi"); retu
 function searchFromInput(){ const v=document.getElementById("searchInput").value.trim(); if(v) search(v); }
 function search(keyword){
 
-   scrollY = window.scrollY;
+  scrollY = window.scrollY;
 
   document.getElementById("searchScreen").style.display="none";
   document.getElementById("resultScreen").style.display="block";
-
   window.scrollTo(0, 0);
 
   const resultDiv=document.getElementById("result");
@@ -254,28 +253,38 @@ function search(keyword){
   const key=normalize(keyword);
   let total=0;
 
+  // ★ ここ追加！！！
+  const showAll = (keyword === "全キャラ");
+
   data.forEach(ch=>{
-  ch.forms.forEach(f=>{
-    const name = normalize(f.name);
-    const desc = normalize(f.description);
-    if(name.includes(key) || desc.includes(key)){
-      total++;
-      const div = document.createElement("div");
-      div.className = "result";
+    ch.forms.forEach(f=>{
 
-      div.innerHTML = `
-        <strong>${highlight(f.name, keyword)}</strong><br>
-        ${highlight(f.description, keyword).replace(/\n/g, "<br>")}
-      `;
+      const name = normalize(f.name);
+      const desc = normalize(f.description);
 
-      resultDiv.appendChild(div);
-    }
+      // ★ 条件変更
+      if(showAll || name.includes(key) || desc.includes(key)){
+
+        total++;
+
+        const div = document.createElement("div");
+        div.className = "result";
+
+        div.innerHTML = `
+          <strong>${showAll ? f.name : highlight(f.name, keyword)}</strong><br>
+          ${showAll ? f.description.replace(/\n/g, "<br>") : highlight(f.description, keyword).replace(/\n/g, "<br>")}
+        `;
+
+        resultDiv.appendChild(div);
+      }
+    });
   });
-});
 
-  document.getElementById("selectedText").innerText=`"${keyword}" の検索結果　${total}件見つかりました`;
+  document.getElementById("selectedText").innerText =
+    showAll
+      ? `全キャラ一覧 (${total}件)`
+      : `"${keyword}" の検索結果　${total}件見つかりました`;
 }
-
 // ===== 戻る =====
 function back(){
   document.getElementById("resultScreen").style.display="none";
