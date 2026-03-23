@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.3.3</h2>
+<h2>味方文字検索 ver.2.3.4</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -239,11 +239,6 @@ function createGridWithHeader(chars,id,name){
   const container = document.getElementById(id).parentNode;
   container.innerHTML = "";
 
-  // ヘッダー作成
-  function createGridWithHeader(chars,id,name){
-  const container = document.getElementById(id).parentNode;
-  container.innerHTML = "";
-
   // ヘッダー
   const header = document.createElement("div");
   header.className = "gradeHeader";
@@ -252,8 +247,8 @@ function createGridWithHeader(chars,id,name){
   const used = chars.filter(isUsed).length;
   header.innerHTML = `▼ ${name} (${used}/${chars.length})`;
 
-  // gridだけ開閉
-  header.setAttribute("onclick", `toggle('${id}', this)`);
+  // ← ここが重要：gridだけ開閉
+  header.onclick = () => toggle(id, header);
 
   // グリッド
   const grid = document.createElement("div");
