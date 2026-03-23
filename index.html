@@ -344,12 +344,14 @@ function updateGroupHeader(){
     const total=Array.from(grids).reduce((a,g)=>a+g.children.length,0);
 
     const header=g.previousElementSibling;
-    if(header){
-      const base = header.dataset.base;
-      header.innerText=`▼ ${base} (${used}/${total})`;
-    }
-  });
+    if (!header || !header.classList.contains("gradeHeader")) {
+  const parentHeader = grid.parentNode.previousElementSibling;
+  if (parentHeader && parentHeader.classList.contains("gradeHeader")) {
+    parentHeader.innerText = `▼ ${name} (${used}/${total})`;
+    return;
+  }
 }
+  }
 
 // ===== 常用漢字外をまとめて左詰め表示 =====
 function createExtraKanji(){
