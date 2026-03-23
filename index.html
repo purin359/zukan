@@ -555,6 +555,13 @@ function runCommand(cmd){
   document.getElementById("searchInput").value = cmd;
   searchFromInput();
 }
+
+  document.addEventListener("click", e=>{
+  const menu = document.getElementById("menu");
+  if(!e.target.closest("#menu") && !e.target.closest("button")){
+    menu.style.display = "none";
+  }
+});
   
 </script>
 
