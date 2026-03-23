@@ -307,7 +307,7 @@ const allChars = chars1
   });
 
   document.getElementById("selectedText").innerText =
-    `1件しかヒットしない文字一覧(常用漢字) ：${total}件`;
+    `1件しかヒットしない文字一覧(常用漢字)：${total}件`;
 
   return;
 }
@@ -339,7 +339,7 @@ const allChars = chars1
   const title = document.getElementById("selectedText");
 
 if(showAll){
-  title.innerText = `全キャラ一覧 ：${total}件`;
+  title.innerText = `全キャラ一覧：${total}件`;
 }else if(total === 0){
   title.innerText = `"${keyword}" は見つかりませんでした`;
 }else{
