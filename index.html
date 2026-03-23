@@ -255,7 +255,8 @@ function search(keyword){
 
   const showAll = (keyword === "全キャラ");
 
-  const showSingle = (keyword === "一件");
+  const keyNorm = normalize(keyword);
+const showSingle = (keyNorm === "1件" || keyNorm === "一件");
 
 if(showSingle){
   const resultDiv = document.getElementById("result");
