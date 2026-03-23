@@ -345,6 +345,106 @@ if(showAll){
 }else{
   title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
 }
+
+  // 件数検索
+  const keyNorm = normalize(keyword);
+
+// 「◯件」または「◯個」対応
+const match = keyNorm.match(/^(\d+)(件|個$/);
+
+if(match){
+  const targetCount = Number(match[1]);
+
+  const resultDiv = document.getElementById("result");
+  let total = 0;
+
+  const allChars = chars1
+    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
+    .filter(c => isUsed(c));
+
+  allChars.forEach(c=>{
+    let count = 0;
+    let names = [];
+
+    data.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        if(f.name.includes(c) || f.description.includes(c)){
+          count++;
+          names.push(f.name);
+        }
+      });
+    });
+
+    if(count === targetCount){
+      total++;
+
+      const div = document.createElement("div");
+      div.className = "result";
+
+      div.innerHTML = `<strong>${c}</strong> → ${names.join(" / ")}`;
+
+      div.onclick = ()=>{
+        document.getElementById("searchInput").value = c;
+        searchFromInput();
+      };
+
+      resultDiv.appendChild(div);
+    }
+  });
+
+  document.getElementById("selectedText").innerText =
+    `${targetCount}件ヒットする文字一覧(常用漢字)：${total}件`;
+
+  return;
+}
+  // ランキング表示
+  if(keyNorm === "ランキング"){
+  const resultDiv = document.getElementById("result");
+  let list = [];
+
+  const allChars = chars1
+    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
+    .filter(c => isUsed(c));
+
+  allChars.forEach(c=>{
+    let count = 0;
+
+    data.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        if(f.name.includes(c) || f.description.includes(c)){
+          count++;
+        }
+      });
+    });
+
+    list.push({char:c, count});
+  });
+
+  // 多い順ソート
+  list.sort((a,b)=>b.count - a.count);
+
+  // 上位10件
+  const top = list.slice(0,10);
+
+  top.forEach((item,i)=>{
+    const div = document.createElement("div");
+    div.className = "result";
+
+    div.innerHTML = `${i+1}位　<strong>${item.char}</strong>（${item.count}件）`;
+
+    div.onclick = ()=>{
+      document.getElementById("searchInput").value = item.char;
+      searchFromInput();
+    };
+
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    `出現数ランキング TOP10(常用漢字)`;
+
+  return;
+}
 }
 
 // ===== 戻る =====
