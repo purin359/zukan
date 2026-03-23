@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.3.5</h2>
+<h2>味方文字検索 ver.2.3.6</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -164,7 +164,7 @@ function init(){
   createGridWithHeader(chars4,"grid4","4年生で習う漢字");
   createGridWithHeader(chars5,"grid5","5年生で習う漢字");
   createGridWithHeader(chars6,"grid6","6年生で習う漢字");
-  createGridWithHeader(chars7,"grid7","中学生"); // ヘッダーHTML側で管理
+  createGridWithHeader(chars7,"grid7","中学生");
 
   createExtraKanji();
 
@@ -236,7 +236,9 @@ function isUsed(c){ return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.
 
 // ===== グリッド生成（n/m付き） =====
 function createGridWithHeader(chars,id,name){
-  const container = document.getElementById(id).parentNode;
+  const container = document.getElementById(id);
+
+  const parent = container.parentNode;
   container.innerHTML = "";
 
   // ヘッダー
@@ -247,7 +249,6 @@ function createGridWithHeader(chars,id,name){
   const used = chars.filter(isUsed).length;
   header.innerHTML = `▼ ${name} (${used}/${chars.length})`;
 
-  // ← ここが重要：gridだけ開閉
   header.onclick = () => toggle(id, header);
 
   // グリッド
@@ -267,8 +268,8 @@ function createGridWithHeader(chars,id,name){
     grid.appendChild(div);
   });
 
-  container.appendChild(header);
-  container.appendChild(grid);
+  parent.insertBefore(header, container);
+  parent.replaceChild(grid, container);
 }
   
 // ===== 各グループ n/m ヘッダー更新 =====
