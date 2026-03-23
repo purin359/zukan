@@ -335,23 +335,27 @@ function updateGroupHeader(){
   });
 
   // グループ（小学生・全体）
-  ["gElem","gAll"].forEach(id=>{
-    const g=document.getElementById(id);
-    if(!g) return;
+  // グループ（小学生・全体）
+["gElem","gAll"].forEach(id=>{
+  const g = document.getElementById(id);
+  if(!g) return;
 
-    const grids=g.querySelectorAll(".grid");
-    const used=Array.from(grids).reduce((a,g)=>a+g.querySelectorAll(".active").length,0);
-    const total=Array.from(grids).reduce((a,g)=>a+g.children.length,0);
+  const grids = g.querySelectorAll(".grid");
 
-    const header=g.previousElementSibling;
-    if (!header || !header.classList.contains("gradeHeader")) {
-  const parentHeader = grid.parentNode.previousElementSibling;
-  if (parentHeader && parentHeader.classList.contains("gradeHeader")) {
-    parentHeader.innerText = `▼ ${name} (${used}/${total})`;
-    return;
+  const used = Array.from(grids).reduce(
+    (a,grid)=>a + grid.querySelectorAll(".active").length, 0
+  );
+
+  const total = Array.from(grids).reduce(
+    (a,grid)=>a + grid.children.length, 0
+  );
+
+  const header = g.previousElementSibling;
+  if(header){
+    const base = header.dataset.base;
+    header.innerText = `▼ ${base} (${used}/${total})`;
   }
-}
-  }
+});
 
 // ===== 常用漢字外をまとめて左詰め表示 =====
 function createExtraKanji(){
