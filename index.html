@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.4.1</h2>
+<h2>味方文字検索 ver.2.4.2</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -307,7 +307,7 @@ function updateGroupHeader(){
     const total = grid.children.length;
 
     // ヘッダーは直前にある
-    const header = grid.parentNode.querySelector(".gradeHeader");
+    const header = grid.previousElementSibling;
     if(header){
       header.innerText = `▼ ${name} (${used}/${total})`;
     }
