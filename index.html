@@ -280,11 +280,17 @@ function search(keyword){
     });
   });
 
-  document.getElementById("selectedText").innerText =
-    showAll
-      ? `全キャラ一覧 (${total}件)`
-      : `"${keyword}" の検索結果　${total}件見つかりました`;
+  const title = document.getElementById("selectedText");
+
+if(showAll){
+  title.innerText = `全キャラ一覧 (${total}件)`;
+}else if(total === 0){
+  title.innerText = `"${keyword}" は見つかりませんでした`;
+}else{
+  title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
 }
+}
+
 // ===== 戻る =====
 function back(){
   document.getElementById("resultScreen").style.display="none";
