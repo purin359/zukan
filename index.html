@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.4</h2>
+<h2>味方文字検索 ver.2.4.1</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -70,7 +70,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll', this)">▼ 常用漢字</div>
 <div id="gAll">
-  <div class="gradeHeader" id="headerGElem" data-base="小学生" onclick="toggle('gElem', this)">▼ 小学生で習う漢字</div>
+  <div class="gradeHeader" id="headerGElem" data-base="小学生で習う漢字" onclick="toggle('gElem', this)">▼ 小学生で習う漢字</div>
   <div id="gElem">
 　　<div id="g1">
   　　<div class="gradeHeader" data-base="1年生で習う漢字" onclick="toggle('grid1', this)">
@@ -135,6 +135,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <script>
 let data=[];
+let scrollY = 0;
 
 // ===== 文字 =====
 const chars1 = `
@@ -230,6 +231,9 @@ function normalize(str){ return (str||"").toLowerCase(); }
 function highlight(text,keyword){ const re=new RegExp(`(${keyword})`,"gi"); return text.replace(re,`<span class="hit">$1</span>`); }
 function searchFromInput(){ const v=document.getElementById("searchInput").value.trim(); if(v) search(v); }
 function search(keyword){
+
+   scrollY = window.scrollY;
+
   document.getElementById("searchScreen").style.display="none";
   document.getElementById("resultScreen").style.display="block";
 
@@ -264,8 +268,14 @@ function search(keyword){
 }
 
 // ===== 戻る =====
-function back(){ document.getElementById("resultScreen").style.display="none"; document.getElementById("searchScreen").style.display="block"; }
+function back(){
+  document.getElementById("resultScreen").style.display="none";
+  document.getElementById("searchScreen").style.display="block";
 
+  // 元の位置に戻す
+  window.scrollTo(0, scrollY);
+}
+  
 // ===== 使用済み判定 =====
 function isUsed(c){ return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.description.includes(c))); }
 
