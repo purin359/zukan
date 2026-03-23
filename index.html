@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.2.8</h2>
+<h2>味方文字検索 ver.2.3</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -182,9 +182,12 @@ function toggle(id, header){
   // 表示切り替え
   el.style.display = isOpen ? "none" : "block";
 
-  // ▼▶切り替え
-  const base = header.dataset.base || header.innerText.slice(2);
-  header.innerText = (isOpen ? "▶ " : "▼ ") + base;
+  // ▼▶だけ置き換える（←ここが重要）
+  if(isOpen){
+    header.innerHTML = header.innerHTML.replace("▼", "▶");
+  }else{
+    header.innerHTML = header.innerHTML.replace("▶", "▼");
+  }
 }
 
 // ===== 検索 =====
@@ -246,7 +249,6 @@ function createGridWithHeader(chars,id,name){
     }
     const used=chars.filter(isUsed).length;
     header.innerText=`▼ ${header.dataset.base} (${used}/${chars.length})`;
-    header.onclick=()=>{grid.style.display=(grid.style.display==="none"||grid.style.display==="")?"grid":"none";};
   }
 
   chars.forEach(c=>{
