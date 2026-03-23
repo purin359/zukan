@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.3.4</h2>
+<h2>味方文字検索 ver.2.3.5</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -177,19 +177,19 @@ function init(){
 function toggle(id, header){
   const el = document.getElementById(id);
 
-  const isOpen = el.style.display === "block";
+  const isOpen = el.style.display === "none";
 
-  // 表示切り替え
-  el.style.display = isOpen ? "none" : "block";
+  // ★ gridに戻す
+  el.style.display = isOpen ? "grid" : "none";
 
-  // ▼▶だけ置き換える（←ここが重要）
+  // ▼▶切り替え
   if(isOpen){
-    header.innerHTML = header.innerHTML.replace("▼", "▶");
-  }else{
     header.innerHTML = header.innerHTML.replace("▶", "▼");
+  }else{
+    header.innerHTML = header.innerHTML.replace("▼", "▶");
   }
 }
-
+  
 // ===== 検索 =====
 function normalize(str){ return (str||"").toLowerCase(); }
 function highlight(text,keyword){ const re=new RegExp(`(${keyword})`,"gi"); return text.replace(re,`<span class="hit">$1</span>`); }
