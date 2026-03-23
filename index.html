@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.3.7</h2>
+<h2>味方文字検索 ver.2.4</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -79,7 +79,12 @@ body { font-family: sans-serif; padding: 10px; }
     <div id="g5"><div id="grid5" class="grid"></div></div>
     <div id="g6"><div id="grid6" class="grid"></div></div>
   </div>
-
+<div class="gradeHeader" id="headerG7" data-base="中学生" onclick="toggle('g7', this)">
+  ▼ 中学生で習う漢字
+</div>
+<div id="g7">
+  <div id="grid7" class="grid"></div>
+</div>
 </div>
 
 <div class="gradeHeader" id="headerExtra" data-base="常用漢字外" onclick="toggle('extraGrid', this)">
@@ -236,23 +241,8 @@ function isUsed(c){ return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.
 
 // ===== グリッド生成（n/m付き） =====
 function createGridWithHeader(chars,id,name){
-  const container = document.getElementById(id).parentNode;
-  container.innerHTML = "";
-
-  // ヘッダー
-  const header = document.createElement("div");
-  header.className = "gradeHeader";
-  header.dataset.base = name;
-
-  const used = chars.filter(isUsed).length;
-  header.innerHTML = `▼ ${name} (${used}/${chars.length})`;
-
-  header.onclick = () => toggle(id, header);
-
-  // グリッド
-  const grid = document.createElement("div");
-  grid.id = id;
-  grid.className = "grid";
+  const grid = document.getElementById(id);
+  grid.innerHTML = "";
 
   chars.forEach(c=>{
     const div=document.createElement("div");
@@ -265,20 +255,50 @@ function createGridWithHeader(chars,id,name){
     };
     grid.appendChild(div);
   });
-
-  container.appendChild(header);
-  container.appendChild(grid);
 }
   
 // ===== 各グループ n/m ヘッダー更新 =====
 function updateGroupHeader(){
-  ["gAll","gElem","g7"].forEach(id=>{
+
+  // 個別（1〜6年・中学生）
+  const map = [
+    ["grid1","1年生で習う漢字"],
+    ["grid2","2年生で習う漢字"],
+    ["grid3","3年生で習う漢字"],
+    ["grid4","4年生で習う漢字"],
+    ["grid5","5年生で習う漢字"],
+    ["grid6","6年生で習う漢字"],
+    ["grid7","中学生で習う漢字"]
+  ];
+
+  map.forEach(([id,name])=>{
+    const grid = document.getElementById(id);
+    if(!grid) return;
+
+    const used = grid.querySelectorAll(".active").length;
+    const total = grid.children.length;
+
+    // ヘッダーは直前にある
+    const header = grid.parentNode.querySelector(".gradeHeader");
+    if(header){
+      header.innerText = `▼ ${name} (${used}/${total})`;
+    }
+  });
+
+  // グループ（小学生・全体）
+  ["gElem","gAll"].forEach(id=>{
     const g=document.getElementById(id);
+    if(!g) return;
+
     const grids=g.querySelectorAll(".grid");
     const used=Array.from(grids).reduce((a,g)=>a+g.querySelectorAll(".active").length,0);
     const total=Array.from(grids).reduce((a,g)=>a+g.children.length,0);
-    const header=g.parentNode.querySelector(`#header${id}`) || g.previousElementSibling;
-    if(header && header.dataset.base) header.innerText=`▼ ${header.dataset.base} (${used}/${total})`;
+
+    const header=g.previousElementSibling;
+    if(header){
+      const base = header.dataset.base;
+      header.innerText=`▼ ${base} (${used}/${total})`;
+    }
   });
 }
 
