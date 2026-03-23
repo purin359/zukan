@@ -357,6 +357,18 @@ function updateGroupHeader(){
   }
 });
 
+  // ===== 中学生 =====
+const grid7 = document.getElementById("grid7");
+if(grid7){
+  const used = grid7.querySelectorAll(".active").length;
+  const total = grid7.children.length;
+
+  const header = document.getElementById("headerG7");
+  if(header){
+    header.innerText = `▼ 中学生で習う漢字 (${used}/${total})`;
+  }
+}
+
 }
 
 // ===== 常用漢字外をまとめて左詰め表示 =====
