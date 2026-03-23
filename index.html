@@ -252,7 +252,7 @@ function createGridWithHeader(chars,id,name){
   const used = chars.filter(isUsed).length;
   header.innerHTML = `▼ ${name} (${used}/${chars.length})`;
 
-  // ★ここ重要：gridだけを開閉する
+  // gridだけ開閉
   header.setAttribute("onclick", `toggle('${id}', this)`);
 
   // グリッド
@@ -265,7 +265,10 @@ function createGridWithHeader(chars,id,name){
     div.className="char";
     if(isUsed(c)) div.classList.add("active");
     div.innerText=c;
-    div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
+    div.onclick=()=>{
+      document.getElementById("searchInput").value=c;
+      searchFromInput();
+    };
     grid.appendChild(div);
   });
 
