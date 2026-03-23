@@ -346,57 +346,6 @@ if(showAll){
   title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
 }
 
-  // 件数検索
-  const keyNorm = normalize(keyword);
-
-// 「◯件」または「◯個」対応
-const match = keyNorm.match(/^(\d+)(件|個$/);
-
-if(match){
-  const targetCount = Number(match[1]);
-
-  const resultDiv = document.getElementById("result");
-  let total = 0;
-
-  const allChars = chars1
-    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
-    .filter(c => isUsed(c));
-
-  allChars.forEach(c=>{
-    let count = 0;
-    let names = [];
-
-    data.forEach(ch=>{
-      ch.forms.forEach(f=>{
-        if(f.name.includes(c) || f.description.includes(c)){
-          count++;
-          names.push(f.name);
-        }
-      });
-    });
-
-    if(count === targetCount){
-      total++;
-
-      const div = document.createElement("div");
-      div.className = "result";
-
-      div.innerHTML = `<strong>${c}</strong> → ${names.join(" / ")}`;
-
-      div.onclick = ()=>{
-        document.getElementById("searchInput").value = c;
-        searchFromInput();
-      };
-
-      resultDiv.appendChild(div);
-    }
-  });
-
-  document.getElementById("selectedText").innerText =
-    `${targetCount}件ヒットする文字一覧(常用漢字)：${total}件`;
-
-  return;
-}
   // ランキング表示
   if(keyNorm === "ランキング"){
   const resultDiv = document.getElementById("result");
