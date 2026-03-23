@@ -61,7 +61,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div id="searchScreen">
   <div id="searchContent">
-<h2>味方文字検索 ver.2.4.5</h2>
+<h2>味方文字検索 ver.2.5</h2>
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
@@ -344,7 +344,11 @@ function createExtraKanji(){
   extraGrid.innerHTML="";
   const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
 
-  const usedChars=data.flatMap(ch=>ch.forms.flatMap(f=>f.name.split("").concat(f.description.split(""))));
+  const usedChars = data.flatMap(ch =>
+  ch.forms.flatMap(f =>
+    Array.from(f.name).concat(Array.from(f.description))
+  )
+);
   const extra=Array.from(new Set(
     usedChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
   ));
