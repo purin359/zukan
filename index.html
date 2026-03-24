@@ -633,15 +633,7 @@ list.forEach((item,i)=>{
     `出現数ランキング`;
 }
 
-  // 統合版用
-  function isUsedEnemy(c){
-  return enemyData.some(ch =>
-    ch.forms?.some(f =>
-      (f.name || "").includes(c) || (f.description || "").includes(c)
-    )
-  );
-}
-
+   // 統合版用
 function isUsedAlly(c){
   return allyData.some(ch =>
     ch.forms.some(f =>
@@ -650,7 +642,7 @@ function isUsedAlly(c){
   );
 }
 
- function createGridIntegrated(chars, id){
+  function createGridIntegrated(chars, id){
   const grid = document.getElementById(id);
   grid.innerHTML = "";
 
@@ -675,6 +667,7 @@ function isUsedAlly(c){
     grid.appendChild(div);
   });
 }
+
   function createExtraKanjiIntegrated(){
   const extraGrid = document.getElementById("extraGrid");
   extraGrid.innerHTML = "";
@@ -687,12 +680,10 @@ function isUsedAlly(c){
     )
   );
 
-  const enemyChars = enemyData.flatMap(ch =>
-  ch.forms.flatMap(f =>
+  const enemyChars = enemyData.flatMap(f =>
     splitChars(f.name || "").concat(splitChars(f.description || ""))
-  )
-);
-    
+  );
+
   const allyExtra = Array.from(new Set(
     allyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
   ));
@@ -718,7 +709,6 @@ function isUsedAlly(c){
 }else if(ally){
   div.classList.add("ally");
 }
-
     div.innerText = c;
     extraGrid.appendChild(div);
   });
@@ -748,8 +738,6 @@ function isUsedAlly(c){
     enemyData = enemy;
     allyData  = ally;
 
-    isIntegrated = true;
-
     // 表表示
     document.getElementById("searchScreen").style.display = "block";
     document.getElementById("resultScreen").style.display = "none";
@@ -763,34 +751,11 @@ function isUsedAlly(c){
     createGridIntegrated(chars7,"grid7");
 
     createExtraKanjiIntegrated();
-    updateGroupHeader();
   });
 }
-
   function resetNormal(){
   // ページリロードが一番安全
   location.reload();
-}
-
-  function countIntegrated(grid){
-  const chars = Array.from(grid.children);
-
-  let used = 0;
-
-  chars.forEach(div=>{
-    if(
-      div.classList.contains("enemy") ||
-      div.classList.contains("ally") ||
-      div.classList.contains("both")
-    ){
-      used++;
-    }
-  });
-
-  return {
-    used,
-    total: chars.length
-  };
 }
   // ここまで統合版
   
