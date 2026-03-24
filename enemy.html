@@ -218,7 +218,7 @@ const chars7 = `
 `.replace(/\n/g, "").split("");
 
 // ===== JSONファイル =====
-const files=["basic.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
+const files=["enemy.json"];
 Promise.all(files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[])))
 .then(r=>{ data=r.flat(); init(); });
 
@@ -283,8 +283,8 @@ function search(keyword){
   data.forEach(ch=>{
     ch.forms.forEach(f=>{
 
-      const name = normalize(f.name);
-      const desc = normalize(f.description);
+      const name = normalize(f.name || "");
+      const desc = normalize(f.description || "");
 
       if(name.includes(key) || desc.includes(key)){
 
@@ -295,7 +295,9 @@ function search(keyword){
 
         div.innerHTML = `
           <strong>${highlight(f.name, keyword)}</strong><br>
-          ${highlight(f.description, keyword).replace(/\n/g, "<br>")}
+          ${f.description
+  ? highlight(f.description, keyword).replace(/\n/g, "<br>")
+  : ""}
         `;
 
         resultDiv.appendChild(div);
@@ -489,7 +491,9 @@ function showRanking(){
 
       div.innerHTML = `
         <strong>${f.name}</strong><br>
-        ${f.description.replace(/\n/g, "<br>")}
+        $${f.description
+  ? f.description.replace(/\n/g, "<br>")
+  : ""}
       `;
 
       resultDiv.appendChild(div);
@@ -518,7 +522,7 @@ function showRanking(){
 
     data.forEach(ch=>{
       ch.forms.forEach(f=>{
-        if(f.name.includes(c) || f.description.includes(c)){
+        if((f.name || "").includes(c) || (f.description || "").includes(c)){
           count++;
           foundName = f.name;
         }
