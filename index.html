@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -89,7 +89,7 @@ body { font-family: sans-serif; padding: 10px; }
 /* 両方（薄い紫） */
 .char.both {
   background: #e6ccff; /* 薄い紫 */
-  color: black;
+  color: purple;
   font-weight: bold;
 }
 .char.selected { background:blue; color:white; }
@@ -793,6 +793,11 @@ function isUsedAlly(c){
   function resetNormal(){
   // ページリロードが一番安全
   location.reload();
+}
+
+  // 敵＋味方
+  function isUsedIntegrated(c){
+  return isUsedEnemy(c) || isUsedAlly(c);
 }
 
   // ヘッダー合計を戻す
