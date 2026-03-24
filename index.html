@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -107,7 +107,7 @@ body { font-family: sans-serif; padding: 10px; }
 
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
-  <button onclick="searchFromInput()">検索</button>
+  <button id="searchBtn">検索</button>
 </div>
 
     <div style="position:relative; margin-bottom:10px;">
@@ -274,6 +274,9 @@ function init(){
   createExtraKanji();
 
   document.getElementById("searchInput").addEventListener("keydown",e=>{ if(e.key==="Enter") searchFromInput(); });
+  document.getElementById("searchBtn")
+    .addEventListener("click", searchFromInput);
+
 
   updateGroupHeader();
 }
@@ -574,10 +577,6 @@ function createExtraKanji(){
   menu.style.display = (menu.style.display === "none") ? "block" : "none";
 }
 
-  function showAll(){
-  document.getElementById("menu").style.display = "none";
-  search("全キャラ");
-}
 
 function showSingleOnly(){
   document.getElementById("menu").style.display = "none";
