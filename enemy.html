@@ -122,10 +122,16 @@ body { font-family: sans-serif; padding: 10px; }
   <div onclick="showAll()">全キャラ表示</div>
   <div onclick="showSingleOnly()">1件のみ検索</div>
   <div onclick="showRanking()">使用数ランキング</div>
-  <div onclick="showIntegratedGrid()">敵味方統合表</div>
 </div>
-      <button onclick="location.href='index.html'">味方版へ</button>
-      <button onclick="resetNormal()">通常表示に戻る</button>
+      <button onclick="location.href='enemy.html'">敵版へ</button>
+
+<button id="integratedBtn" onclick="showIntegratedGrid()">
+  敵味方統合版へ
+</button>
+
+<button id="resetBtn" onclick="resetNormal()" style="display:none;">
+  通常に戻す
+</button>
 </div>
 
 <div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll', this)">▼ 常用漢字</div>
@@ -772,8 +778,25 @@ function isUsedAlly(c){
 }
   // 通常に戻す
   function resetNormal(){
-  // ページリロードが一番安全
-  location.reload();
+
+  isIntegrated = false;
+
+  // ★ボタン戻す
+  document.getElementById("integratedBtn").style.display = "inline-block";
+  document.getElementById("resetBtn").style.display = "none";
+
+  // 元のグリッドに戻す
+  createGridWithHeader(chars1,"grid1","1年生で習う漢字");
+  createGridWithHeader(chars2,"grid2","2年生で習う漢字");
+  createGridWithHeader(chars3,"grid3","3年生で習う漢字");
+  createGridWithHeader(chars4,"grid4","4年生で習う漢字");
+  createGridWithHeader(chars5,"grid5","5年生で習う漢字");
+  createGridWithHeader(chars6,"grid6","6年生で習う漢字");
+  createGridWithHeader(chars7,"grid7","中学生");
+
+  createExtraKanji();
+
+  updateGroupHeader();
 }
 
   // 敵＋味方
@@ -785,6 +808,49 @@ function isUsedAlly(c){
   function resetNormal(){
   isIntegrated = false;
   location.reload();
+}
+
+  // 統合版ボタン切り替え
+  function showIntegratedGrid(){
+  document.getElementById("menu").style.display = "none";
+
+  Promise.all([
+    fetch("enemy.json").then(r=>r.json()).catch(()=>[]),
+
+    Promise.all([
+      fetch("basic.json").then(r=>r.json()).catch(()=>[]),
+      fetch("ex.json").then(r=>r.json()).catch(()=>[]),
+      fetch("rare.json").then(r=>r.json()).catch(()=>[]),
+      fetch("superrare.json").then(r=>r.json()).catch(()=>[]),
+      fetch("ultrarare.json").then(r=>r.json()).catch(()=>[]),
+      fetch("legendrare.json").then(r=>r.json()).catch(()=>[])
+    ]).then(r => r.flat())
+  ])
+  .then(([enemy, ally])=>{
+
+    enemyData = enemy;
+    allyData  = ally;
+
+    // ★ボタン切り替え
+    document.getElementById("integratedBtn").style.display = "none";
+    document.getElementById("resetBtn").style.display = "inline-block";
+
+    // 表更新
+    document.getElementById("searchScreen").style.display = "block";
+    document.getElementById("resultScreen").style.display = "none";
+
+    createGridIntegrated(chars1,"grid1");
+    createGridIntegrated(chars2,"grid2");
+    createGridIntegrated(chars3,"grid3");
+    createGridIntegrated(chars4,"grid4");
+    createGridIntegrated(chars5,"grid5");
+    createGridIntegrated(chars6,"grid6");
+    createGridIntegrated(chars7,"grid7");
+
+    createExtraKanjiIntegrated();
+    isIntegrated = true;
+    updateGroupHeader();
+  });
 }
   // ここまで統合版
   
