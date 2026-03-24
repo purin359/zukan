@@ -574,19 +574,29 @@ function showRanking(){
 
   list.sort((a,b)=>b.count - a.count);
 
-  list.forEach((item,i)=>{
-    const div = document.createElement("div");
-    div.className = "result";
+  let rank = 0;
+let prevCount = -1;
 
-    div.innerHTML = `${i+1}位　<strong>${item.char}</strong>（${item.count}件）`;
+list.forEach((item,i)=>{
 
-    div.onclick = ()=>{
-      document.getElementById("searchInput").value = item.char;
-      searchFromInput();
-    };
+  // 件数が違うときだけ順位更新
+  if(item.count !== prevCount){
+    rank = i + 1;
+    prevCount = item.count;
+  }
 
-    resultDiv.appendChild(div);
-  });
+  const div = document.createElement("div");
+  div.className = "result";
+
+  div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
+
+  div.onclick = ()=>{
+    document.getElementById("searchInput").value = item.char;
+    searchFromInput();
+  };
+
+  resultDiv.appendChild(div);
+});
 
   document.getElementById("selectedText").innerText =
     `出現数ランキング`;
