@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -65,12 +66,13 @@ body { font-family: sans-serif; padding: 10px; }
   align-items: center;       
 }
 
-  .char.active {
+.char.active {
   background: #dde8ff;
   color: blue;
   font-weight: bold;
 }
-/* 敵のみ */
+  
+  /* 敵のみ */
 .char.enemy {
   background: #ffdddd;
   color: red;
@@ -87,7 +89,7 @@ body { font-family: sans-serif; padding: 10px; }
 /* 両方（薄い紫） */
 .char.both {
   background: #e6ccff; /* 薄い紫 */
-  color: purple;
+  color: black;
   font-weight: bold;
 }
 .char.selected { background:blue; color:white; }
@@ -280,14 +282,13 @@ function toggle(id, header){
 
   const isOpen = el.style.display === "none";
 
-  // ★ gridかどうか判定
-  const isGrid = el.classList.contains("grid");
+  // ★ gridに戻す
+  el.style.display = isOpen ? "grid" : "none";
 
+  // ▼▶切り替え
   if(isOpen){
-    el.style.display = isGrid ? "grid" : "block";
     header.innerHTML = header.innerHTML.replace("▶", "▼");
   }else{
-    el.style.display = "none";
     header.innerHTML = header.innerHTML.replace("▼", "▶");
   }
 }
@@ -436,7 +437,6 @@ if(grid7){
 
 }
 
-  
 // ===== 常用漢字外をまとめて左詰め表示 =====
 function createExtraKanji(){
   const extraGrid=document.getElementById("extraGrid");
@@ -634,7 +634,13 @@ list.forEach((item,i)=>{
     `出現数ランキング`;
 }
 
-   // 統合版用
+  // 統合版用
+  function isUsedEnemy(c){
+  return enemyData.some(f =>
+    (f.name || "").includes(c) || (f.description || "").includes(c)
+  );
+}
+
 function isUsedAlly(c){
   return allyData.some(ch =>
     ch.forms.some(f =>
@@ -668,7 +674,6 @@ function isUsedAlly(c){
     grid.appendChild(div);
   });
 }
-
   function createExtraKanjiIntegrated(){
   const extraGrid = document.getElementById("extraGrid");
   extraGrid.innerHTML = "";
@@ -710,6 +715,7 @@ function isUsedAlly(c){
 }else if(ally){
   div.classList.add("ally");
 }
+
     div.innerText = c;
     extraGrid.appendChild(div);
   });
@@ -754,6 +760,7 @@ function isUsedAlly(c){
     createExtraKanjiIntegrated();
   });
 }
+  
   function resetNormal(){
   // ページリロードが一番安全
   location.reload();
