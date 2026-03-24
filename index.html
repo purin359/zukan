@@ -458,7 +458,7 @@ function createGridIntegrated(chars, id){
 
     div.innerText = c;
 
-    // ★これ追加
+    // ★これが必要
     div.onclick = ()=>{
       document.getElementById("searchInput").value = c;
       searchFromInput();
@@ -766,31 +766,6 @@ function isUsedAlly(c){
   );
 }
 
-  function createGridIntegrated(chars, id){
-  const grid = document.getElementById(id);
-  grid.innerHTML = "";
-
-  chars.forEach(c=>{
-    const enemy = isUsedEnemy(c);
-    const ally  = isUsedAlly(c);
-
-    const div = document.createElement("div");
-    div.className = "char";
-
-    // ★ ここで色分岐
-    if(enemy && ally){
-      div.classList.add("both");
-    }else if(enemy){
-      div.classList.add("enemy");
-    }else if(ally){
-      div.classList.add("ally");
-    }
-    // ★ 何もなければクラス付けない（＝元の見た目）
-
-    div.innerText = c;
-    grid.appendChild(div);
-  });
-}
   function createExtraKanjiIntegrated(){
   const extraGrid = document.getElementById("extraGrid");
   extraGrid.innerHTML = "";
