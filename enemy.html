@@ -708,7 +708,7 @@ function isUsedAlly(c){
   ));
 
   // 味方 → 敵
-  const combined = allyExtra.concat(enemyExtra);
+  const combined = Array.from(new Set(allyExtra.concat(enemyExtra)));
 
   combined.forEach(c=>{
     const enemy = enemyChars.includes(c);
