@@ -66,6 +66,26 @@ body { font-family: sans-serif; padding: 10px; }
 }
 
 .char.active { color:red; background:#ffe0e0; font-weight:bold; }
+  /* 敵のみ */
+.char.enemy {
+  background: #ffdddd;
+  color: red;
+  font-weight: bold;
+}
+
+/* 味方のみ */
+.char.ally {
+  background: #dde8ff;
+  color: blue;
+  font-weight: bold;
+}
+
+/* 両方（薄い紫） */
+.char.both {
+  background: #e6ccff; /* 薄い紫 */
+  color: black;
+  font-weight: bold;
+}
 .char.selected { background:red; color:white; }
 
 .hit { color:red; font-weight:bold; }
@@ -106,6 +126,7 @@ body { font-family: sans-serif; padding: 10px; }
   <div onclick="showIntegratedGrid()">統合（表）</div>
 </div>
       <button onclick="location.href='index.html'">味方版へ</button>
+      <button onclick="resetNormal()">通常表示に戻る</button>
 </div>
 
 <div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll', this)">▼ 常用漢字</div>
@@ -619,16 +640,18 @@ function isUsedAlly(c){
     const enemy = isUsedEnemy(c);
     const ally  = isUsedAlly(c);
 
-    if(!enemy && !ally) return;
-
     const div = document.createElement("div");
     div.className = "char";
 
+    // ★ ここで色分岐
     if(enemy && ally){
-      div.classList.add("both"); // 紫
-    }else{
-      div.classList.add("active"); // 赤
+      div.classList.add("both");
+    }else if(enemy){
+      div.classList.add("enemy");
+    }else if(ally){
+      div.classList.add("ally");
     }
+    // ★ 何もなければクラス付けない（＝元の見た目）
 
     div.innerText = c;
     grid.appendChild(div);
@@ -670,11 +693,12 @@ function isUsedAlly(c){
     div.className = "char";
 
     if(enemy && ally){
-      div.classList.add("both");
-    }else{
-      div.classList.add("active");
-    }
-
+  div.classList.add("both");
+}else if(enemy){
+  div.classList.add("enemy");
+}else if(ally){
+  div.classList.add("ally");
+}
     div.innerText = c;
     extraGrid.appendChild(div);
   });
@@ -718,6 +742,10 @@ function isUsedAlly(c){
 
     createExtraKanjiIntegrated();
   });
+}
+  function resetNormal(){
+  // ページリロードが一番安全
+  location.reload();
 }
   // ここまで統合版
   
