@@ -632,8 +632,10 @@ list.forEach((item,i)=>{
 
   // 統合版用
   function isUsedEnemy(c){
-  return enemyData.some(f =>
-    (f.name || "").includes(c) || (f.description || "").includes(c)
+  return enemyData.some(ch =>
+    ch.forms?.some(f =>
+      (f.name || "").includes(c) || (f.description || "").includes(c)
+    )
   );
 }
 
@@ -741,6 +743,8 @@ function isUsedAlly(c){
     enemyData = enemy;
     allyData  = ally;
 
+    isIntegrated = true;
+
     // 表表示
     document.getElementById("searchScreen").style.display = "block";
     document.getElementById("resultScreen").style.display = "none";
@@ -754,8 +758,8 @@ function isUsedAlly(c){
     createGridIntegrated(chars7,"grid7");
 
     createExtraKanjiIntegrated();
-  });
     updateGroupHeader();
+  });
 }
 
   function resetNormal(){
