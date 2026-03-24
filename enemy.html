@@ -70,6 +70,11 @@ body { font-family: sans-serif; padding: 10px; }
 
 .hit { color:red; font-weight:bold; }
 
+  .char.both {
+  background: purple;
+  color: white;
+}
+
 .result { border-bottom:1px solid #ccc; padding:8px 0; }
 </style>
 </head>
@@ -98,6 +103,7 @@ body { font-family: sans-serif; padding: 10px; }
   <div onclick="showAll()">全キャラ表示</div>
   <div onclick="showSingleOnly()">1件のみ検索</div>
   <div onclick="showRanking()">使用数ランキング</div>
+  <div onclick="showIntegratedGrid()">統合（表）</div>
 </div>
       <button onclick="location.href='index.html'">味方版へ</button>
 </div>
@@ -166,6 +172,9 @@ body { font-family: sans-serif; padding: 10px; }
 <script>
 let data=[];
 let scrollY = 0;
+let enemyData = [];
+let allyData = [];
+let isIntegrated = false;
 
 // ===== 文字 =====
 const chars1 = `
@@ -586,6 +595,131 @@ list.forEach((item,i)=>{
   document.getElementById("selectedText").innerText =
     `出現数ランキング(常用漢字)`;
 }
+
+  function isUsedEnemy(c){
+  return enemyData.some(f =>
+    (f.name || "").includes(c) || (f.description || "").includes(c)
+  );
+}
+
+  // 統合版用
+function isUsedAlly(c){
+  return allyData.some(ch =>
+    ch.forms.some(f =>
+      (f.name || "").includes(c) || (f.description || "").includes(c)
+    )
+  );
+}
+
+  function createGridIntegrated(chars, id){
+  const grid = document.getElementById(id);
+  grid.innerHTML = "";
+
+  chars.forEach(c=>{
+    const enemy = isUsedEnemy(c);
+    const ally  = isUsedAlly(c);
+
+    if(!enemy && !ally) return;
+
+    const div = document.createElement("div");
+    div.className = "char";
+
+    if(enemy && ally){
+      div.classList.add("both"); // 紫
+    }else{
+      div.classList.add("active"); // 赤
+    }
+
+    div.innerText = c;
+    grid.appendChild(div);
+  });
+}
+
+  function createExtraKanjiIntegrated(){
+  const extraGrid = document.getElementById("extraGrid");
+  extraGrid.innerHTML = "";
+
+  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+
+  const allyChars = allyData.flatMap(ch =>
+    ch.forms.flatMap(f =>
+      splitChars(f.name || "").concat(splitChars(f.description || ""))
+    )
+  );
+
+  const enemyChars = enemyData.flatMap(f =>
+    splitChars(f.name || "").concat(splitChars(f.description || ""))
+  );
+
+  const allyExtra = Array.from(new Set(
+    allyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
+  ));
+
+  const enemyExtra = Array.from(new Set(
+    enemyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
+  ));
+
+  // 味方 → 敵
+  const combined = allyExtra.concat(enemyExtra);
+
+  combined.forEach(c=>{
+    const enemy = enemyChars.includes(c);
+    const ally  = allyChars.includes(c);
+
+    const div = document.createElement("div");
+    div.className = "char";
+
+    if(enemy && ally){
+      div.classList.add("both");
+    }else{
+      div.classList.add("active");
+    }
+
+    div.innerText = c;
+    extraGrid.appendChild(div);
+  });
+
+  document.getElementById("headerExtra").innerText =
+    `▼ 常用漢字外 ${combined.length}種類`;
+}
+
+  function showIntegratedGrid(){
+  document.getElementById("menu").style.display = "none";
+
+  Promise.all([
+    fetch("enemy.json").then(r=>r.json()).catch(()=>[]),
+
+    // 味方6ファイルまとめて読み込み
+    Promise.all([
+      fetch("basic.json").then(r=>r.json()).catch(()=>[]),
+      fetch("ex.json").then(r=>r.json()).catch(()=>[]),
+      fetch("rare.json").then(r=>r.json()).catch(()=>[]),
+      fetch("superrare.json").then(r=>r.json()).catch(()=>[]),
+      fetch("ultrarare.json").then(r=>r.json()).catch(()=>[]),
+      fetch("legendrare.json").then(r=>r.json()).catch(()=>[])
+    ]).then(r => r.flat()) // ←ここ重要
+  ])
+  .then(([enemy, ally])=>{
+
+    enemyData = enemy;
+    allyData  = ally;
+
+    // 表表示
+    document.getElementById("searchScreen").style.display = "block";
+    document.getElementById("resultScreen").style.display = "none";
+
+    createGridIntegrated(chars1,"grid1");
+    createGridIntegrated(chars2,"grid2");
+    createGridIntegrated(chars3,"grid3");
+    createGridIntegrated(chars4,"grid4");
+    createGridIntegrated(chars5,"grid5");
+    createGridIntegrated(chars6,"grid6");
+    createGridIntegrated(chars7,"grid7");
+
+    createExtraKanjiIntegrated();
+  });
+}
+  // ここまで統合版
   
 </script>
 
