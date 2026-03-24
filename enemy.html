@@ -280,29 +280,27 @@ function search(keyword){
   const key=normalize(keyword);
   let total=0;
 
-  data.forEach(ch=>{
-    ch.forms.forEach(f=>{
+  data.forEach(f=>{
 
-      const name = normalize(f.name || "");
-      const desc = normalize(f.description || "");
+    const name = normalize(f.name || "");
+    const desc = normalize(f.description || "");
 
-      if(name.includes(key) || desc.includes(key)){
+    if(name.includes(key) || desc.includes(key)){
 
-        total++;
+      total++;
 
-        const div = document.createElement("div");
-        div.className = "result";
+      const div = document.createElement("div");
+      div.className = "result";
 
-        div.innerHTML = `
-          <strong>${highlight(f.name, keyword)}</strong><br>
-          ${f.description
-  ? highlight(f.description, keyword).replace(/\n/g, "<br>")
-  : ""}
-        `;
+      div.innerHTML = `
+        <strong>${highlight(f.name, keyword)}</strong><br>
+        ${f.description
+          ? highlight(f.description, keyword).replace(/\n/g, "<br>")
+          : ""}
+      `;
 
-        resultDiv.appendChild(div);
-      }
-    });
+      resultDiv.appendChild(div);
+    }
   });
 
   const title = document.getElementById("selectedText");
@@ -313,7 +311,7 @@ function search(keyword){
     title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
   }
 }
-
+  
 // ===== 戻る =====
 function back(){
   document.getElementById("resultScreen").style.display="none";
@@ -324,7 +322,11 @@ function back(){
 }
   
 // ===== 使用済み判定 =====
-function isUsed(c){ return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.description.includes(c))); }
+function isUsed(c){ 
+  return data.some(f =>
+    (f.name || "").includes(c) || (f.description || "").includes(c)
+  );
+}
 
 // ===== グリッド生成（n/m付き） =====
 function createGridWithHeader(chars,id,name){
@@ -414,11 +416,10 @@ function createExtraKanji(){
   extraGrid.innerHTML="";
   const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
 
-  const usedChars = data.flatMap(ch =>
-  ch.forms.flatMap(f =>
-    splitChars(f.name).concat(splitChars(f.description))
-  )
+  const usedChars = data.flatMap(f =>
+  splitChars(f.name || "").concat(splitChars(f.description || ""))
 );
+  
   const extra=Array.from(new Set(
     usedChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
   ));
@@ -567,11 +568,9 @@ function showRanking(){
     let count = 0;
 
     data.forEach(ch=>{
-      ch.forms.forEach(f=>{
         if(f.name.includes(c) || f.description.includes(c)){
           count++;
         }
-      });
     });
 
     list.push({char:c, count});
