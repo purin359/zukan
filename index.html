@@ -65,15 +65,29 @@ body { font-family: sans-serif; padding: 10px; }
   align-items: center;       
 }
 
-.char.active { color:blue; background:#e0f0ff; font-weight:bold; }
+/* 敵のみ */
+.char.enemy {
+  background: #ffdddd;
+  color: red;
+  font-weight: bold;
+}
+
+/* 味方のみ */
+.char.ally {
+  background: #dde8ff;
+  color: blue;
+  font-weight: bold;
+}
+
+/* 両方（薄い紫） */
+.char.both {
+  background: #e6ccff; /* 薄い紫 */
+  color: purple;
+  font-weight: bold;
+}
 .char.selected { background:blue; color:white; }
 
 .hit { color:blue; font-weight:bold; }
-
-  .char.both {
-  background: purple;
-  color: white;
-}
 
 .result { border-bottom:1px solid #ccc; padding:8px 0; }
 </style>
@@ -106,6 +120,7 @@ body { font-family: sans-serif; padding: 10px; }
   <div onclick="showIntegratedGrid()">敵味方統合表</div>
 </div>
       <button onclick="location.href='enemy.html'">敵版へ</button>
+      <button onclick="resetNormal()">通常表示に戻る</button>
 </div>
 
 <div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll', this)">▼ 常用漢字</div>
@@ -627,7 +642,7 @@ function isUsedAlly(c){
   );
 }
 
-  function createGridIntegrated(chars, id){
+ function createGridIntegrated(chars, id){
   const grid = document.getElementById(id);
   grid.innerHTML = "";
 
@@ -641,9 +656,11 @@ function isUsedAlly(c){
     div.className = "char";
 
     if(enemy && ally){
-      div.classList.add("both"); // 紫
-    }else{
-      div.classList.add("active"); // 赤
+      div.classList.add("both");
+    }else if(enemy){
+      div.classList.add("enemy");
+    }else if(ally){
+      div.classList.add("ally");
     }
 
     div.innerText = c;
@@ -686,10 +703,12 @@ function isUsedAlly(c){
     div.className = "char";
 
     if(enemy && ally){
-      div.classList.add("both");
-    }else{
-      div.classList.add("active");
-    }
+  div.classList.add("both");
+}else if(enemy){
+  div.classList.add("enemy");
+}else if(ally){
+  div.classList.add("ally");
+}
 
     div.innerText = c;
     extraGrid.appendChild(div);
@@ -734,6 +753,11 @@ function isUsedAlly(c){
 
     createExtraKanjiIntegrated();
   });
+}
+
+  function resetNormal(){
+  // ページリロードが一番安全
+  location.reload();
 }
   // ここまで統合版
   
