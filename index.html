@@ -837,6 +837,8 @@ function isUsedAlly(c){
     enemyData = enemy;
     allyData  = ally;
 
+    integratedMode = true;
+
     // 表表示
     document.getElementById("searchScreen").style.display = "block";
     document.getElementById("resultScreen").style.display = "none";
@@ -887,6 +889,7 @@ function isUsedAlly(c){
   // ヘッダー合計を戻す
   function resetNormal(){
   isIntegrated = false;
+  integratedMode = false;
   location.reload();
 }
 
