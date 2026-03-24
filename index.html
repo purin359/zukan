@@ -437,19 +437,33 @@ function back(){
 function isUsed(c){ return data.some(ch=>ch.forms.some(f=>f.name.includes(c)||f.description.includes(c))); }
 
 // ===== グリッド生成（n/m付き） =====
-function createGridWithHeader(chars,id,name){
+function createGridIntegrated(chars, id){
   const grid = document.getElementById(id);
   grid.innerHTML = "";
 
   chars.forEach(c=>{
-    const div=document.createElement("div");
-    div.className="char";
-    if(isUsed(c)) div.classList.add("active");
-    div.innerText=c;
-    div.onclick=()=>{
-      document.getElementById("searchInput").value=c;
+    const enemy = isUsedEnemy(c);
+    const ally  = isUsedAlly(c);
+
+    const div = document.createElement("div");
+    div.className = "char";
+
+    if(enemy && ally){
+      div.classList.add("both");
+    }else if(enemy){
+      div.classList.add("enemy");
+    }else if(ally){
+      div.classList.add("ally");
+    }
+
+    div.innerText = c;
+
+    // ★これ追加
+    div.onclick = ()=>{
+      document.getElementById("searchInput").value = c;
       searchFromInput();
     };
+
     grid.appendChild(div);
   });
 }
