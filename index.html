@@ -304,8 +304,20 @@ function toggle(id, header){
 // ===== 検索 =====
 function normalize(str){ return (str||"").toLowerCase(); }
 function highlight(text,keyword){ const re=new RegExp(`(${keyword})`,"gi"); return text.replace(re,`<span class="hit">$1</span>`); }
-function searchFromInput(){ const v=document.getElementById("searchInput").value.trim(); if(v) search(v); }
+function searchFromInput(){
+  const v = document.getElementById("searchInput").value.trim();
+  if(!v) return;
+
+  // ★ここ追加
+  if(integratedMode){
+    search(v); // 統合検索
+  }else{
+    search(v); // 通常検索
+  }
+}
 function search(keyword){
+
+  console.log("integratedMode:", integratedMode);
 
   scrollY = window.scrollY;
 
