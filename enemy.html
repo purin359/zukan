@@ -378,7 +378,6 @@ function createGridWithHeader(chars,id,name){
 // ===== 各グループ n/m ヘッダー更新 =====
 function updateGroupHeader(){
 
-  // 個別（1〜6年・中学生）
   const map = [
     ["grid1","1年生で習う漢字"],
     ["grid2","2年生で習う漢字"],
@@ -393,50 +392,77 @@ function updateGroupHeader(){
     const grid = document.getElementById(id);
     if(!grid) return;
 
-    const used = grid.querySelectorAll(".active").length;
-    const total = grid.children.length;
+    let used = 0;
+    let total = grid.children.length;
 
-    // ヘッダーは直前にある
+    // ★ここ分岐が重要
+    if(isIntegrated){
+      // 統合版：敵＋味方
+      Array.from(grid.children).forEach(div=>{
+        const c = div.innerText;
+        if(isUsedIntegrated(c)) used++;
+      });
+    }else{
+      // 通常：味方のみ
+      used = grid.querySelectorAll(".active").length;
+    }
+
     const header = grid.previousElementSibling;
     if(header){
       header.innerText = `▼ ${name} (${used}/${total})`;
     }
   });
 
-  // グループ（小学生・全体）
-["gElem","gAll"].forEach(id=>{
-  const g = document.getElementById(id);
-  if(!g) return;
+  // ===== 小学生・全体 =====
+  ["gElem","gAll"].forEach(id=>{
+    const g = document.getElementById(id);
+    if(!g) return;
 
-  const grids = g.querySelectorAll(".grid");
+    const grids = g.querySelectorAll(".grid");
 
-  const used = Array.from(grids).reduce(
-    (a,grid)=>a + grid.querySelectorAll(".active").length, 0
-  );
+    let used = 0;
+    let total = 0;
 
-  const total = Array.from(grids).reduce(
-    (a,grid)=>a + grid.children.length, 0
-  );
+    grids.forEach(grid=>{
+      total += grid.children.length;
 
-  const header = g.previousElementSibling;
-  if(header){
-    const base = header.dataset.base;
-    header.innerText = `▼ ${base} (${used}/${total})`;
-  }
-});
+      if(isIntegrated){
+        Array.from(grid.children).forEach(div=>{
+          const c = div.innerText;
+          if(isUsedIntegrated(c)) used++;
+        });
+      }else{
+        used += grid.querySelectorAll(".active").length;
+      }
+    });
+
+    const header = g.previousElementSibling;
+    if(header){
+      const base = header.dataset.base;
+      header.innerText = `▼ ${base} (${used}/${total})`;
+    }
+  });
 
   // ===== 中学生 =====
-const grid7 = document.getElementById("grid7");
-if(grid7){
-  const used = grid7.querySelectorAll(".active").length;
-  const total = grid7.children.length;
+  const grid7 = document.getElementById("grid7");
+  if(grid7){
+    let used = 0;
+    const total = grid7.children.length;
 
-  const header = document.getElementById("headerG7");
-  if(header){
-    header.innerText = `▼ 中学生で習う漢字 (${used}/${total})`;
+    if(isIntegrated){
+      Array.from(grid7.children).forEach(div=>{
+        const c = div.innerText;
+        if(isUsedIntegrated(c)) used++;
+      });
+    }else{
+      used = grid7.querySelectorAll(".active").length;
+    }
+
+    const header = document.getElementById("headerG7");
+    if(header){
+      header.innerText = `▼ 中学生で習う漢字 (${used}/${total})`;
+    }
   }
-}
-
 }
 
 // ===== 常用漢字外をまとめて左詰め表示 =====
@@ -740,10 +766,24 @@ function isUsedAlly(c){
     createGridIntegrated(chars7,"grid7");
 
     createExtraKanjiIntegrated();
+    isIntegrated = true;
+    updateGroupHeader();
   });
 }
+  // 通常に戻す
   function resetNormal(){
   // ページリロードが一番安全
+  location.reload();
+}
+
+  // 敵＋味方
+  function isUsedIntegrated(c){
+  return isUsedEnemy(c) || isUsedAlly(c);
+}
+
+  // ヘッダー合計を戻す
+  function resetNormal(){
+  isIntegrated = false;
   location.reload();
 }
   // ここまで統合版
