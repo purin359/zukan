@@ -684,10 +684,12 @@ function isUsedAlly(c){
     )
   );
 
-  const enemyChars = enemyData.flatMap(f =>
+  const enemyChars = enemyData.flatMap(ch =>
+  ch.forms.flatMap(f =>
     splitChars(f.name || "").concat(splitChars(f.description || ""))
-  );
-
+  )
+);
+    
   const allyExtra = Array.from(new Set(
     allyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
   ));
