@@ -279,73 +279,13 @@ function search(keyword){
   const key=normalize(keyword);
   let total=0;
 
-  const showAll = (keyword === "全キャラ");
-
-  const keyNorm = normalize(keyword);
-const showSingle = (keyNorm === "1件" || keyNorm === "一件");
-
-if(showSingle){
-  const resultDiv = document.getElementById("result");
-  let total = 0;
-
-  // ★ 使用されている漢字だけ（isUsedベース）
-const allChars = chars1
-  .concat(chars2, chars3, chars4, chars5, chars6, chars7)
-  .filter(c => isUsed(c));
-
-  allChars.forEach(c=>{
-    let count = 0;
-
-    data.forEach(ch=>{
-      ch.forms.forEach(f=>{
-        if(f.name.includes(c) || f.description.includes(c)){
-          count++;
-        }
-      });
-    });
-
-    // ★ 1件だけ
-    if(count === 1){
-  total++;
-
-  // ★ 該当キャラを取得
-  let foundName = "";
-
-  data.forEach(ch=>{
-    ch.forms.forEach(f=>{
-      if(f.name.includes(c) || f.description.includes(c)){
-        foundName = f.name;
-      }
-    });
-  });
-
-  const div = document.createElement("div");
-  div.className = "result";
-  div.innerHTML = `<strong>${c}</strong> ： ${foundName}`;
-
-      div.onclick = ()=>{
-        document.getElementById("searchInput").value = c;
-        searchFromInput();
-      };
-
-      resultDiv.appendChild(div);
-    }
-  });
-
-  document.getElementById("selectedText").innerText =
-    `1件しかヒットしない文字一覧(常用漢字)：${total}件`;
-
-  return;
-}
-
   data.forEach(ch=>{
     ch.forms.forEach(f=>{
 
       const name = normalize(f.name);
       const desc = normalize(f.description);
 
-      // ★ 条件変更
-      if(showAll || name.includes(key) || desc.includes(key)){
+      if(name.includes(key) || desc.includes(key)){
 
         total++;
 
@@ -353,8 +293,8 @@ const allChars = chars1
         div.className = "result";
 
         div.innerHTML = `
-          <strong>${showAll ? f.name : highlight(f.name, keyword)}</strong><br>
-          ${showAll ? f.description.replace(/\n/g, "<br>") : highlight(f.description, keyword).replace(/\n/g, "<br>")}
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          ${highlight(f.description, keyword).replace(/\n/g, "<br>")}
         `;
 
         resultDiv.appendChild(div);
@@ -364,62 +304,11 @@ const allChars = chars1
 
   const title = document.getElementById("selectedText");
 
-if(showAll){
-  title.innerText = `全キャラ一覧：${total}件`;
-}else if(total === 0){
-  title.innerText = `"${keyword}" は見つかりませんでした`;
-}else{
-  title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
-}
-
-  // ランキング表示
-  if(keyNorm === "ランキング"){
-  const resultDiv = document.getElementById("result");
-  let list = [];
-
-  const allChars = chars1
-    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
-    .filter(c => isUsed(c));
-
-  allChars.forEach(c=>{
-    let count = 0;
-
-    data.forEach(ch=>{
-      ch.forms.forEach(f=>{
-        if(f.name.includes(c) || f.description.includes(c)){
-          count++;
-        }
-      });
-    });
-
-    list.push({char:c, count});
-  });
-
-  // 多い順ソート
-  list.sort((a,b)=>b.count - a.count);
-
-  // 上位2136件
-  const top = list.slice(0,2136);
-
-  top.forEach((item,i)=>{
-    const div = document.createElement("div");
-    div.className = "result";
-
-    div.innerHTML = `${i+1}位　<strong>${item.char}</strong>（${item.count}件）`;
-
-    div.onclick = ()=>{
-      document.getElementById("searchInput").value = item.char;
-      searchFromInput();
-    };
-
-    resultDiv.appendChild(div);
-  });
-
-  document.getElementById("selectedText").innerText =
-    `出現数ランキング(常用漢字)`;
-
-  return;
-}
+  if(total === 0){
+    title.innerText = `"${keyword}" は見つかりませんでした`;
+  }else{
+    title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
+  }
 }
 
 // ===== 戻る =====
@@ -571,6 +460,137 @@ function showRanking(){
     menu.style.display = "none";
   }
 });
+
+  function openResult(){
+  scrollY = window.scrollY;
+
+  document.getElementById("searchScreen").style.display="none";
+  document.getElementById("resultScreen").style.display="block";
+  window.scrollTo(0, 0);
+
+  document.getElementById("result").innerHTML="";
+}
+
+  // 全キャラ表示
+  function showAll(){
+  document.getElementById("menu").style.display = "none";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+  let total = 0;
+
+  data.forEach(ch=>{
+    ch.forms.forEach(f=>{
+      total++;
+
+      const div = document.createElement("div");
+      div.className = "result";
+
+      div.innerHTML = `
+        <strong>${f.name}</strong><br>
+        ${f.description.replace(/\n/g, "<br>")}
+      `;
+
+      resultDiv.appendChild(div);
+    });
+  });
+
+  document.getElementById("selectedText").innerText =
+    `全キャラ一覧：${total}件`;
+}
+
+  // 1件検索
+  function showSingleOnly(){
+  document.getElementById("menu").style.display = "none";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+  let total = 0;
+
+  const allChars = chars1
+    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
+    .filter(c => isUsed(c));
+
+  allChars.forEach(c=>{
+    let count = 0;
+    let foundName = "";
+
+    data.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        if(f.name.includes(c) || f.description.includes(c)){
+          count++;
+          foundName = f.name;
+        }
+      });
+    });
+
+    if(count === 1){
+      total++;
+
+      const div = document.createElement("div");
+      div.className = "result";
+
+      div.innerHTML = `<strong>${c}</strong> ： ${foundName}`;
+
+      div.onclick = ()=>{
+        document.getElementById("searchInput").value = c;
+        searchFromInput();
+      };
+
+      resultDiv.appendChild(div);
+    }
+  });
+
+  document.getElementById("selectedText").innerText =
+    `1件しかヒットしない文字一覧：${total}件`;
+}
+
+  // ランキング
+  function showRanking(){
+  document.getElementById("menu").style.display = "none";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+
+  let list = [];
+
+  const allChars = chars1
+    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
+    .filter(c => isUsed(c));
+
+  allChars.forEach(c=>{
+    let count = 0;
+
+    data.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        if(f.name.includes(c) || f.description.includes(c)){
+          count++;
+        }
+      });
+    });
+
+    list.push({char:c, count});
+  });
+
+  list.sort((a,b)=>b.count - a.count);
+
+  list.forEach((item,i)=>{
+    const div = document.createElement("div");
+    div.className = "result";
+
+    div.innerHTML = `${i+1}位　<strong>${item.char}</strong>（${item.count}件）`;
+
+    div.onclick = ()=>{
+      document.getElementById("searchInput").value = item.char;
+      searchFromInput();
+    };
+
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    `出現数ランキング`;
+}
   
 </script>
 
