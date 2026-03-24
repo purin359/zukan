@@ -88,17 +88,17 @@ body { font-family: sans-serif; padding: 10px; }
   <button onclick="toggleMenu()">･･･</button>
 
   <div id="menu" style="
-    display:none;
-    position:absolute;
-    background:white;
-    border:1px solid #ccc;
-    padding:5px;
-    z-index:100;
-  ">
-    <div onclick="runCommand('全キャラ')">全キャラ表示</div>
-    <div onclick="runCommand('1件')">1件のみ検索</div>
-    <div onclick="runCommand('ランキング')">使用数ランキング</div>
-  </div>
+  display:none;
+  position:absolute;
+  background:white;
+  border:1px solid #ccc;
+  padding:5px;
+  z-index:100;
+">
+  <div onclick="showAll()">全キャラ表示</div>
+  <div onclick="showSingleOnly()">1件のみ検索</div>
+  <div onclick="showRanking()">使用数ランキング</div>
+</div>
 </div>
 
 <div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll', this)">▼ 常用漢字</div>
@@ -549,11 +549,19 @@ function createExtraKanji(){
   menu.style.display = (menu.style.display === "none") ? "block" : "none";
 }
 
-function runCommand(cmd){
+  function showAll(){
   document.getElementById("menu").style.display = "none";
+  search("全キャラ");
+}
 
-  document.getElementById("searchInput").value = cmd;
-  searchFromInput();
+function showSingleOnly(){
+  document.getElementById("menu").style.display = "none";
+  search("1件");
+}
+
+function showRanking(){
+  document.getElementById("menu").style.display = "none";
+  search("ランキング");
 }
 
   // ==== ･･･ウィンドウを閉じる =====
