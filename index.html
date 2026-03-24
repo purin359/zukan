@@ -203,6 +203,8 @@ let scrollY = 0;
 let enemyData = [];
 let allyData = [];
 let isIntegrated = false;
+let integratedMode = false;
+let integratedOrder = "allyFirst";
 
 // ===== 文字 =====
 const chars1 = `
@@ -317,28 +319,86 @@ function search(keyword){
   const key=normalize(keyword);
   let total=0;
 
-  data.forEach(ch=>{
-    ch.forms.forEach(f=>{
+  // ===== 通常（味方のみ）=====
+  if(!integratedMode){
 
-      const name = normalize(f.name);
-      const desc = normalize(f.description);
+    data.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        const name = normalize(f.name);
+        const desc = normalize(f.description);
+
+        if(name.includes(key) || desc.includes(key)){
+          total++;
+
+          const div = document.createElement("div");
+          div.className = "result";
+
+          div.innerHTML = `
+            <strong>${highlight(f.name, keyword)}</strong><br>
+            ${highlight(f.description, keyword).replace(/\n/g, "<br>")}
+          `;
+
+          resultDiv.appendChild(div);
+        }
+      });
+    });
+
+  }else{
+
+    // ===== 統合版 =====
+    const allyList = [];
+    const enemyList = [];
+
+    // 味方
+    allyData.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        const name = normalize(f.name);
+        const desc = normalize(f.description);
+
+        if(name.includes(key) || desc.includes(key)){
+          allyList.push(f);
+        }
+      });
+    });
+
+    // 敵
+    enemyData.forEach(f=>{
+      const name = normalize(f.name || "");
+      const desc = normalize(f.description || "");
 
       if(name.includes(key) || desc.includes(key)){
-
-        total++;
-
-        const div = document.createElement("div");
-        div.className = "result";
-
-        div.innerHTML = `
-          <strong>${highlight(f.name, keyword)}</strong><br>
-          ${highlight(f.description, keyword).replace(/\n/g, "<br>")}
-        `;
-
-        resultDiv.appendChild(div);
+        enemyList.push(f);
       }
     });
-  });
+
+    // ★ 順番制御
+    let finalList = [];
+
+    if(integratedOrder === "allyFirst"){
+      finalList = allyList.concat(enemyList);
+    }else{
+      finalList = enemyList.concat(allyList);
+    }
+
+    // 表示
+    finalList.forEach(f=>{
+      total++;
+
+      const div = document.createElement("div");
+      div.className = "result";
+
+      // ★敵か味方か表示（任意）
+      const isEnemy = enemyList.includes(f);
+
+      div.innerHTML = `
+        <strong>${highlight(f.name, keyword)}</strong>
+        ${isEnemy ? "（敵）" : "（味方）"}<br>
+        ${highlight(f.description || "", keyword).replace(/\n/g, "<br>")}
+      `;
+
+      resultDiv.appendChild(div);
+    });
+  }
 
   const title = document.getElementById("selectedText");
 
@@ -791,6 +851,7 @@ function isUsedAlly(c){
 
     createExtraKanjiIntegrated();
     isIntegrated = true;
+    integratedOrder = "allyFirst";
     updateGroupHeader();
   });
 }
