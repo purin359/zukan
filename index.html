@@ -655,11 +655,10 @@ function isUsedAlly(c){
     const enemy = isUsedEnemy(c);
     const ally  = isUsedAlly(c);
 
-    if(!enemy && !ally) return;
-
     const div = document.createElement("div");
     div.className = "char";
 
+    // ★ ここで色分岐
     if(enemy && ally){
       div.classList.add("both");
     }else if(enemy){
@@ -667,12 +666,12 @@ function isUsedAlly(c){
     }else if(ally){
       div.classList.add("ally");
     }
+    // ★ 何もなければクラス付けない（＝元の見た目）
 
     div.innerText = c;
     grid.appendChild(div);
   });
 }
-
   function createExtraKanjiIntegrated(){
   const extraGrid = document.getElementById("extraGrid");
   extraGrid.innerHTML = "";
