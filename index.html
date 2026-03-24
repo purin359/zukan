@@ -280,13 +280,14 @@ function toggle(id, header){
 
   const isOpen = el.style.display === "none";
 
-  // ★ gridに戻す
-  el.style.display = isOpen ? "grid" : "none";
+  // ★ gridかどうか判定
+  const isGrid = el.classList.contains("grid");
 
-  // ▼▶切り替え
   if(isOpen){
+    el.style.display = isGrid ? "grid" : "block";
     header.innerHTML = header.innerHTML.replace("▶", "▼");
   }else{
+    el.style.display = "none";
     header.innerHTML = header.innerHTML.replace("▼", "▶");
   }
 }
