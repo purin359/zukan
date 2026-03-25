@@ -202,7 +202,8 @@ let data=[];
 let scrollY = 0;
 let enemyData = [];
 let allyData = [];
-
+let isIntegrated = true;
+  
 // ===== 文字 =====
 const chars1 = `
 一二三四五六七八九十百千日月火水木金土田山川林森石天気空雨夕草花竹文字本円玉年音学校先生赤白青人男女子目耳口手足犬貝虫王力町村車大中小上下左右正出入立見休早名糸
@@ -340,6 +341,9 @@ function init(){
 
 // ===== 検索 =====
 function search(keyword){
+
+  openResult(); // ←追加
+
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
@@ -466,33 +470,77 @@ function updateGroupHeader(){
   }
 }
 
-// ===== 常用漢字外をまとめて左詰め表示 =====
-function createExtraKanji(){
-  const extraGrid=document.getElementById("extraGrid");
-  extraGrid.innerHTML="";
-  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+  // 折りたたみ
+  function toggle(id, header){
+  const el = document.getElementById(id);
+  const isOpen = el.style.display === "none";
 
-  const usedChars = data.flatMap(ch =>
-  ch.forms.flatMap(f =>
-    splitChars(f.name).concat(splitChars(f.description))
-  )
-);
-  const extra=Array.from(new Set(
-    usedChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
-  ));
+  el.style.display = isOpen ? "grid" : "none";
 
-  const header=document.getElementById("headerExtra");
-  header.innerText=`▼ ${header.dataset.base} ${extra.length}種類`;
-
-  extra.forEach(c=>{
-    const div=document.createElement("div");
-    div.className="char";
-    div.innerText=c;
-    div.onclick=()=>{document.getElementById("searchInput").value=c; searchFromInput();};
-    extraGrid.appendChild(div);
-  });
+  if(isOpen){
+    header.innerHTML = header.innerHTML.replace("▶", "▼");
+  }else{
+    header.innerHTML = header.innerHTML.replace("▼", "▶");
+  }
 }
 
+// ===== 常用漢字外をまとめて左詰め表示 =====
+const segmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
+
+function splitChars(str){
+  return Array.from(segmenter.segment(str), s => s.segment);
+}
+
+function createExtraKanjiIntegrated(){
+  const extraGrid = document.getElementById("extraGrid");
+  extraGrid.innerHTML = "";
+
+  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+
+  const allyChars = allyData.flatMap(ch =>
+    ch.forms.flatMap(f =>
+      splitChars(f.name || "").concat(splitChars(f.description || ""))
+    )
+  );
+
+  const enemyChars = enemyData.flatMap(f =>
+    splitChars(f.name || "").concat(splitChars(f.description || ""))
+  );
+
+  const combined = Array.from(new Set(
+    allyChars.concat(enemyChars)
+      .filter(c => !allChars.includes(c) && /[\u4E00-\u9FFF]/.test(c))
+  ));
+
+  combined.forEach(c=>{
+    const enemy = enemyChars.includes(c);
+    const ally  = allyChars.includes(c);
+
+    const div = document.createElement("div");
+    div.className = "char";
+
+    if(enemy && ally){
+      div.classList.add("both");
+    }else if(enemy){
+      div.classList.add("enemy");
+    }else if(ally){
+      div.classList.add("ally");
+    }
+
+    div.innerText = c;
+
+    div.onclick = ()=>{
+      document.getElementById("searchInput").value = c;
+      search(c);
+    };
+
+    extraGrid.appendChild(div);
+  });
+
+  document.getElementById("headerExtra").innerText =
+    `▼ 常用漢字外 ${combined.length}種類`;
+}
+  
 // ===== メニュー欄 =====
   function toggleMenu(){
   const menu = document.getElementById("menu");
@@ -663,213 +711,20 @@ list.forEach((item,i)=>{
     `出現数ランキング`;
 }
 
-  // 統合版用
-  function isUsedEnemy(c){
-  return enemyData.some(f =>
-    (f.name || "").includes(c) || (f.description || "").includes(c)
-  );
+ function searchFromInput(){
+  const v = document.getElementById("searchInput").value.trim();
+  if(v) search(v);
 }
 
-function isUsedAlly(c){
-  return allyData.some(ch =>
-    ch.forms.some(f =>
-      (f.name || "").includes(c) || (f.description || "").includes(c)
-    )
-  );
+  function openResult(){
+  scrollY = window.scrollY;
+
+  document.getElementById("searchScreen").style.display="none";
+  document.getElementById("resultScreen").style.display="block";
+  window.scrollTo(0, 0);
+
+  document.getElementById("result").innerHTML="";
 }
-
-  function createGridIntegrated(chars, id){
-  const grid = document.getElementById(id);
-  grid.innerHTML = "";
-
-  chars.forEach(c=>{
-    const enemy = isUsedEnemy(c);
-    const ally  = isUsedAlly(c);
-
-    const div = document.createElement("div");
-    div.className = "char";
-
-    // ★ ここで色分岐
-    if(enemy && ally){
-      div.classList.add("both");
-    }else if(enemy){
-      div.classList.add("enemy");
-    }else if(ally){
-      div.classList.add("ally");
-    }
-    // ★ 何もなければクラス付けない（＝元の見た目）
-
-    div.innerText = c;
-    grid.appendChild(div);
-  });
-}
-  function createExtraKanjiIntegrated(){
-  const extraGrid = document.getElementById("extraGrid");
-  extraGrid.innerHTML = "";
-
-  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
-
-  const allyChars = allyData.flatMap(ch =>
-    ch.forms.flatMap(f =>
-      splitChars(f.name || "").concat(splitChars(f.description || ""))
-    )
-  );
-
-  const enemyChars = enemyData.flatMap(f =>
-    splitChars(f.name || "").concat(splitChars(f.description || ""))
-  );
-
-  const allyExtra = Array.from(new Set(
-    allyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
-  ));
-
-  const enemyExtra = Array.from(new Set(
-    enemyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
-  ));
-
-  // 味方 → 敵
-  const combined = Array.from(new Set(allyExtra.concat(enemyExtra)));
-
-  combined.forEach(c=>{
-    const enemy = enemyChars.includes(c);
-    const ally  = allyChars.includes(c);
-
-    const div = document.createElement("div");
-    div.className = "char";
-
-    if(enemy && ally){
-  div.classList.add("both");
-}else if(enemy){
-  div.classList.add("enemy");
-}else if(ally){
-  div.classList.add("ally");
-}
-
-    div.innerText = c;
-    extraGrid.appendChild(div);
-  });
-
-  document.getElementById("headerExtra").innerText =
-    `▼ 常用漢字外 ${combined.length}種類`;
-}
-
-  function showIntegratedGrid(){
-  document.getElementById("menu").style.display = "none";
-
-  Promise.all([
-    fetch("enemy.json").then(r=>r.json()).catch(()=>[]),
-
-    // 味方6ファイルまとめて読み込み
-    Promise.all([
-      fetch("basic.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ex.json").then(r=>r.json()).catch(()=>[]),
-      fetch("rare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("superrare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ultrarare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("legendrare.json").then(r=>r.json()).catch(()=>[])
-    ]).then(r => r.flat()) // ←ここ重要
-  ])
-  .then(([enemy, ally])=>{
-
-    enemyData = enemy;
-    allyData  = ally;
-
-    // 表表示
-    document.getElementById("searchScreen").style.display = "block";
-    document.getElementById("resultScreen").style.display = "none";
-
-    createGridIntegrated(chars1,"grid1");
-    createGridIntegrated(chars2,"grid2");
-    createGridIntegrated(chars3,"grid3");
-    createGridIntegrated(chars4,"grid4");
-    createGridIntegrated(chars5,"grid5");
-    createGridIntegrated(chars6,"grid6");
-    createGridIntegrated(chars7,"grid7");
-
-    createExtraKanjiIntegrated();
-    isIntegrated = true;
-    updateGroupHeader();
-  });
-}
-
-  // 通常に戻す
-  function resetNormal(){
-
-  isIntegrated = false;
-
-  // ★ボタン戻す
-  document.getElementById("integratedBtn").style.display = "inline-block";
-  document.getElementById("resetBtn").style.display = "none";
-
-  // 元のグリッドに戻す
-  createGridWithHeader(chars1,"grid1","1年生で習う漢字");
-  createGridWithHeader(chars2,"grid2","2年生で習う漢字");
-  createGridWithHeader(chars3,"grid3","3年生で習う漢字");
-  createGridWithHeader(chars4,"grid4","4年生で習う漢字");
-  createGridWithHeader(chars5,"grid5","5年生で習う漢字");
-  createGridWithHeader(chars6,"grid6","6年生で習う漢字");
-  createGridWithHeader(chars7,"grid7","中学生");
-
-  createExtraKanji();
-
-  updateGroupHeader();
-}
-
-  // 敵＋味方
-  function isUsedIntegrated(c){
-  return isUsedEnemy(c) || isUsedAlly(c);
-}
-
-  // ヘッダー合計を戻す
-  function resetNormal(){
-  isIntegrated = false;
-  location.reload();
-}
-
-  // 統合版ボタン切り替え
-  function showIntegratedGrid(){
-  document.getElementById("menu").style.display = "none";
-
-  Promise.all([
-    fetch("enemy.json").then(r=>r.json()).catch(()=>[]),
-
-    Promise.all([
-      fetch("basic.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ex.json").then(r=>r.json()).catch(()=>[]),
-      fetch("rare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("superrare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ultrarare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("legendrare.json").then(r=>r.json()).catch(()=>[])
-    ]).then(r => r.flat())
-  ])
-  .then(([enemy, ally])=>{
-
-    enemyData = enemy;
-    allyData  = ally;
-
-    // ★ボタン切り替え
-    document.getElementById("integratedBtn").style.display = "none";
-    document.getElementById("resetBtn").style.display = "inline-block";
-
-    // 表更新
-    document.getElementById("searchScreen").style.display = "block";
-    document.getElementById("resultScreen").style.display = "none";
-
-    createGridIntegrated(chars1,"grid1");
-    createGridIntegrated(chars2,"grid2");
-    createGridIntegrated(chars3,"grid3");
-    createGridIntegrated(chars4,"grid4");
-    createGridIntegrated(chars5,"grid5");
-    createGridIntegrated(chars6,"grid6");
-    createGridIntegrated(chars7,"grid7");
-
-    createExtraKanjiIntegrated();
-    isIntegrated = true;
-    updateGroupHeader();
-  });
-}
-  
-  // ここまで統合版
   
 </script>
 
