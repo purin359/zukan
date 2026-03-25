@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -614,144 +614,164 @@ function showRanking(){
   openResult();
 
   const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
   let total = 0;
 
-  data.forEach(ch=>{
+  // 味方
+  allyData.forEach(ch=>{
     ch.forms.forEach(f=>{
       total++;
 
-      const div = document.createElement("div");
-      div.className = "result";
+      const name = f.name || "";
+      const desc = f.description || "";
 
-      div.innerHTML = `
-        <strong>${f.name}</strong><br>
-        ${f.description.replace(/\n/g, "<br>")}
+      resultDiv.innerHTML += `
+        <div class="result ally">
+          <b>${name}</b><br>
+          ${desc.replace(/\n/g,"<br>")}
+        </div>
       `;
-
-      resultDiv.appendChild(div);
     });
+  });
+
+  // 敵
+  enemyData.forEach(f=>{
+    total++;
+
+    const name = f.name || "";
+    const desc = f.description || "";
+
+    resultDiv.innerHTML += `
+      <div class="result enemy">
+        <b>${name}</b><br>
+        ${desc.replace(/\n/g,"<br>")}
+      </div>
+    `;
   });
 
   document.getElementById("selectedText").innerText =
     `全キャラ一覧：${total}件`;
 }
-
+  
   // 1件検索
   function showSingleOnly(){
   document.getElementById("menu").style.display = "none";
   openResult();
 
   const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
   let total = 0;
 
-  const allChars = chars1
-    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
-    .filter(c => isUsed(c));
+  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
 
   allChars.forEach(c=>{
     let count = 0;
-    let foundName = "";
+    let found = [];
 
-    data.forEach(ch=>{
+    // 味方
+    allyData.forEach(ch=>{
       ch.forms.forEach(f=>{
-        if(f.name.includes(c) || f.description.includes(c)){
+        const name = f.name || "";
+        const desc = f.description || "";
+
+        if(name.includes(c) || desc.includes(c)){
           count++;
-          foundName = f.name;
+          found.push(name);
         }
       });
+    });
+
+    // 敵
+    enemyData.forEach(f=>{
+      const name = f.name || "";
+      const desc = f.description || "";
+
+      if(name.includes(c) || desc.includes(c)){
+        count++;
+        found.push(name);
+      }
     });
 
     if(count === 1){
       total++;
 
-      const div = document.createElement("div");
-      div.className = "result";
-
-      div.innerHTML = `<strong>${c}</strong> ： ${foundName}`;
-
-      div.onclick = ()=>{
-        document.getElementById("searchInput").value = c;
-        searchFromInput();
-      };
-
-      resultDiv.appendChild(div);
+      resultDiv.innerHTML += `
+        <div class="result">
+          <b>${c}</b> ： ${found[0]}
+        </div>
+      `;
     }
   });
 
   document.getElementById("selectedText").innerText =
-    `1件しかヒットしない文字一覧：${total}件`;
+    `1件しかヒットしない文字一覧(常用漢字)：${total}件`;
 }
-
+  
   // ランキング
   function showRanking(){
   document.getElementById("menu").style.display = "none";
   openResult();
 
   const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
 
   let list = [];
 
-  const allChars = chars1
-    .concat(chars2, chars3, chars4, chars5, chars6, chars7)
-    .filter(c => isUsed(c));
+  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
 
   allChars.forEach(c=>{
     let count = 0;
 
-    data.forEach(ch=>{
+    // 味方
+    allyData.forEach(ch=>{
       ch.forms.forEach(f=>{
-        if(f.name.includes(c) || f.description.includes(c)){
+        const name = f.name || "";
+        const desc = f.description || "";
+
+        if(name.includes(c) || desc.includes(c)){
           count++;
         }
       });
     });
 
-    list.push({char:c, count});
+    // 敵
+    enemyData.forEach(f=>{
+      const name = f.name || "";
+      const desc = f.description || "";
+
+      if(name.includes(c) || desc.includes(c)){
+        count++;
+      }
+    });
+
+    if(count > 0){
+      list.push({char:c, count});
+    }
   });
 
+  // ソート
   list.sort((a,b)=>b.count - a.count);
 
   let rank = 0;
-let prevCount = -1;
+  let prev = -1;
 
-list.forEach((item,i)=>{
+  list.forEach((item,i)=>{
+    if(item.count !== prev){
+      rank = i + 1;
+      prev = item.count;
+    }
 
-  // 件数が違うときだけ順位更新
-  if(item.count !== prevCount){
-    rank = i + 1;
-    prevCount = item.count;
-  }
-
-  const div = document.createElement("div");
-  div.className = "result";
-
-  div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
-
-  div.onclick = ()=>{
-    document.getElementById("searchInput").value = item.char;
-    searchFromInput();
-  };
-
-  resultDiv.appendChild(div);
-});
+    resultDiv.innerHTML += `
+      <div class="result">
+        ${rank}位　<b>${item.char}</b>（${item.count}件）
+      </div>
+    `;
+  });
 
   document.getElementById("selectedText").innerText =
-    `出現数ランキング`;
-}
-
- function searchFromInput(){
-  const v = document.getElementById("searchInput").value.trim();
-  if(v) search(v);
-}
-
-  function openResult(){
-  scrollY = window.scrollY;
-
-  document.getElementById("searchScreen").style.display="none";
-  document.getElementById("resultScreen").style.display="block";
-  window.scrollTo(0, 0);
-
-  document.getElementById("result").innerHTML="";
+    `出現数ランキング(常用漢字)`;
 }
   
 </script>
