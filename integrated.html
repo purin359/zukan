@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索</title>
+<title>にゃんこ文字検索１</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -352,7 +352,7 @@ function search(keyword){
         total++;
 
         const div = document.createElement("div");
-        div.className = "result ally"; // ←追加！！
+        div.className = "result ally";
 
         div.innerHTML = `
           <b>${highlightText(name, keyword)}</b><br>
@@ -373,7 +373,7 @@ function search(keyword){
       total++;
 
       const div = document.createElement("div");
-      div.className = "result enemy"; // ←追加！！
+      div.className = "result enemy";
 
       div.innerHTML = `
         <b>${highlightText(name, keyword)}</b><br>
@@ -384,7 +384,6 @@ function search(keyword){
     }
   });
 
-  // 件数表示
   document.getElementById("selectedText").innerText =
     total > 0
       ? `「${keyword}」の検索結果：${total}件見つかりました`
