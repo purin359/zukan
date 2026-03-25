@@ -335,7 +335,7 @@ function init(){
 // ===== 検索 =====
 function search(keyword){
 
-  openResult(); // ←追加
+  openResult();
 
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
@@ -360,8 +360,13 @@ function search(keyword){
     }
   });
 
-  document.getElementById("selectedText").innerText =
-    `"${keyword}"：${total}件`;
+  const title = document.getElementById("selectedText");
+
+  if(total === 0){
+    title.innerText = `"${keyword}" の検索結果　見つかりませんでした`;
+  }else{
+    title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
+  }
 }
   
 // ===== 戻る =====
