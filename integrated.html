@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索</title>
+<title>にゃんこ文字検索１</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -196,6 +196,7 @@ let scrollY = 0;
 let enemyData = [];
 let allyData = [];
 let isIntegrated = true;
+let charCountCache = null;
   
 // ===== 文字 =====
 const chars1 = `
@@ -334,7 +335,6 @@ function init(){
 
 // ===== 検索 =====
 function search(keyword){
-
   openResult();
 
   const resultDiv = document.getElementById("result");
@@ -345,18 +345,16 @@ function search(keyword){
   // 味方
   allyData.forEach(ch=>{
     ch.forms.forEach(f=>{
-
       const name = f.name || "";
       const desc = f.description || "";
 
       if(name.includes(keyword) || desc.includes(keyword)){
-
         total++;
 
         resultDiv.innerHTML += `
           <div class="result ally">
             <b>${highlight(name, keyword)}</b><br>
-            ${highlight(desc, keyword).replace(/\n/g, "<br>")}
+            ${highlight(desc, keyword).replace(/\n/g,"<br>")}
           </div>
         `;
       }
@@ -365,31 +363,25 @@ function search(keyword){
 
   // 敵
   enemyData.forEach(f=>{
-
     const name = f.name || "";
     const desc = f.description || "";
 
     if(name.includes(keyword) || desc.includes(keyword)){
-
       total++;
 
       resultDiv.innerHTML += `
         <div class="result enemy">
           <b>${highlight(name, keyword)}</b><br>
-          ${highlight(desc, keyword).replace(/\n/g, "<br>")}
+          ${highlight(desc, keyword).replace(/\n/g,"<br>")}
         </div>
       `;
     }
   });
 
-  // ★件数表示
-  const title = document.getElementById("selectedText");
-
-  if(total === 0){
-    title.innerText = `"${keyword}" の検索結果　見つかりませんでした`;
-  }else{
-    title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
-  }
+  document.getElementById("selectedText").innerText =
+    total > 0
+      ? `"${keyword}" の検索結果：${total}件見つかりました`
+      : `"${keyword}" は見つかりませんでした`;
 }
   
 // ===== 戻る =====
@@ -565,8 +557,7 @@ function createExtraKanjiIntegrated(){
   // 対応文字色付け
   function highlight(text, keyword){
   if(!keyword) return text;
-  const re = new RegExp(`(${keyword})`, "g");
-  return text.replace(re, '<span class="hit">$1</span>');
+  return text.replaceAll(keyword, `<span class="hit">${keyword}</span>`);
 }
   
 // ===== メニュー欄 =====
@@ -616,6 +607,8 @@ function showRanking(){
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
   let total = 0;
 
   // 味方
@@ -623,15 +616,15 @@ function showRanking(){
     ch.forms.forEach(f=>{
       total++;
 
-      const name = f.name || "";
-      const desc = f.description || "";
+      const div = document.createElement("div");
+      div.className = "result ally";
 
-      resultDiv.innerHTML += `
-        <div class="result ally">
-          <b>${name}</b><br>
-          ${desc.replace(/\n/g,"<br>")}
-        </div>
+      div.innerHTML = `
+        <strong>${f.name}</strong><br>
+        ${(f.description || "").replace(/\n/g,"<br>")}
       `;
+
+      fragment.appendChild(div);
     });
   });
 
@@ -639,16 +632,18 @@ function showRanking(){
   enemyData.forEach(f=>{
     total++;
 
-    const name = f.name || "";
-    const desc = f.description || "";
+    const div = document.createElement("div");
+    div.className = "result enemy";
 
-    resultDiv.innerHTML += `
-      <div class="result enemy">
-        <b>${name}</b><br>
-        ${desc.replace(/\n/g,"<br>")}
-      </div>
+    div.innerHTML = `
+      <strong>${f.name}</strong><br>
+      ${(f.description || "").replace(/\n/g,"<br>")}
     `;
+
+    fragment.appendChild(div);
   });
+
+  resultDiv.appendChild(fragment);
 
   document.getElementById("selectedText").innerText =
     `全キャラ一覧：${total}件`;
@@ -717,61 +712,97 @@ function showRanking(){
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
-  let list = [];
+  const cache = buildRankingCache();
 
-  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+  let list = Object.entries(cache)
+    .filter(([c,v])=>v.count>0)
+    .map(([c,v])=>({char:c,...v}));
 
-  allChars.forEach(c=>{
-    let count = 0;
-
-    // 味方
-    allyData.forEach(ch=>{
-      ch.forms.forEach(f=>{
-        const name = f.name || "";
-        const desc = f.description || "";
-
-        if(name.includes(c) || desc.includes(c)){
-          count++;
-        }
-      });
-    });
-
-    // 敵
-    enemyData.forEach(f=>{
-      const name = f.name || "";
-      const desc = f.description || "";
-
-      if(name.includes(c) || desc.includes(c)){
-        count++;
-      }
-    });
-
-    if(count > 0){
-      list.push({char:c, count});
-    }
-  });
-
-  // ソート
   list.sort((a,b)=>b.count - a.count);
+
+  const fragment = document.createDocumentFragment();
 
   let rank = 0;
   let prev = -1;
 
   list.forEach((item,i)=>{
+
     if(item.count !== prev){
       rank = i + 1;
       prev = item.count;
     }
 
-    resultDiv.innerHTML += `
-      <div class="result">
-        ${rank}位　<b>${item.char}</b>（${item.count}件）
-      </div>
+    const div = document.createElement("div");
+
+    // 色分け
+    if(item.enemy && item.ally){
+      div.className = "result both";
+    }else if(item.enemy){
+      div.className = "result enemy";
+    }else{
+      div.className = "result ally";
+    }
+
+    div.innerHTML = `
+      ${rank}位　
+      <strong>${item.char}</strong>
+      （${item.count}件）
     `;
+
+    // クリック検索
+    div.onclick = ()=>{
+      document.getElementById("searchInput").value = item.char;
+      search(item.char);
+    };
+
+    fragment.appendChild(div);
   });
+
+  resultDiv.appendChild(fragment);
 
   document.getElementById("selectedText").innerText =
     `出現数ランキング(常用漢字)`;
+}
+  // キャッシュ
+  function buildRankingCache(){
+  if(charCountCache) return charCountCache;
+
+  const map = {};
+
+  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+
+  allChars.forEach(c=>{
+    map[c] = { count:0, enemy:false, ally:false };
+  });
+
+  // 味方
+  allyData.forEach(ch=>{
+    ch.forms.forEach(f=>{
+      const text = (f.name || "") + (f.description || "");
+
+      allChars.forEach(c=>{
+        if(text.includes(c)){
+          map[c].count++;
+          map[c].ally = true;
+        }
+      });
+    });
+  });
+
+  // 敵
+  enemyData.forEach(f=>{
+    const text = (f.name || "") + (f.description || "");
+
+    allChars.forEach(c=>{
+      if(text.includes(c)){
+        map[c].count++;
+        map[c].enemy = true;
+      }
+    });
+  });
+
+  charCountCache = map;
+  return map;
 }
   
 </script>
