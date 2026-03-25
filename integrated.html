@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索</title>
+<title>にゃんこ文字検索１</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -345,21 +345,44 @@ function search(keyword){
   // 味方
   allyData.forEach(ch=>{
     ch.forms.forEach(f=>{
-      if(f.name.includes(keyword) || f.description.includes(keyword)){
+
+      const name = f.name || "";
+      const desc = f.description || "";
+
+      if(name.includes(keyword) || desc.includes(keyword)){
+
         total++;
-        resultDiv.innerHTML += `<div class="result"><b>${f.name}</b><br>${f.description}</div>`;
+
+        resultDiv.innerHTML += `
+          <div class="result ally">
+            <b>${highlight(name, keyword)}</b><br>
+            ${highlight(desc, keyword).replace(/\n/g, "<br>")}
+          </div>
+        `;
       }
     });
   });
 
   // 敵
   enemyData.forEach(f=>{
-    if(f.name.includes(keyword) || f.description.includes(keyword)){
+
+    const name = f.name || "";
+    const desc = f.description || "";
+
+    if(name.includes(keyword) || desc.includes(keyword)){
+
       total++;
-      resultDiv.innerHTML += `<div class="result enemy"><b>${f.name}</b><br>${f.description}</div>`;
+
+      resultDiv.innerHTML += `
+        <div class="result enemy">
+          <b>${highlight(name, keyword)}</b><br>
+          ${highlight(desc, keyword).replace(/\n/g, "<br>")}
+        </div>
+      `;
     }
   });
 
+  // ★件数表示
   const title = document.getElementById("selectedText");
 
   if(total === 0){
@@ -537,6 +560,13 @@ function createExtraKanjiIntegrated(){
 
   document.getElementById("headerExtra").innerText =
     `▼ 常用漢字外 ${combined.length}種類`;
+}
+
+  // 対応文字色付け
+  function highlight(text, keyword){
+  if(!keyword) return text;
+  const re = new RegExp(`(${keyword})`, "g");
+  return text.replace(re, '<span class="hit">$1</span>');
 }
   
 // ===== メニュー欄 =====
