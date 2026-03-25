@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索</title>
+<title>にゃんこ文字検索１</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -367,15 +366,12 @@ function search(keyword){
       if(name.includes(keyword) || desc.includes(keyword)){
         total++;
 
-        const div = document.createElement("div");
-        div.className = "result ally";
-
-        div.innerHTML = `
-          <b>${highlight(name, keyword)}</b><br>
-          ${highlight(desc, keyword).replace(/\n/g,"<br>")}
+        resultDiv.innerHTML += `
+          <div class="result ally">
+            <b>${highlight(name, keyword)}</b><br>
+            ${highlight(desc, keyword).replace(/\n/g,"<br>")}
+          </div>
         `;
-
-        resultDiv.appendChild(div);
       }
     });
   });
@@ -388,22 +384,19 @@ function search(keyword){
     if(name.includes(keyword) || desc.includes(keyword)){
       total++;
 
-      const div = document.createElement("div");
-      div.className = "result enemy";
-
-      div.innerHTML = `
-        <b>${highlight(name, keyword)}</b><br>
-        ${highlight(desc, keyword).replace(/\n/g,"<br>")}
+      resultDiv.innerHTML += `
+        <div class="result enemy">
+          <b>${highlight(name, keyword)}</b><br>
+          ${highlight(desc, keyword).replace(/\n/g,"<br>")}
+        </div>
       `;
-
-      resultDiv.appendChild(div);
     }
   });
 
   document.getElementById("selectedText").innerText =
     total > 0
-      ? `「${keyword}」の検索結果：${total}件見つかりました`
-      : `「${keyword}」は見つかりませんでした`;
+      ? `"${keyword}" の検索結果：${total}件見つかりました`
+      : `"${keyword}" は見つかりませんでした`;
 }
   
 // ===== 戻る =====
