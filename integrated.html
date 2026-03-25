@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -95,6 +95,18 @@ body { font-family: sans-serif; padding: 10px; }
 .char.selected { background:blue; color:white; }
 
 .hit { color:blue; font-weight:bold; }
+
+.result.enemy {
+  background: #ffdddd;
+}
+
+.result.ally {
+  background: #dde8ff;
+}
+
+.result.both {
+  background: #e6ccff;
+}
 
 .result { border-bottom:1px solid #ccc; padding:8px 0; }
 </style>
@@ -293,19 +305,23 @@ function createGridIntegrated(chars, id){
   grid.innerHTML = "";
 
   chars.forEach(c=>{
-    const enemy = isUsedEnemy(c);
-    const ally  = isUsedAlly(c);
+    const isEnemy = enemyData.some(e =>
+  (e.name||"").includes(keyword) || (e.description||"").includes(keyword)
+);
 
-    const div = document.createElement("div");
-    div.className = "char";
+const isAlly = allyData.some(ch =>
+  ch.forms.some(f =>
+    (f.name||"").includes(keyword) || (f.description||"").includes(keyword)
+  )
+);
 
-    if(enemy && ally){
-      div.classList.add("both");
-    }else if(enemy){
-      div.classList.add("enemy");
-    }else if(ally){
-      div.classList.add("ally");
-    }
+if(isEnemy && isAlly){
+  div.className = "result both";
+}else if(isEnemy){
+  div.className = "result enemy";
+}else{
+  div.className = "result ally";
+}
 
     div.innerText = c;
 
@@ -355,8 +371,8 @@ function search(keyword){
         div.className = "result ally";
 
         div.innerHTML = `
-          <b>${highlightText(name, keyword)}</b><br>
-          ${highlightText(desc, keyword).replace(/\n/g,"<br>")}
+          <b>${highlight(name, keyword)}</b><br>
+          ${highlight(desc, keyword).replace(/\n/g,"<br>")}
         `;
 
         resultDiv.appendChild(div);
@@ -376,8 +392,8 @@ function search(keyword){
       div.className = "result enemy";
 
       div.innerHTML = `
-        <b>${highlightText(name, keyword)}</b><br>
-        ${highlightText(desc, keyword).replace(/\n/g,"<br>")}
+        <b>${highlight(name, keyword)}</b><br>
+        ${highlight(desc, keyword).replace(/\n/g,"<br>")}
       `;
 
       resultDiv.appendChild(div);
@@ -564,6 +580,11 @@ function createExtraKanjiIntegrated(){
   function highlight(text, keyword){
   if(!keyword) return text;
   return text.replaceAll(keyword, `<span class="hit">${keyword}</span>`);
+}
+
+  function searchFromInput(){
+  const val = document.getElementById("searchInput").value;
+  if(val) search(val);
 }
   
 // ===== メニュー欄 =====
