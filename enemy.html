@@ -570,7 +570,6 @@ function createExtraKanji(){
   // 1件検索
   function showSingleOnly(){
     lastMode = "single";
-    singleScrollY = window.scrollY;
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -617,10 +616,11 @@ function createExtraKanji(){
 
   // ランキング
   function showRanking(){
-    lastMode = "ranking";
-    rankingScrollY = window.scrollY;
+  lastMode = "ranking";
   document.getElementById("menu").style.display = "none";
   openResult();
+
+  const resultDiv = document.getElementById("result");
 
   const resultDiv = document.getElementById("result");
 
