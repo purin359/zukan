@@ -208,6 +208,8 @@ let charUsageMap = {};
 let lastMode = "home";
 let prevMode = "home";
 let lastKeyword = "";
+let rankingScrollY = 0;
+let singleScrollY = 0;
 
   
 // ===== 文字 =====
@@ -435,7 +437,7 @@ function search(keyword){
 // ===== 戻る =====
 function back(){
 
-  // ★検索から戻る場合
+  // 検索から戻る
   if(lastMode === "search"){
 
     document.getElementById("resultScreen").style.display="none";
@@ -443,22 +445,26 @@ function back(){
 
     window.scrollTo(0, scrollY);
 
-    // ★元の画面に戻す
     if(prevMode === "ranking"){
       showRanking();
+      setTimeout(()=>{
+        document.getElementById("result").scrollTop = rankingScrollY;
+      },0);
     }
     else if(prevMode === "single"){
       showSingleOnly();
+      setTimeout(()=>{
+        document.getElementById("result").scrollTop = singleScrollY;
+      },0);
     }
     else if(prevMode === "all"){
       showAll();
     }
-    // homeなら何もしない
 
     return;
   }
 
-  // ★ランキング等からホームへ戻る
+  // 通常戻る
   document.getElementById("resultScreen").style.display="none";
   document.getElementById("searchScreen").style.display="block";
 
@@ -739,6 +745,8 @@ function createExtraKanjiIntegrated(){
       `;
 
       div.onclick = ()=>{
+  singleScrollY = document.getElementById("result").scrollTop;
+
   document.getElementById("searchInput").value = c;
   search(c, "single");
 };
@@ -797,9 +805,11 @@ renderRanking();
     `;
 
     div.onclick = ()=>{
-      document.getElementById("searchInput").value = item.char;
-      search(item.char, "ranking");
-    };
+  rankingScrollY = document.getElementById("result").scrollTop;
+
+  document.getElementById("searchInput").value = item.char;
+  search(item.char, "ranking");
+};
 
     resultDiv.appendChild(div);
   });
