@@ -376,11 +376,16 @@ function init(){
 }
 
 // ===== 検索 =====
-function search(keyword){
+function search(keyword, fromMode=null){
   lastKeyword = keyword;
-  lastMode = "search";
-  openResult();
 
+  if(fromMode){
+    lastMode = fromMode;
+  }else{
+    lastMode = "search";
+  }
+
+  openResult();
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
@@ -434,6 +439,21 @@ function back(){
   document.getElementById("searchScreen").style.display="block";
 
   window.scrollTo(0, scrollY);
+
+  // ★ここが重要
+  if(lastMode === "search"){
+    search(lastKeyword);
+  }
+  else if(lastMode === "single"){
+    showSingleOnly();
+  }
+  else if(lastMode === "ranking"){
+    showRanking();
+  }
+  else if(lastMode === "all"){
+    showAll();
+  }
+}
 
   // 状態復元
   if(lastMode === "search"){
@@ -694,6 +714,7 @@ function createExtraKanjiIntegrated(){
   // 1件検索
  function showSingleOnly(){
   lastMode = "single";
+
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -711,12 +732,14 @@ function createExtraKanjiIntegrated(){
       const div = document.createElement("div");
       div.className = "result";
 
-      div.innerHTML = `<b>${c}</b>`;
+      div.innerHTML = `
+        <b>${c}</b> ： ${v.names[0]}
+      `;
 
       div.onclick = ()=>{
-        document.getElementById("searchInput").value = c;
-        search(c);
-      };
+  document.getElementById("searchInput").value = c;
+  search(c, "single");
+};
 
       resultDiv.appendChild(div);
     }
@@ -774,9 +797,9 @@ function createExtraKanjiIntegrated(){
 
     // クリック検索
     div.onclick = ()=>{
-      document.getElementById("searchInput").value = item.char;
-      search(item.char);
-    };
+  document.getElementById("searchInput").value = item.char;
+  search(item.char, "ranking");
+};
 
     fragment.appendChild(div);
   });
@@ -791,22 +814,22 @@ function createExtraKanjiIntegrated(){
   if(charCountCache) return charCountCache;
 
   const map = {};
-
   const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
 
   allChars.forEach(c=>{
-    map[c] = { count:0, enemy:false, ally:false };
+    map[c] = { count:0, enemy:false, ally:false, names:[] };
   });
 
   // 味方
   allyData.forEach(ch=>{
     ch.forms.forEach(f=>{
-      const text = (f.name || "") + (f.description || "");
+      const text = (f.name||"") + (f.description||"");
 
       allChars.forEach(c=>{
         if(text.includes(c)){
           map[c].count++;
           map[c].ally = true;
+          map[c].names.push(f.name);
         }
       });
     });
@@ -814,12 +837,13 @@ function createExtraKanjiIntegrated(){
 
   // 敵
   enemyData.forEach(f=>{
-    const text = (f.name || "") + (f.description || "");
+    const text = (f.name||"") + (f.description||"");
 
     allChars.forEach(c=>{
       if(text.includes(c)){
         map[c].count++;
         map[c].enemy = true;
+        map[c].names.push(f.name);
       }
     });
   });
