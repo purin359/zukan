@@ -198,6 +198,8 @@ let scrollY = 0;
 let enemyData = [];
 let allyData = [];
 let isIntegrated = false;
+let lastMode = "home";
+let lastKeyword = "";
 
 // ===== 文字 =====
 const chars1 = `
@@ -298,7 +300,15 @@ function toggle(id, header){
 function normalize(str){ return (str||"").toLowerCase(); }
 function highlight(text,keyword){ const re=new RegExp(`(${keyword})`,"gi"); return text.replace(re,`<span class="hit">$1</span>`); }
 function searchFromInput(){ const v=document.getElementById("searchInput").value.trim(); if(v) search(v); }
-function search(keyword){
+function search(keyword, fromMode=null){
+
+  lastKeyword = keyword;
+
+  if(fromMode){
+    lastMode = fromMode;
+  }else{
+    lastMode = "search";
+  }
 
   scrollY = window.scrollY;
 
@@ -314,12 +324,10 @@ function search(keyword){
 
   data.forEach(ch=>{
     ch.forms.forEach(f=>{
-
       const name = normalize(f.name);
       const desc = normalize(f.description);
 
       if(name.includes(key) || desc.includes(key)){
-
         total++;
 
         const div = document.createElement("div");
@@ -337,11 +345,10 @@ function search(keyword){
 
   const title = document.getElementById("selectedText");
 
-  if(total === 0){
-    title.innerText = `"${keyword}" は見つかりませんでした`;
-  }else{
-    title.innerText = `"${keyword}" の検索結果　${total}件見つかりました`;
-  }
+  title.innerText =
+    total === 0
+      ? `"${keyword}" は見つかりませんでした`
+      : `"${keyword}" の検索結果　${total}件見つかりました`;
 }
 
 // ===== 戻る =====
@@ -349,8 +356,22 @@ function back(){
   document.getElementById("resultScreen").style.display="none";
   document.getElementById("searchScreen").style.display="block";
 
-  // 元の位置に戻す
   window.scrollTo(0, scrollY);
+
+  if(lastMode === "single"){
+    showSingleOnly();
+  }
+  else if(lastMode === "ranking"){
+    showRanking();
+  }
+  else if(lastMode === "all"){
+    showAll();
+  }
+  // search / home は何もしない
+
+  if(lastKeyword){
+    document.getElementById("searchInput").value = lastKeyword;
+  }
 }
   
 // ===== 使用済み判定 =====
@@ -497,21 +518,6 @@ function createExtraKanji(){
   menu.style.display = (menu.style.display === "none") ? "block" : "none";
 }
 
-  function showAll(){
-  document.getElementById("menu").style.display = "none";
-  search("全キャラ");
-}
-
-function showSingleOnly(){
-  document.getElementById("menu").style.display = "none";
-  search("1件");
-}
-
-function showRanking(){
-  document.getElementById("menu").style.display = "none";
-  search("ランキング");
-}
-
   // ==== ･･･ウィンドウを閉じる =====
   document.addEventListener("click", e=>{
   const menu = document.getElementById("menu");
@@ -532,6 +538,7 @@ function showRanking(){
 
   // 全キャラ表示
   function showAll(){
+    lastMode = "all";
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -560,6 +567,7 @@ function showRanking(){
 
   // 1件検索
   function showSingleOnly(){
+    lastMode = "single";
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -593,7 +601,7 @@ function showRanking(){
 
       div.onclick = ()=>{
         document.getElementById("searchInput").value = c;
-        searchFromInput();
+        search(c, "single");
       };
 
       resultDiv.appendChild(div);
@@ -606,6 +614,7 @@ function showRanking(){
 
   // ランキング
   function showRanking(){
+    lastMode = "ranking";
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -651,7 +660,7 @@ list.forEach((item,i)=>{
 
   div.onclick = ()=>{
     document.getElementById("searchInput").value = item.char;
-    searchFromInput();
+    search(c, "ranking");
   };
 
   resultDiv.appendChild(div);
@@ -660,214 +669,6 @@ list.forEach((item,i)=>{
   document.getElementById("selectedText").innerText =
     `出現数ランキング`;
 }
-
-  // 統合版用
-  function isUsedEnemy(c){
-  return enemyData.some(f =>
-    (f.name || "").includes(c) || (f.description || "").includes(c)
-  );
-}
-
-function isUsedAlly(c){
-  return allyData.some(ch =>
-    ch.forms.some(f =>
-      (f.name || "").includes(c) || (f.description || "").includes(c)
-    )
-  );
-}
-
-  function createGridIntegrated(chars, id){
-  const grid = document.getElementById(id);
-  grid.innerHTML = "";
-
-  chars.forEach(c=>{
-    const enemy = isUsedEnemy(c);
-    const ally  = isUsedAlly(c);
-
-    const div = document.createElement("div");
-    div.className = "char";
-
-    // ★ ここで色分岐
-    if(enemy && ally){
-      div.classList.add("both");
-    }else if(enemy){
-      div.classList.add("enemy");
-    }else if(ally){
-      div.classList.add("ally");
-    }
-    // ★ 何もなければクラス付けない（＝元の見た目）
-
-    div.innerText = c;
-    grid.appendChild(div);
-  });
-}
-  function createExtraKanjiIntegrated(){
-  const extraGrid = document.getElementById("extraGrid");
-  extraGrid.innerHTML = "";
-
-  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
-
-  const allyChars = allyData.flatMap(ch =>
-    ch.forms.flatMap(f =>
-      splitChars(f.name || "").concat(splitChars(f.description || ""))
-    )
-  );
-
-  const enemyChars = enemyData.flatMap(f =>
-    splitChars(f.name || "").concat(splitChars(f.description || ""))
-  );
-
-  const allyExtra = Array.from(new Set(
-    allyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
-  ));
-
-  const enemyExtra = Array.from(new Set(
-    enemyChars.filter(c=>!allChars.includes(c)&&/[\u4E00-\u9FFF]/.test(c))
-  ));
-
-  // 味方 → 敵
-  const combined = Array.from(new Set(allyExtra.concat(enemyExtra)));
-
-  combined.forEach(c=>{
-    const enemy = enemyChars.includes(c);
-    const ally  = allyChars.includes(c);
-
-    const div = document.createElement("div");
-    div.className = "char";
-
-    if(enemy && ally){
-  div.classList.add("both");
-}else if(enemy){
-  div.classList.add("enemy");
-}else if(ally){
-  div.classList.add("ally");
-}
-
-    div.innerText = c;
-    extraGrid.appendChild(div);
-  });
-
-  document.getElementById("headerExtra").innerText =
-    `▼ 常用漢字外 ${combined.length}種類`;
-}
-
-  function showIntegratedGrid(){
-  document.getElementById("menu").style.display = "none";
-
-  Promise.all([
-    fetch("enemy.json").then(r=>r.json()).catch(()=>[]),
-
-    // 味方6ファイルまとめて読み込み
-    Promise.all([
-      fetch("basic.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ex.json").then(r=>r.json()).catch(()=>[]),
-      fetch("rare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("superrare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ultrarare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("legendrare.json").then(r=>r.json()).catch(()=>[])
-    ]).then(r => r.flat()) // ←ここ重要
-  ])
-  .then(([enemy, ally])=>{
-
-    enemyData = enemy;
-    allyData  = ally;
-
-    // 表表示
-    document.getElementById("searchScreen").style.display = "block";
-    document.getElementById("resultScreen").style.display = "none";
-
-    createGridIntegrated(chars1,"grid1");
-    createGridIntegrated(chars2,"grid2");
-    createGridIntegrated(chars3,"grid3");
-    createGridIntegrated(chars4,"grid4");
-    createGridIntegrated(chars5,"grid5");
-    createGridIntegrated(chars6,"grid6");
-    createGridIntegrated(chars7,"grid7");
-
-    createExtraKanjiIntegrated();
-    isIntegrated = true;
-    updateGroupHeader();
-  });
-}
-
-  // 通常に戻す
-  function resetNormal(){
-
-  isIntegrated = false;
-
-  // ★ボタン戻す
-  document.getElementById("integratedBtn").style.display = "inline-block";
-  document.getElementById("resetBtn").style.display = "none";
-
-  // 元のグリッドに戻す
-  createGridWithHeader(chars1,"grid1","1年生で習う漢字");
-  createGridWithHeader(chars2,"grid2","2年生で習う漢字");
-  createGridWithHeader(chars3,"grid3","3年生で習う漢字");
-  createGridWithHeader(chars4,"grid4","4年生で習う漢字");
-  createGridWithHeader(chars5,"grid5","5年生で習う漢字");
-  createGridWithHeader(chars6,"grid6","6年生で習う漢字");
-  createGridWithHeader(chars7,"grid7","中学生");
-
-  createExtraKanji();
-
-  updateGroupHeader();
-}
-
-  // 敵＋味方
-  function isUsedIntegrated(c){
-  return isUsedEnemy(c) || isUsedAlly(c);
-}
-
-  // ヘッダー合計を戻す
-  function resetNormal(){
-  isIntegrated = false;
-  location.reload();
-}
-
-  // 統合版ボタン切り替え
-  function showIntegratedGrid(){
-  document.getElementById("menu").style.display = "none";
-
-  Promise.all([
-    fetch("enemy.json").then(r=>r.json()).catch(()=>[]),
-
-    Promise.all([
-      fetch("basic.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ex.json").then(r=>r.json()).catch(()=>[]),
-      fetch("rare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("superrare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("ultrarare.json").then(r=>r.json()).catch(()=>[]),
-      fetch("legendrare.json").then(r=>r.json()).catch(()=>[])
-    ]).then(r => r.flat())
-  ])
-  .then(([enemy, ally])=>{
-
-    enemyData = enemy;
-    allyData  = ally;
-
-    // ★ボタン切り替え
-    document.getElementById("integratedBtn").style.display = "none";
-    document.getElementById("resetBtn").style.display = "inline-block";
-
-    // 表更新
-    document.getElementById("searchScreen").style.display = "block";
-    document.getElementById("resultScreen").style.display = "none";
-
-    createGridIntegrated(chars1,"grid1");
-    createGridIntegrated(chars2,"grid2");
-    createGridIntegrated(chars3,"grid3");
-    createGridIntegrated(chars4,"grid4");
-    createGridIntegrated(chars5,"grid5");
-    createGridIntegrated(chars6,"grid6");
-    createGridIntegrated(chars7,"grid7");
-
-    createExtraKanjiIntegrated();
-    isIntegrated = true;
-    updateGroupHeader();
-  });
-}
-  
-  // ここまで統合版
   
 </script>
 
