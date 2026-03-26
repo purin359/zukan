@@ -622,8 +622,6 @@ function createExtraKanji(){
 
   const resultDiv = document.getElementById("result");
 
-  const resultDiv = document.getElementById("result");
-
   let list = [];
 
   const allChars = chars1
@@ -662,7 +660,7 @@ list.forEach((item,i)=>{
 
   div.onclick = ()=>{
   fromMode = "ranking";
-    rankingScrollY = document.getElementById("result").scrollTop;
+  rankingScrollY = document.getElementById("result").scrollTop; // ←これが正解
   document.getElementById("searchInput").value = item.char;
   searchFromInput();
 };
