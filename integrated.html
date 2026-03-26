@@ -204,6 +204,8 @@ let enemyData = [];
 let allyData = [];
 let isIntegrated = true;
 let charCountCache = null;
+let charUsageMap = {};
+
   
 // ===== 文字 =====
 const chars1 = `
@@ -271,9 +273,42 @@ Promise.all([
 .then(([enemy, ally])=>{
   enemyData = enemy;
   allyData  = ally;
+  buildCharMap();
   init();
 });
 
+  // 処理速度上げ
+function buildCharMap(){
+  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+
+  allChars.forEach(c=>{
+    charUsageMap[c] = {enemy:false, ally:false};
+  });
+
+  // 味方
+  allyData.forEach(ch=>{
+    ch.forms.forEach(f=>{
+      const text = (f.name||"") + (f.description||"");
+
+      allChars.forEach(c=>{
+        if(text.includes(c)){
+          charUsageMap[c].ally = true;
+        }
+      });
+    });
+  });
+
+  // 敵
+  enemyData.forEach(f=>{
+    const text = (f.name||"") + (f.description||"");
+
+    allChars.forEach(c=>{
+      if(text.includes(c)){
+        charUsageMap[c].enemy = true;
+      }
+    });
+  });
+}
 
 // ===== 使用判定 =====
 function isUsedEnemy(c){
@@ -300,17 +335,16 @@ function createGridIntegrated(chars, id){
   grid.innerHTML = "";
 
   chars.forEach(c=>{
-    const enemy = isUsedEnemy(c);
-    const ally  = isUsedAlly(c);
+    const info = charUsageMap[c] || {};
 
     const div = document.createElement("div");
     div.className = "char";
 
-    if(enemy && ally){
+    if(info.enemy && info.ally){
       div.classList.add("both");
-    }else if(enemy){
+    }else if(info.enemy){
       div.classList.add("enemy");
-    }else if(ally){
+    }else if(info.ally){
       div.classList.add("ally");
     }
 
@@ -511,6 +545,7 @@ function splitChars(str){
 }
 
 function createExtraKanjiIntegrated(){
+  setTimeout(()=>{
   const extraGrid = document.getElementById("extraGrid");
   extraGrid.innerHTML = "";
 
@@ -558,6 +593,7 @@ function createExtraKanjiIntegrated(){
 
   document.getElementById("headerExtra").innerText =
     `▼ 常用漢字外 ${combined.length}種類`;
+  }, 0);
 }
 
   // 対応文字色付け
