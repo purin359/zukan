@@ -362,34 +362,26 @@ function back(){
 
   window.scrollTo(0, scrollY);
 
-  // ★検索経由のときだけ戻す
+  if(lastKeyword){
+    document.getElementById("searchInput").value = lastKeyword;
+  }
+
+  // ★ここで一回だけ表示＋スクロール復元
   if(lastMode === "searchFromSingle"){
     showSingleOnly();
+    setTimeout(()=>{
+      document.getElementById("result").scrollTop = singleScrollY;
+    },0);
   }
   else if(lastMode === "searchFromRanking"){
     showRanking();
+    setTimeout(()=>{
+      document.getElementById("result").scrollTop = rankingScrollY;
+    },0);
   }
   else if(lastMode === "searchFromAll"){
     showAll();
   }
-
-  // それ以外は何もしない＝ホーム
-
-  if(lastKeyword){
-    document.getElementById("searchInput").value = lastKeyword;
-  }
-  if(lastMode === "searchFromSingle"){
-  showSingleOnly();
-  setTimeout(()=>{
-    document.getElementById("result").scrollTop = singleScrollY;
-  },0);
-}
-else if(lastMode === "searchFromRanking"){
-  showRanking();
-  setTimeout(()=>{
-    document.getElementById("result").scrollTop = rankingScrollY;
-  },0);
-}
 }
   
 // ===== 使用済み判定 =====
