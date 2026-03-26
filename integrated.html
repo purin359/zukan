@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -440,11 +440,8 @@ function back(){
 
   window.scrollTo(0, scrollY);
 
-  // ★ここが重要
-  if(lastMode === "search"){
-    search(lastKeyword);
-  }
-  else if(lastMode === "single"){
+  // モードに応じて一覧を復元
+  if(lastMode === "single"){
     showSingleOnly();
   }
   else if(lastMode === "ranking"){
@@ -453,9 +450,8 @@ function back(){
   else if(lastMode === "all"){
     showAll();
   }
-}
 
-  // 状態復元
+  // 検索キーワードだけ復元（再検索はしない）
   if(lastMode === "search"){
     document.getElementById("searchInput").value = lastKeyword;
   }
