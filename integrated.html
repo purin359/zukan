@@ -381,9 +381,9 @@ function search(keyword, fromMode=null){
 
   if(fromMode){
     lastMode = fromMode;
-  }else{
-    lastMode = "search";
   }
+
+  openResult();
 
   openResult();
   const resultDiv = document.getElementById("result");
@@ -440,7 +440,6 @@ function back(){
 
   window.scrollTo(0, scrollY);
 
-  // モードに応じて一覧を復元
   if(lastMode === "single"){
     showSingleOnly();
   }
@@ -450,13 +449,13 @@ function back(){
   else if(lastMode === "all"){
     showAll();
   }
-
-  // 検索キーワードだけ復元（再検索はしない）
-  if(lastMode === "search"){
-    document.getElementById("searchInput").value = lastKeyword;
+  else{
+    // 何もしない＝検索画面（漢字一覧）
   }
 
-  console.log("戻り先:", lastMode);
+  if(lastKeyword){
+    document.getElementById("searchInput").value = lastKeyword;
+  }
 }
   
 // ===== 各グループ n/m ヘッダー更新 =====
