@@ -199,6 +199,8 @@ let allyData = [];
 let isIntegrated = false;
 let lastMode = "";
 let fromMode = "";
+let rankingScrollY = 0;
+let singleScrollY = 0;
 
 // ===== 文字 =====
 const chars1 = `
@@ -352,14 +354,22 @@ function back(){
 
   window.scrollTo(0, scrollY);
 
-  // ★「どこから来たか」で戻る
   if(fromMode === "ranking"){
     fromMode = "";
     showRanking();
+
+    // ★復元
+    setTimeout(()=>{
+      document.getElementById("result").scrollTop = rankingScrollY;
+    }, 0);
   }
   else if(fromMode === "single"){
     fromMode = "";
     showSingleOnly();
+
+    setTimeout(()=>{
+      document.getElementById("result").scrollTop = singleScrollY;
+    }, 0);
   }
 }
   
@@ -560,6 +570,7 @@ function createExtraKanji(){
   // 1件検索
   function showSingleOnly(){
     lastMode = "single";
+    singleScrollY = window.scrollY;
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -591,6 +602,7 @@ function createExtraKanji(){
 
       div.onclick = ()=>{
   fromMode = "single";  // ←追加
+         singleScrollY = document.getElementById("result").scrollTop;
   document.getElementById("searchInput").value = c;
   searchFromInput();
 };;
@@ -606,6 +618,7 @@ function createExtraKanji(){
   // ランキング
   function showRanking(){
     lastMode = "ranking";
+    rankingScrollY = window.scrollY;
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -649,6 +662,7 @@ list.forEach((item,i)=>{
 
   div.onclick = ()=>{
   fromMode = "ranking";
+    rankingScrollY = document.getElementById("result").scrollTop;
   document.getElementById("searchInput").value = item.char;
   searchFromInput();
 };
