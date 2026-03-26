@@ -590,10 +590,10 @@ function createExtraKanji(){
       div.innerHTML = `<strong>${c}</strong> ： ${foundName}`;
 
       div.onclick = ()=>{
-  fromMode = "ranking";
-  document.getElementById("searchInput").value = item.char;
+  fromMode = "single";  // ←追加
+  document.getElementById("searchInput").value = c;
   searchFromInput();
-};
+};;
 
       resultDiv.appendChild(div);
     }
