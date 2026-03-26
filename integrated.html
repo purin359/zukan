@@ -205,6 +205,12 @@ let allyData = [];
 let isIntegrated = true;
 let charCountCache = null;
 let charUsageMap = {};
+let lastMode = "home";
+let lastMode = "all";
+let lastMode = "single";
+let lastMode = "rankong";
+let lastMode = "search";
+let lastKeyword = "";
 
   
 // ===== 文字 =====
@@ -375,6 +381,8 @@ function init(){
 
 // ===== 検索 =====
 function search(keyword){
+  lastKeyword = keyword;
+  lastMode = "search";
   openResult();
 
   const resultDiv = document.getElementById("result");
@@ -428,6 +436,13 @@ function search(keyword){
 function back(){
   document.getElementById("resultScreen").style.display="none";
   document.getElementById("searchScreen").style.display="block";
+
+  // 元のスクロール位置
+  window.scrollTo(0, scrollY);
+
+  // 必要ならログ用
+  console.log("戻り先:", lastMode);
+}
 
   // 元の位置に戻す
   window.scrollTo(0, scrollY);
@@ -614,6 +629,7 @@ function createExtraKanjiIntegrated(){
 }
 
   function showAll(){
+    lastMode = "all";
   document.getElementById("menu").style.display = "none";
   search("全キャラ");
 }
@@ -698,6 +714,7 @@ function showRanking(){
   
   // 1件検索
   function showSingleOnly(){
+    lastMode = "single";
   document.getElementById("menu").style.display = "none";
   openResult();
 
@@ -739,11 +756,19 @@ function showRanking(){
     if(count === 1){
       total++;
 
-      resultDiv.innerHTML += `
-        <div class="result">
-          <b>${c}</b> ： ${found[0]}
-        </div>
-      `;
+      const div = document.createElement("div");
+div.className = "result";
+
+div.innerHTML = `
+  <b>${c}</b> ： ${found[0]}
+`;
+
+div.onclick = ()=>{
+  document.getElementById("searchInput").value = c;
+  search(c);
+};
+
+resultDiv.appendChild(div);
     }
   });
 
@@ -753,6 +778,7 @@ function showRanking(){
   
   // ランキング
   function showRanking(){
+    lastMode = "ranking";
   document.getElementById("menu").style.display = "none";
   openResult();
 
