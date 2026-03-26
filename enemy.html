@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -198,6 +198,7 @@ let enemyData = [];
 let allyData = [];
 let isIntegrated = false;
 let lastMode = "";
+let fromMode = "";
 
 // ===== 文字 =====
 const chars1 = `
@@ -351,17 +352,15 @@ function back(){
 
   window.scrollTo(0, scrollY);
 
-  // ★ここが重要
-  if(lastMode === "all"){
-    showAll();
-  }
-  else if(lastMode === "single"){
-    showSingleOnly();
-  }
-  else if(lastMode === "ranking"){
+  // ★「どこから来たか」で戻る
+  if(fromMode === "ranking"){
+    fromMode = "";
     showRanking();
   }
-  // search は何もしない（そのままホーム）
+  else if(fromMode === "single"){
+    fromMode = "";
+    showSingleOnly();
+  }
 }
   
 // ===== 使用済み判定 =====
@@ -591,9 +590,10 @@ function createExtraKanji(){
       div.innerHTML = `<strong>${c}</strong> ： ${foundName}`;
 
       div.onclick = ()=>{
-        document.getElementById("searchInput").value = c;
-        searchFromInput();
-      };
+  fromMode = "ranking";
+  document.getElementById("searchInput").value = item.char;
+  searchFromInput();
+};
 
       resultDiv.appendChild(div);
     }
@@ -648,9 +648,10 @@ list.forEach((item,i)=>{
   div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
 
   div.onclick = ()=>{
-    document.getElementById("searchInput").value = item.char;
-    searchFromInput();
-  };
+  fromMode = "ranking";
+  document.getElementById("searchInput").value = item.char;
+  searchFromInput();
+};
 
   resultDiv.appendChild(div);
 });
