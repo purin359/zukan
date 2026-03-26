@@ -376,6 +376,13 @@ function init(){
 
   createExtraKanjiIntegrated();
   updateGroupHeader();
+
+  document.getElementById("searchInput")
+  .addEventListener("keydown", e => {
+    if(e.key === "Enter"){
+  const val = document.getElementById("searchInput").value.trim();
+  if(val) searchFromInput();
+}
 }
 
 // ===== 検索 =====
