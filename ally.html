@@ -310,6 +310,7 @@ function search(keyword, fromMode=null){
     lastMode = "search";
   }
 
+  openResult();
   scrollY = window.scrollY;
 
   document.getElementById("searchScreen").style.display="none";
@@ -353,21 +354,24 @@ function search(keyword, fromMode=null){
 
 // ===== 戻る =====
 function back(){
+
   document.getElementById("resultScreen").style.display="none";
   document.getElementById("searchScreen").style.display="block";
 
   window.scrollTo(0, scrollY);
 
-  if(lastMode === "single"){
+  // ★検索経由のときだけ戻す
+  if(lastMode === "searchFromSingle"){
     showSingleOnly();
   }
-  else if(lastMode === "ranking"){
+  else if(lastMode === "searchFromRanking"){
     showRanking();
   }
-  else if(lastMode === "all"){
+  else if(lastMode === "searchFromAll"){
     showAll();
   }
-  // search / home は何もしない
+
+  // それ以外は何もしない＝ホーム
 
   if(lastKeyword){
     document.getElementById("searchInput").value = lastKeyword;
@@ -600,9 +604,9 @@ function createExtraKanji(){
       div.innerHTML = `<strong>${c}</strong> ： ${foundName}`;
 
       div.onclick = ()=>{
-        document.getElementById("searchInput").value = c;
-        search(c, "single");
-      };
+  document.getElementById("searchInput").value = c;
+  search(c, "searchFromSingle");
+};
 
       resultDiv.appendChild(div);
     }
@@ -659,10 +663,9 @@ list.forEach((item,i)=>{
   div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
 
   div.onclick = ()=>{
-    document.getElementById("searchInput").value = item.char;
-    search(c, "ranking");
-  };
-
+  document.getElementById("searchInput").value = c;
+  search(c, "searchFromRanking");
+};
   resultDiv.appendChild(div);
 });
 
