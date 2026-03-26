@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body { font-family: sans-serif; padding: 10px; }
 
@@ -300,27 +300,22 @@ function createGridIntegrated(chars, id){
   grid.innerHTML = "";
 
   chars.forEach(c=>{
-    const isEnemy = enemyData.some(e =>
-  (e.name||"").includes(keyword) || (e.description||"").includes(keyword)
-);
+    const enemy = isUsedEnemy(c);
+    const ally  = isUsedAlly(c);
 
-const isAlly = allyData.some(ch =>
-  ch.forms.some(f =>
-    (f.name||"").includes(keyword) || (f.description||"").includes(keyword)
-  )
-);
+    const div = document.createElement("div");
+    div.className = "char";
 
-if(isEnemy && isAlly){
-  div.className = "result both";
-}else if(isEnemy){
-  div.className = "result enemy";
-}else{
-  div.className = "result ally";
-}
+    if(enemy && ally){
+      div.classList.add("both");
+    }else if(enemy){
+      div.classList.add("enemy");
+    }else if(ally){
+      div.classList.add("ally");
+    }
 
     div.innerText = c;
 
-    // ★クリックで検索
     div.onclick = ()=>{
       document.getElementById("searchInput").value = c;
       search(c);
