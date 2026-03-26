@@ -206,10 +206,6 @@ let isIntegrated = true;
 let charCountCache = null;
 let charUsageMap = {};
 let lastMode = "home";
-let lastMode = "all";
-let lastMode = "single";
-let lastMode = "rankong";
-let lastMode = "search";
 let lastKeyword = "";
 
   
@@ -437,15 +433,14 @@ function back(){
   document.getElementById("resultScreen").style.display="none";
   document.getElementById("searchScreen").style.display="block";
 
-  // 元のスクロール位置
   window.scrollTo(0, scrollY);
 
-  // 必要ならログ用
+  // 状態復元
+  if(lastMode === "search"){
+    document.getElementById("searchInput").value = lastKeyword;
+  }
+
   console.log("戻り先:", lastMode);
-}
-
-  // 元の位置に戻す
-  window.scrollTo(0, scrollY);
 }
   
 // ===== 各グループ n/m ヘッダー更新 =====
@@ -628,22 +623,6 @@ function createExtraKanjiIntegrated(){
   menu.style.display = (menu.style.display === "none") ? "block" : "none";
 }
 
-  function showAll(){
-    lastMode = "all";
-  document.getElementById("menu").style.display = "none";
-  search("全キャラ");
-}
-
-function showSingleOnly(){
-  document.getElementById("menu").style.display = "none";
-  search("1件");
-}
-
-function showRanking(){
-  document.getElementById("menu").style.display = "none";
-  search("ランキング");
-}
-
   // ==== ･･･ウィンドウを閉じる =====
   document.addEventListener("click", e=>{
   const menu = document.getElementById("menu");
@@ -713,62 +692,33 @@ function showRanking(){
 }
   
   // 1件検索
-  function showSingleOnly(){
-    lastMode = "single";
+ function showSingleOnly(){
+  lastMode = "single";
   document.getElementById("menu").style.display = "none";
   openResult();
 
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
+  const cache = buildRankingCache();
+
   let total = 0;
 
-  const allChars = chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
-
-  allChars.forEach(c=>{
-    let count = 0;
-    let found = [];
-
-    // 味方
-    allyData.forEach(ch=>{
-      ch.forms.forEach(f=>{
-        const name = f.name || "";
-        const desc = f.description || "";
-
-        if(name.includes(c) || desc.includes(c)){
-          count++;
-          found.push(name);
-        }
-      });
-    });
-
-    // 敵
-    enemyData.forEach(f=>{
-      const name = f.name || "";
-      const desc = f.description || "";
-
-      if(name.includes(c) || desc.includes(c)){
-        count++;
-        found.push(name);
-      }
-    });
-
-    if(count === 1){
+  Object.entries(cache).forEach(([c, v])=>{
+    if(v.count === 1){
       total++;
 
       const div = document.createElement("div");
-div.className = "result";
+      div.className = "result";
 
-div.innerHTML = `
-  <b>${c}</b> ： ${found[0]}
-`;
+      div.innerHTML = `<b>${c}</b>`;
 
-div.onclick = ()=>{
-  document.getElementById("searchInput").value = c;
-  search(c);
-};
+      div.onclick = ()=>{
+        document.getElementById("searchInput").value = c;
+        search(c);
+      };
 
-resultDiv.appendChild(div);
+      resultDiv.appendChild(div);
     }
   });
 
