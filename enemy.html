@@ -299,7 +299,7 @@ function normalize(str){ return (str||"").toLowerCase(); }
 function highlight(text,keyword){ const re=new RegExp(`(${keyword})`,"gi"); return text.replace(re,`<span class="hit">$1</span>`); }
 function searchFromInput(){ const v=document.getElementById("searchInput").value.trim(); if(v) search(v); }
 function search(keyword){
-
+ lastMode = "search";
   scrollY = window.scrollY;
 
   document.getElementById("searchScreen").style.display="none";
@@ -351,7 +351,7 @@ function back(){
 
   window.scrollTo(0, scrollY);
 
-  // ★ここ追加
+  // ★ここが重要
   if(lastMode === "all"){
     showAll();
   }
@@ -361,6 +361,7 @@ function back(){
   else if(lastMode === "ranking"){
     showRanking();
   }
+  // search は何もしない（そのままホーム）
 }
   
 // ===== 使用済み判定 =====
