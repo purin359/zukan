@@ -440,17 +440,14 @@ function back(){
 
   window.scrollTo(0, scrollY);
 
-  if(lastMode === "single"){
-    showSingleOnly();
+  if(lastMode === "ranking"){
+    renderRanking(); // ← openResultしない
   }
-  else if(lastMode === "ranking"){
-    showRanking();
+  else if(lastMode === "single"){
+    renderSingle();
   }
   else if(lastMode === "all"){
-    showAll();
-  }
-  else{
-    // 何もしない＝検索画面（漢字一覧）
+    renderAll();
   }
 
   if(lastKeyword){
@@ -749,7 +746,10 @@ function createExtraKanjiIntegrated(){
     lastMode = "ranking";
   document.getElementById("menu").style.display = "none";
   openResult();
-
+    
+renderRanking();
+}
+  function renderRanking(){
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
@@ -761,13 +761,10 @@ function createExtraKanjiIntegrated(){
 
   list.sort((a,b)=>b.count - a.count);
 
-  const fragment = document.createDocumentFragment();
-
   let rank = 0;
   let prev = -1;
 
   list.forEach((item,i)=>{
-
     if(item.count !== prev){
       rank = i + 1;
       prev = item.count;
@@ -775,7 +772,6 @@ function createExtraKanjiIntegrated(){
 
     const div = document.createElement("div");
 
-    // 色分け
     if(item.enemy && item.ally){
       div.className = "result both";
     }else if(item.enemy){
@@ -790,21 +786,19 @@ function createExtraKanjiIntegrated(){
       （${item.count}件）
     `;
 
-    // クリック検索
     div.onclick = ()=>{
-  document.getElementById("searchInput").value = item.char;
-  search(item.char, "ranking");
-};
+      document.getElementById("searchInput").value = item.char;
+      search(item.char, "ranking");
+    };
 
-    fragment.appendChild(div);
+    resultDiv.appendChild(div);
   });
-
-  resultDiv.appendChild(fragment);
 
   document.getElementById("selectedText").innerText =
     `出現数ランキング(常用漢字)`;
 }
-  // キャッシュ
+  
+    // キャッシュ
   function buildRankingCache(){
   if(charCountCache) return charCountCache;
 
