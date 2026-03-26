@@ -206,6 +206,7 @@ let isIntegrated = true;
 let charCountCache = null;
 let charUsageMap = {};
 let lastMode = "home";
+let prevMode = "home";
 let lastKeyword = "";
 
   
@@ -376,16 +377,14 @@ function init(){
 }
 
 // ===== 検索 =====
-function search(keyword, fromMode=null){
+function search(keyword){
   lastKeyword = keyword;
 
-  if(fromMode){
-    lastMode = fromMode;
-  }
+  prevMode = lastMode;   // ← ここが最重要
+  lastMode = "search";   // ← 今は検索中
 
   openResult();
 
-  openResult();
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
@@ -435,24 +434,35 @@ function search(keyword, fromMode=null){
   
 // ===== 戻る =====
 function back(){
+
+  // ★検索から戻る場合
+  if(lastMode === "search"){
+
+    document.getElementById("resultScreen").style.display="none";
+    document.getElementById("searchScreen").style.display="block";
+
+    window.scrollTo(0, scrollY);
+
+    // ★元の画面に戻す
+    if(prevMode === "ranking"){
+      showRanking();
+    }
+    else if(prevMode === "single"){
+      showSingleOnly();
+    }
+    else if(prevMode === "all"){
+      showAll();
+    }
+    // homeなら何もしない
+
+    return;
+  }
+
+  // ★ランキング等からホームへ戻る
   document.getElementById("resultScreen").style.display="none";
   document.getElementById("searchScreen").style.display="block";
 
   window.scrollTo(0, scrollY);
-
-  if(lastMode === "ranking"){
-    renderRanking(); // ← openResultしない
-  }
-  else if(lastMode === "single"){
-    renderSingle();
-  }
-  else if(lastMode === "all"){
-    renderAll();
-  }
-
-  if(lastKeyword){
-    document.getElementById("searchInput").value = lastKeyword;
-  }
 }
   
 // ===== 各グループ n/m ヘッダー更新 =====
