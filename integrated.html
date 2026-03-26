@@ -745,11 +745,19 @@ function createExtraKanjiIntegrated(){
       total++;
 
       const div = document.createElement("div");
-      div.className = "result";
 
-      div.innerHTML = `
-        <b>${c}</b> ： ${v.names[0]}
-      `;
+// ★ 色判定
+if(v.enemy && v.ally){
+  div.className = "result both";
+}else if(v.enemy){
+  div.className = "result enemy";
+}else{
+  div.className = "result ally";
+}
+
+div.innerHTML = `
+  <b>${c}</b> ： ${v.names[0]}
+`;
 
       div.onclick = ()=>{
   singleScrollY = document.getElementById("result").scrollTop;
