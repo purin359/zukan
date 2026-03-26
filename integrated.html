@@ -661,7 +661,10 @@ function createExtraKanjiIntegrated(){
 
   function searchFromInput(){
   const val = document.getElementById("searchInput").value;
-  if(val) search(val);
+  if(val){
+    lastMode = "home"; 
+    search(val);
+  }
 }
   
 // ===== メニュー欄 =====
