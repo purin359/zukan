@@ -711,7 +711,6 @@ function backFromChecker(){
   // 新規チェッカー
   function runChecker(){
   const text = document.getElementById("checkerInput").value;
-
   const resultDiv = document.getElementById("checkerResult");
   resultDiv.innerHTML = "";
 
@@ -720,23 +719,33 @@ function backFromChecker(){
 
   const unique = [...new Set(chars)];
 
-  unique.forEach(c=>{
-    const isExisting = isUsed(c); // ★ここ変更
-
-    const div = document.createElement("div");
-
-    if(isExisting){
-      div.innerHTML = `<b>${c}</b>：既存`;
-    }else{
-      div.innerHTML = `<b style="color:red;">${c}</b>：新規`;
-    }
-
-    resultDiv.appendChild(div);
-  });
-
   if(unique.length === 0){
     resultDiv.innerText = "漢字が見つかりませんでした";
+    return;
   }
+
+  let existing = [];
+  let newChars = [];
+
+  unique.forEach(c=>{
+    if(isUsed(c)){
+      existing.push(c);
+    }else{
+      newChars.push(c);
+    }
+  });
+
+  let html = "";
+
+  if(existing.length){
+    html += `既存：${existing.join("、")}<br>`;
+  }
+
+  if(newChars.length){
+    html += `<span style="color:red;">新規：${newChars.join("、")}</span>`;
+  }
+
+  resultDiv.innerHTML = html;
 }
   
 </script>
