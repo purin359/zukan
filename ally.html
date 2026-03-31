@@ -193,6 +193,7 @@ body { font-family: sans-serif; padding: 10px; }
   <textarea id="checkerInput" style="width:100%; height:120px;"></textarea>
   <br><br>
   <button onclick="runChecker()">判定</button>
+  <button onclick="clearChecker()">判定</button>
 
   <div id="checkerResult" style="margin-top:10px;"></div>
 </div>
@@ -757,6 +758,12 @@ function backFromChecker(){
   }
 
   resultDiv.innerHTML = html;
+}
+
+  function clearChecker(){
+  document.getElementById("checkerInput").value = "";
+  document.getElementById("checkerResult").innerHTML = "";
+  document.getElementById("checkerInput").focus();
 }
   
   
