@@ -724,18 +724,16 @@ function backFromChecker(){
   let existing = [];
   let newChars = [];
 
-  // ★敵データ固定
-  const targetData = enemyData;
+  // ★ここ修正
+  const targetData = data;
 
   unique.forEach(c=>{
     let count = 0;
 
-    targetData.forEach(ch=>{
-      ch.forms.forEach(f=>{
-        if(f.name.includes(c) || f.description.includes(c)){
-          count++;
-        }
-      });
+    targetData.forEach(f=>{
+      if((f.name || "").includes(c) || (f.description || "").includes(c)){
+        count++;
+      }
     });
 
     if(count > 0){
