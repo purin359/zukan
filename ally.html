@@ -123,7 +123,7 @@ body { font-family: sans-serif; padding: 10px; }
   <div onclick="showAll()">全キャラ表示</div>
   <div onclick="showSingleOnly()">1件のみ検索</div>
   <div onclick="showRanking()">使用数ランキング</div>
-  <div onclick="showChecker()">説明文新規文字チェッカー</div>
+  <div onclick="showChecker()">新規文字チェッカー</div>
 </div>
       <button onclick="location.href='enemy.html'">敵版へ</button>
 
@@ -728,8 +728,19 @@ function backFromChecker(){
   let newChars = [];
 
   unique.forEach(c=>{
-    if(isUsed(c)){
-      existing.push(c);
+    let count = 0;
+
+    // ★ 使用回数カウント
+    data.forEach(ch=>{
+      ch.forms.forEach(f=>{
+        if(f.name.includes(c) || f.description.includes(c)){
+          count++;
+        }
+      });
+    });
+
+    if(count > 0){
+      existing.push(`${c}(${count}回)`);
     }else{
       newChars.push(c);
     }
