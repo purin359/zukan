@@ -104,6 +104,18 @@ body { font-family: sans-serif; padding: 10px; }
   <div id="searchContent">
 <h2>味方文字検索</h2>
 
+    <div id="checkerScreen" style="display:none;">
+  <button onclick="backFromChecker()">← 戻る</button>
+
+  <h2>説明文 新規漢字チェッカー</h2>
+
+  <textarea id="checkerInput" style="width:100%; height:120px;"></textarea>
+  <br><br>
+  <button onclick="runChecker()">判定</button>
+
+  <div id="checkerResult" style="margin-top:10px;"></div>
+</div>
+
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
@@ -123,6 +135,7 @@ body { font-family: sans-serif; padding: 10px; }
   <div onclick="showAll()">全キャラ表示</div>
   <div onclick="showSingleOnly()">1件のみ検索</div>
   <div onclick="showRanking()">使用数ランキング</div>
+  <div onclick="showChecker()">説明文新規文字チェッカー</div>
 </div>
       <button onclick="location.href='enemy.html'">敵版へ</button>
 
@@ -679,6 +692,54 @@ list.forEach((item,i)=>{
 
   document.getElementById("selectedText").innerText =
     `出現数ランキング(常用漢字)`;
+}
+
+  // 画面移動
+  function showChecker(){
+  document.getElementById("menu").style.display = "none";
+
+  document.getElementById("searchScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "none";
+  document.getElementById("checkerScreen").style.display = "block";
+}
+
+function backFromChecker(){
+  document.getElementById("checkerScreen").style.display = "none";
+  document.getElementById("searchScreen").style.display = "block";
+}
+
+  // 新規チェッカー
+  function runChecker(){
+  const text = document.getElementById("checkerInput").value;
+
+  const resultDiv = document.getElementById("checkerResult");
+  resultDiv.innerHTML = "";
+
+  const allChars = chars1
+    .concat(chars2, chars3, chars4, chars5, chars6, chars7);
+
+  const chars = splitChars(text)
+    .filter(c => /[\u4E00-\u9FFF]/.test(c)); // 漢字だけ
+
+  const unique = [...new Set(chars)];
+
+  unique.forEach(c=>{
+    const isExisting = allChars.includes(c);
+
+    const div = document.createElement("div");
+
+    if(isExisting){
+      div.innerHTML = `<b>${c}</b>：既存`;
+    }else{
+      div.innerHTML = `<b style="color:red;">${c}</b>：新規`;
+    }
+
+    resultDiv.appendChild(div);
+  });
+
+  if(unique.length === 0){
+    resultDiv.innerText = "漢字が見つかりませんでした";
+  }
 }
   
 </script>
