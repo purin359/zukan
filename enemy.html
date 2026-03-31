@@ -712,7 +712,7 @@ function backFromChecker(){
   resultDiv.innerHTML = "";
 
   const chars = splitChars(text)
-    .filter(c => /[\u4E00-\u9FFF]/.test(c)); // 漢字だけ
+    .filter(c => /[\u4E00-\u9FFF]/.test(c));
 
   const unique = [...new Set(chars)];
 
@@ -724,11 +724,13 @@ function backFromChecker(){
   let existing = [];
   let newChars = [];
 
+  // ★敵データ固定
+  const targetData = enemyData;
+
   unique.forEach(c=>{
     let count = 0;
 
-    // ★ 使用回数カウント
-    data.forEach(ch=>{
+    targetData.forEach(ch=>{
       ch.forms.forEach(f=>{
         if(f.name.includes(c) || f.description.includes(c)){
           count++;
