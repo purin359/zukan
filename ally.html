@@ -715,16 +715,13 @@ function backFromChecker(){
   const resultDiv = document.getElementById("checkerResult");
   resultDiv.innerHTML = "";
 
-  const allChars = chars1
-    .concat(chars2, chars3, chars4, chars5, chars6, chars7);
-
   const chars = splitChars(text)
     .filter(c => /[\u4E00-\u9FFF]/.test(c)); // 漢字だけ
 
   const unique = [...new Set(chars)];
 
   unique.forEach(c=>{
-    const isExisting = allChars.includes(c);
+    const isExisting = isUsed(c); // ★ここ変更
 
     const div = document.createElement("div");
 
