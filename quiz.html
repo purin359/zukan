@@ -45,8 +45,17 @@ button{
   padding:5px;
   cursor:pointer;
 }
+  
 .sugItem:hover{
   background:#eee;
+}
+
+  select{
+  flex:1;
+}
+
+button{
+  cursor:pointer;
 }
 
 .correct{color:blue;}
@@ -57,35 +66,31 @@ button{
 
 <h2>説明文クイズ</h2>
 
-<select id="mode">
-  <option value="ally">味方</option>
-  <option value="enemy">敵</option>
-</select>
+<div style="display:flex; gap:6px;">
+  <select id="mode">
+    <option value="ally">味方</option>
+    <option value="enemy">敵</option>
+  </select>
 
-<select id="rarity">
-  <option value="all">全て</option>
-  <option value="basic">基本</option>
-  <option value="ex">EX</option>
-  <option value="rare">レア</option>
-  <option value="superrare">激レア</option>
-  <option value="ultrarare">超激レア</option>
-  <option value="legendrare">伝説レア</option>
-</select>
+  <select id="rarity">
+    <option value="all">全て</option>
+    <option value="basic">基本</option>
+    <option value="ex">EX</option>
+    <option value="rare">レア</option>
+    <option value="superrare">激レア</option>
+    <option value="ultrarare">超激レア</option>
+    <option value="legendrare">伝説レア</option>
+  </select>
+</div>
 
-<label>
-<input type="checkbox" id="finalOnly">
-最上位形態のみ
-</label>
-
-<button onclick="startQuiz()">開始</button>
-
-<p>スコア：<span id="score">0</span></p>
-<p>最高記録：<span id="best">0</span></p>
-
-<div id="desc"></div>
+<div style="display:flex; gap:20px; margin:8px 0;">
+  <span>スコア：<span id="score">0</span></span>
+  <span>最高記録：<span id="best">0</span></span>
+</div>
 
 <input id="answer" placeholder="キャラ名">
 
+<button onclick="check()">回答</button>
 <div id="suggest"></div>
 
 <div id="result"></div>
@@ -215,11 +220,14 @@ function check(){
 
     saveBest();
 
-    setTimeout(nextQuestion,500); // 自動次へ
+    setTimeout(nextQuestion,500);
 
   }else{
     document.getElementById("result").innerHTML=
       `<span class="wrong">不正解</span><br>答え：${current.name}`;
+
+    score = 0;
+    document.getElementById("score").innerText = 0;
   }
 }
 
@@ -267,6 +275,27 @@ document.getElementById("answer").addEventListener("keydown",e=>{
 
 // 入力でサジェスト
 document.getElementById("answer").addEventListener("input",updateSuggest);
+
+  ["mode","rarity","finalOnly"].forEach(id=>{
+  document.getElementById(id).addEventListener("change",()=>{
+    resetQuiz();
+  });
+});
+
+function resetQuiz(){
+  score = 0;
+  current = null;
+  quizList = [];
+  suggestList = [];
+
+  document.getElementById("score").innerText = 0;
+  document.getElementById("desc").innerText = "";
+  document.getElementById("answer").value = "";
+  document.getElementById("suggest").innerHTML = "";
+  document.getElementById("result").innerHTML = "";
+
+  loadBest();
+}
 </script>
 
 </body>
