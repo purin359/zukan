@@ -331,14 +331,18 @@ function nextQuestion(){
 // ===== 回答ボタン =====
 function answerButton(){
   if(waitingNext){
-    if(isCleared){
-      startQuiz();
-    }else{
-      nextQuestion();
-      if(gameMode === "complete"){
-        startTimer();
-      }
+    if(gameMode === "complete"){
+      resetTimer();
+      answeredCodes = new Set();
+      updateRemainCount();
     }
+
+    nextQuestion();
+
+    if(gameMode === "complete"){
+      startTimer();
+    }
+
     return;
   }
 
@@ -383,8 +387,8 @@ function check(){
 
   }else{
     const answers = sameDescList
-      .map(q => `${q.name}(${q.code})`)
-      .join(" / ");
+  .map(q => q.name)
+  .join(" / ");
 
     document.getElementById("result").innerHTML =
       `<span class="wrong">不正解</span><br>答え：${answers}`;
@@ -453,12 +457,24 @@ function saveBest(){
 
   if(gameMode === "complete"){
     const timeText = formatTime(elapsedTime);
+    const clearText = `${score}問 / タイム：${timeText}`;
+
     const old = localStorage.getItem(key);
 
-    if(!old || elapsedTime < timeToMs(old)){
-      localStorage.setItem(key, timeText);
-      document.getElementById("best").innerText = `タイム：${timeText}`;
+    if(!old){
+      localStorage.setItem(key, clearText);
+      document.getElementById("best").innerText = clearText;
+      return;
     }
+
+    const oldTimeMatch = old.match(/タイム：(\d{2}:\d{2})/);
+    const oldMs = oldTimeMatch ? timeToMs(oldTimeMatch[1]) : Infinity;
+
+    if(elapsedTime < oldMs){
+      localStorage.setItem(key, clearText);
+      document.getElementById("best").innerText = clearText;
+    }
+
     return;
   }
 
@@ -469,7 +485,7 @@ function saveBest(){
     document.getElementById("best").innerText = score;
   }
 }
-
+  
 function timeToMs(text){
   const [m, s] = text.split(":").map(Number);
   return (m * 60 + s) * 1000;
@@ -481,7 +497,7 @@ function loadBest(){
 
   if(gameMode === "complete"){
     document.getElementById("best").innerText =
-      best ? `タイム：${best}` : "なし";
+      best ? best : "0";
   }else{
     document.getElementById("best").innerText =
       Number(best || 0);
@@ -609,7 +625,7 @@ function updateRemainCount(){
   document.getElementById("suggest").innerHTML = "";
 
   document.getElementById("result").innerHTML =
-    `<span class="correct">クリア！</span><br>タイム：${formatTime(elapsedTime)}`;
+    `<span class="correct">クリア！</span><br>${score}問 / タイム：${formatTime(elapsedTime)}`;
 
   document.getElementById("answerBtn").innerText = "次の問題";
 
