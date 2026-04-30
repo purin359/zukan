@@ -108,7 +108,7 @@ button{
   </select>
 
   <select id="raritySelect" onchange="resetQuiz()">
-    <option value="all">全て</option>
+    <option value="all">全て(レアリティ)</option>
     <option value="basic">基本</option>
     <option value="ex">EX</option>
     <option value="rare">レア</option>
@@ -189,12 +189,18 @@ function updateControlVisibility(){
   const type = document.getElementById("typeSelect").value;
   const raritySelect = document.getElementById("raritySelect");
   const finalOnlyWrap = document.getElementById("finalOnlyWrap");
+  const collabFilter = document.getElementById("collabFilter");
 
   if(type === "enemy"){
     raritySelect.disabled = true;
+    collabFilter.disabled = true;
     finalOnlyWrap.style.display = "none";
+
+    raritySelect.value = "all";
+    collabFilter.value = "all";
   }else{
     raritySelect.disabled = false;
+    collabFilter.disabled = false;
     finalOnlyWrap.style.display = "block";
   }
 }
