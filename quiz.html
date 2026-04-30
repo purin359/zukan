@@ -121,12 +121,12 @@ button{
 <h2>説明文クイズ</h2>
 
 <div class="selectRow">
-  <select id="modeSelect">
+  <select id="typeSelect" onchange="resetQuiz()">
     <option value="ally">味方</option>
     <option value="enemy">敵</option>
   </select>
 
-  <select id="rarity">
+  <select id="raritySelect" onchange="resetQuiz()">
     <option value="all">全て</option>
     <option value="basic">基本</option>
     <option value="ex">EX</option>
@@ -134,6 +134,12 @@ button{
     <option value="superrare">激レア</option>
     <option value="ultrarare">超激レア</option>
     <option value="legendrare">伝説レア</option>
+  </select>
+
+  <select id="collabFilter" onchange="resetQuiz()">
+    <option value="all">全て</option>
+    <option value="0">常設</option>
+    <option value="1">コラボ</option>
   </select>
 </div>
   
@@ -242,10 +248,18 @@ async function loadData(){
   .map(f => ({
     name: f.name,
     desc: f.description || "",
-    code: getIdStageString(ch.id, f.stage)
+    code: getIdStageString(ch.id, f.stage),
+    collab: ch.collab ?? 0
   }));
     });
   }
+
+  // ★コラボフィルター適用
+const collabFilter = document.getElementById("collabFilter").value;
+
+if(collabFilter !== "all"){
+  quizList = quizList.filter(q => String(q.collab) === collabFilter);
+}
 
   suggestList = quizList.map(q => q.name);
 }
