@@ -344,22 +344,24 @@ async function startQuiz(){
   nextQuestion();
 }
 
-// Enterで回答
-document.getElementById("answer").addEventListener("keydown", e => {
-  if(e.key === "Enter"){
-    check();
-  }
+window.addEventListener("load", () => {
+  const answer = document.getElementById("answer");
+  const rarity = document.getElementById("rarity");
+  const finalOnly = document.getElementById("finalOnly");
+
+  answer.addEventListener("keydown", e => {
+    if(e.key === "Enter"){
+      check();
+    }
+  });
+
+  answer.addEventListener("input", updateSuggest);
+
+  rarity.addEventListener("change", startQuiz);
+  finalOnly.addEventListener("change", startQuiz);
+
+  startQuiz();
 });
-
-// 入力でサジェスト
-document.getElementById("answer").addEventListener("input", updateSuggest);
-
-// レアリティ・最上位形態変更でリセット
-document.getElementById("rarity").addEventListener("change", startQuiz);
-document.getElementById("finalOnly").addEventListener("change", startQuiz);
-
-// 起動時に問題表示
-window.addEventListener("load", startQuiz);
 </script>
 
 </body>
