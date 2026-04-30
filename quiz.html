@@ -275,33 +275,43 @@ function check(){
 }
 
 // ===== サジェスト =====
-function updateSuggest(){
-  const input = document.getElementById("answer").value;
-  const key = normalize(input);
-  const box = document.getElementById("suggest");
-
-  box.innerHTML = "";
-
-  if(!key) return;
-
-  suggestList
-    .filter(name => normalize(name).includes(key))
-    .slice(0, 20)
-    .forEach(name => {
-      const div = document.createElement("div");
-      div.className = "sugItem";
-      div.innerText = name;
-
-      div.onclick = () => {
-        document.getElementById("answer").value = name;
-        box.innerHTML = "";
-        document.getElementById("answer").focus();
-      };
-
-      box.appendChild(div);
-    });
+function normalizeText(str){
+  return (str || "")
+    .toLowerCase()
+    .normalize("NFKC")
+    .replace(/[ぁ-ん]/g, ch =>
+      String.fromCharCode(ch.charCodeAt(0) + 0x60)
+    )
+    .replace(/\s+/g, "");
 }
 
+function updateSuggest(){
+  const input = document.getElementById("answer").value.trim();
+  const suggest = document.getElementById("suggest");
+
+  suggest.innerHTML = "";
+
+  if(!input) return;
+
+  const key = normalizeText(input);
+
+  const list = getCandidates()
+    .filter(ch => normalizeText(ch.name).includes(key))
+    .slice(0, 10);
+
+  list.forEach(ch => {
+    const div = document.createElement("div");
+    div.textContent = ch.name;
+
+    div.onclick = () => {
+      document.getElementById("answer").value = ch.name;
+      suggest.innerHTML = "";
+    };
+
+    suggest.appendChild(div);
+  });
+}
+  
 // ===== 記録 =====
 function getKey(){
   const rarity = document.getElementById("rarity").value;
