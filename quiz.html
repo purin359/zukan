@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>説明文クイズ</title>
+
 <style>
 body{
   font-family:sans-serif;
@@ -11,42 +12,45 @@ body{
   margin:auto;
 }
 
-textarea,input,button,select{
+input,select,button{
   font-size:16px;
   padding:10px;
-  margin:6px 0;
+  margin:5px 0;
+  width:100%;
   box-sizing:border-box;
 }
 
-input,select{
-  width:100%;
-}
-
 button{
-  border:none;
-  border-radius:8px;
   background:#4CAF50;
   color:white;
-  cursor:pointer;
+  border:none;
+  border-radius:8px;
 }
 
 #desc{
   border:1px solid #ccc;
   padding:12px;
+  margin:10px 0;
   min-height:120px;
-  margin:12px 0;
   white-space:pre-wrap;
 }
 
-.correct{
-  color:blue;
-  font-weight:bold;
+#suggest{
+  border:1px solid #ccc;
+  max-height:150px;
+  overflow-y:auto;
 }
 
-.wrong{
-  color:red;
-  font-weight:bold;
+.sugItem{
+  padding:5px;
+  cursor:pointer;
 }
+.sugItem:hover{
+  background:#eee;
+}
+
+.correct{color:blue;}
+.wrong{color:red;}
 </style>
 </head>
 <body>
@@ -58,126 +62,211 @@ button{
   <option value="enemy">敵</option>
 </select>
 
+<select id="rarity">
+  <option value="all">全て</option>
+  <option value="basic">基本</option>
+  <option value="ex">EX</option>
+  <option value="rare">レア</option>
+  <option value="superrare">激レア</option>
+  <option value="ultrarare">超激レア</option>
+  <option value="legendrare">伝説レア</option>
+</select>
+
+<label>
+<input type="checkbox" id="finalOnly">
+最上位形態のみ
+</label>
+
 <button onclick="startQuiz()">開始</button>
 
-<div id="quizArea" style="display:none;">
-  <p>問題数：<span id="count">0</span></p>
+<p>スコア：<span id="score">0</span></p>
+<p>最高記録：<span id="best">0</span></p>
 
-  <div id="desc"></div>
+<div id="desc"></div>
 
-  <input id="answerInput" type="text" placeholder="キャラ名を入力">
-  <button onclick="checkAnswer()">回答</button>
-  <button onclick="nextQuestion()">次の問題</button>
+<input id="answer" placeholder="キャラ名">
 
-  <div id="result"></div>
-</div>
+<div id="suggest"></div>
+
+<div id="result"></div>
 
 <script>
-let data = [];
-let quizList = [];
-let current = null;
-let count = 0;
+let quizList=[];
+let current=null;
+let score=0;
 
-// ===== JSON読み込み =====
-async function loadData(mode){
-  if(mode === "enemy"){
-    data = await fetch("enemy.json").then(r=>r.json()).catch(()=>[]);
-    quizList = data
-      .filter(f => f.name && f.description)
-      .map(f => ({
-        name: f.name,
-        description: f.description
-      }));
+// ===== 正規化 =====
+function normalize(str){
+  return (str||"")
+    .replace(/\s/g,"")
+    .replace(/　/g,"")
+    .toLowerCase();
+}
+
+// ===== データ取得 =====
+async function loadData(){
+
+  const mode=document.getElementById("mode").value;
+  const rarity=document.getElementById("rarity").value;
+  const finalOnly=document.getElementById("finalOnly").checked;
+
+  if(mode==="enemy"){
+    const data=await fetch("enemy.json").then(r=>r.json()).catch(()=>[]);
+
+    quizList=data.map(f=>({
+      name:f.name,
+      desc:f.description||""
+    }));
+
   }else{
-    const files = [
-      "basic.json",
-      "ex.json",
-      "rare.json",
-      "superrare.json",
-      "ultrarare.json",
-      "legendrare.json"
-    ];
+    const map={
+      basic:"basic.json",
+      ex:"ex.json",
+      rare:"rare.json",
+      superrare:"superrare.json",
+      ultrarare:"ultrarare.json",
+      legendrare:"legendrare.json"
+    };
 
-    const loaded = await Promise.all(
-      files.map(f => fetch(f).then(r=>r.json()).catch(()=>[]))
+    let files=[];
+
+    if(rarity==="all"){
+      files=Object.values(map);
+    }else{
+      files=[map[rarity]];
+    }
+
+    const loaded=await Promise.all(
+      files.map(f=>fetch(f).then(r=>r.json()).catch(()=>[]))
     );
 
-    data = loaded.flat();
+    const data=loaded.flat();
 
-    quizList = data.flatMap(ch =>
-      ch.forms
-        .filter(f => f.name && f.description)
-        .map(f => ({
-          name: f.name,
-          description: f.description
-        }))
-    );
+    quizList=data.flatMap(ch=>{
+      let forms=ch.forms;
+
+      if(finalOnly){
+        forms=[forms[forms.length-1]];
+      }
+
+      return forms.map(f=>({
+        name:f.name,
+        desc:f.description||""
+      }));
+    });
   }
+
+  buildSuggest();
+}
+
+// ===== サジェスト =====
+let suggestList=[];
+
+function buildSuggest(){
+  suggestList=quizList.map(q=>q.name);
+}
+
+function updateSuggest(){
+  const input=document.getElementById("answer").value;
+  const key=normalize(input);
+
+  const box=document.getElementById("suggest");
+  box.innerHTML="";
+
+  if(!key) return;
+
+  suggestList.forEach(name=>{
+    if(normalize(name).includes(key)){
+      const div=document.createElement("div");
+      div.className="sugItem";
+      div.innerText=name;
+
+      div.onclick=()=>{
+        document.getElementById("answer").value=name;
+        box.innerHTML="";
+      };
+
+      box.appendChild(div);
+    }
+  });
+}
+
+// ===== クイズ =====
+function nextQuestion(){
+  current=quizList[Math.floor(Math.random()*quizList.length)];
+
+  document.getElementById("desc").innerText=current.desc;
+  document.getElementById("answer").value="";
+  document.getElementById("result").innerHTML="";
+}
+
+// ===== 回答 =====
+function check(){
+  const input=document.getElementById("answer").value;
+
+  if(!input) return;
+
+  if(normalize(input)===normalize(current.name)){
+    score++;
+    document.getElementById("score").innerText=score;
+
+    document.getElementById("result").innerHTML=
+      `<span class="correct">正解！</span>`;
+
+    saveBest();
+
+    setTimeout(nextQuestion,500); // 自動次へ
+
+  }else{
+    document.getElementById("result").innerHTML=
+      `<span class="wrong">不正解</span><br>答え：${current.name}`;
+  }
+}
+
+// ===== 記録 =====
+function getKey(){
+  const mode=document.getElementById("mode").value;
+  const rarity=document.getElementById("rarity").value;
+  const finalOnly=document.getElementById("finalOnly").checked;
+
+  return `descQuiz_${mode}_${rarity}_${finalOnly}`;
+}
+
+function saveBest(){
+  const key=getKey();
+  const best=Number(localStorage.getItem(key)||0);
+
+  if(score>best){
+    localStorage.setItem(key,score);
+    document.getElementById("best").innerText=score;
+  }
+}
+
+function loadBest(){
+  const key=getKey();
+  const best=Number(localStorage.getItem(key)||0);
+
+  document.getElementById("best").innerText=best;
 }
 
 // ===== 開始 =====
 async function startQuiz(){
-  const mode = document.getElementById("mode").value;
-  await loadData(mode);
+  score=0;
+  document.getElementById("score").innerText=0;
 
-  count = 0;
-
-  document.getElementById("quizArea").style.display = "block";
-  document.getElementById("result").innerHTML = "";
+  await loadData();
+  loadBest();
 
   nextQuestion();
 }
 
-// ===== 次の問題 =====
-function nextQuestion(){
-  if(quizList.length === 0){
-    document.getElementById("desc").innerText = "データがありません";
-    return;
-  }
-
-  current = quizList[Math.floor(Math.random() * quizList.length)];
-  count++;
-
-  document.getElementById("count").innerText = count;
-  document.getElementById("desc").innerText = current.description;
-  document.getElementById("answerInput").value = "";
-  document.getElementById("result").innerHTML = "";
-
-  document.getElementById("answerInput").focus();
-}
-
-// ===== 回答判定 =====
-function checkAnswer(){
-  const input = document.getElementById("answerInput").value.trim();
-
-  if(!input) return;
-
-  const result = document.getElementById("result");
-
-  if(normalize(input) === normalize(current.name)){
-    result.innerHTML = `<p class="correct">正解！ ${current.name}</p>`;
-  }else{
-    result.innerHTML = `
-      <p class="wrong">不正解</p>
-      <p>答え：<b>${current.name}</b></p>
-    `;
-  }
-}
-
-// ===== 表記ゆれ軽減 =====
-function normalize(str){
-  return (str || "")
-    .replace(/\s/g, "")
-    .replace(/　/g, "")
-    .toLowerCase();
-}
-
 // Enterで回答
-document.getElementById("answerInput").addEventListener("keydown", e=>{
-  if(e.key === "Enter"){
-    checkAnswer();
-  }
+document.getElementById("answer").addEventListener("keydown",e=>{
+  if(e.key==="Enter") check();
 });
+
+// 入力でサジェスト
+document.getElementById("answer").addEventListener("input",updateSuggest);
 </script>
 
 </body>
