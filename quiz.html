@@ -203,7 +203,7 @@ async function loadData(){
       .filter(f => f.name && f.description)
       .map(f => ({
         name: f.name,
-        desc: f.description || ""
+        desc: f.description || "",
         code: String(f.id)
       }));
 
