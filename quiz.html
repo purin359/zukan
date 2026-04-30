@@ -307,7 +307,18 @@ function check(){
   if(!current) return;
 
   const input = document.getElementById("answer").value.trim();
-  if(!input) return;
+
+// 空欄でも判定させる（不正解扱い）
+const inputNorm = normalize(input);
+const nameNorm = normalize(current.name);
+const codeNorm = normalize(current.code);
+
+if(inputNorm === nameNorm || inputNorm === codeNorm){
+  // 正解処理
+}else{
+  // 不正解処理
+}
+  
 
   const inputNorm = normalize(input);
   const nameNorm = normalize(current.name);
@@ -326,7 +337,7 @@ function check(){
 
   }else{
     document.getElementById("result").innerHTML =
-      `<span class="wrong">不正解</span><br>答え：${current.name}<br>ID：${current.code}`;
+      `<span class="wrong">不正解</span><br>答え：${current.name};
 
     score = 0;
     document.getElementById("score").innerText = 0;
