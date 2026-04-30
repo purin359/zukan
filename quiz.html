@@ -237,11 +237,12 @@ async function loadData(){
       }
 
       return forms
-        .filter(f => f.name && f.description)
-        .map(f => ({
-          name: f.name,
-          desc: f.description || ""
-        }));
+  .filter(f => f.name && f.description)
+  .map(f => ({
+    name: f.name,
+    desc: f.description || "",
+    code: getIdStageString(ch.id, f.stage)
+  }));
     });
   }
 
@@ -421,6 +422,12 @@ modeSelect.addEventListener("change", changeMode);
 
   startQuiz();
 });
+
+  function getIdStageString(id, stage){
+  const idStr = String(id).padStart(3, "0");
+  const stageNum = stage - 1;
+  return `${idStr}-${stageNum}`;
+}
 </script>
 
 </body>
