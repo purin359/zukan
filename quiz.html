@@ -166,6 +166,7 @@ let suggestList = [];
 let current = null;
 let score = 0;
 let mode = "ally";
+let waitingNext = false;
 
 // ===== 正規化 =====
 function normalize(str){
@@ -250,6 +251,9 @@ async function loadData(){
 
 // ===== 問題表示 =====
 function nextQuestion(){
+  waitingNext = false;
+  document.getElementById("answerBtn").innerText = "回答";
+  
   if(quizList.length === 0){
     current = null;
     document.getElementById("desc").innerText = "問題データがありません";
@@ -263,21 +267,22 @@ function nextQuestion(){
   document.getElementById("suggest").innerHTML = "";
   document.getElementById("result").innerHTML = "";
   document.getElementById("answer").focus();
-  waitingNext = false;
-document.getElementById("answerBtn").innerText = "回答";
 }
 
 // ===== 回答 =====
 let waitingNext = false;
 
 function answerButton(){
+
   if(waitingNext){
+    // 次の問題へ
     waitingNext = false;
     document.getElementById("answerBtn").innerText = "回答";
     nextQuestion();
-  }else{
-    check();
+    return;
   }
+
+  check();
 }
 
 function check(){
@@ -287,6 +292,7 @@ function check(){
   if(!input) return;
 
   if(normalize(input) === normalize(current.name)){
+    // 正解
     score++;
     document.getElementById("score").innerText = score;
 
@@ -295,16 +301,22 @@ function check(){
 
     saveBest();
 
+    // 自動で次へ
     setTimeout(nextQuestion, 500);
 
   }else{
+    // ❌ 不正解
     document.getElementById("result").innerHTML =
       `<span class="wrong">不正解</span><br>答え：${current.name}`;
 
+    // スコアリセット
     score = 0;
     document.getElementById("score").innerText = 0;
 
+    // 状態変更
     waitingNext = true;
+
+    // ボタン変更
     document.getElementById("answerBtn").innerText = "次の問題";
   }
 }
