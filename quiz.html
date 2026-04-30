@@ -204,6 +204,7 @@ async function loadData(){
       .map(f => ({
         name: f.name,
         desc: f.description || ""
+        code: String(f.id)
       }));
 
   }else{
@@ -291,7 +292,11 @@ function check(){
   const input = document.getElementById("answer").value.trim();
   if(!input) return;
 
-  if(normalize(input) === normalize(current.name)){
+  if(
+  normalize(input) === normalize(current.name) ||
+  normalize(input) === normalize(current.code)
+){
+    
     // 正解
     score++;
     document.getElementById("score").innerText = score;
