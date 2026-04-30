@@ -313,12 +313,19 @@ function check(){
   if(!current) return;
 
   const input = document.getElementById("answer").value.trim();
-
   const inputNorm = normalize(input);
-  const nameNorm = normalize(current.name);
-  const codeNorm = normalize(current.code);
 
-  if(inputNorm === nameNorm || inputNorm === codeNorm){
+  // ★ 同じ説明文の候補を全部取得
+  const sameDescList = quizList.filter(q => q.desc === current.desc);
+
+  // ★ 正解候補に含まれるかチェック
+  const isCorrect = sameDescList.some(q =>
+    inputNorm === normalize(q.name) ||
+    inputNorm === normalize(q.code)
+  );
+
+  if(isCorrect){
+    // 正解
     score++;
     document.getElementById("score").innerText = score;
 
@@ -330,8 +337,11 @@ function check(){
     setTimeout(nextQuestion, 500);
 
   }else{
+    // 不正解
+    const answers = sameDescList.map(q => q.name).join(" / ");
+
     document.getElementById("result").innerHTML =
-      `<span class="wrong">不正解</span><br>答え：${current.name}`;
+      `<span class="wrong">不正解</span><br>答え：${answers}`;
 
     score = 0;
     document.getElementById("score").innerText = 0;
@@ -340,7 +350,7 @@ function check(){
     document.getElementById("answerBtn").innerText = "次の問題";
   }
 }
-
+  
 // ===== サジェスト =====
 function updateSuggest(){
   const input = document.getElementById("answer").value.trim();
