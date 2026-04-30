@@ -381,10 +381,13 @@ function updateSuggest(){
   
 // ===== 記録 =====
 function getKey(){
-  const rarity = document.getElementById("rarity").value;
+  const type = document.getElementById("typeSelect").value;
+  const rarity = document.getElementById("raritySelect").value;
+  const collab = document.getElementById("collabFilter").value;
   const finalOnly = document.getElementById("finalOnly").checked;
 
-  return `descQuiz_${mode}_${rarity}_${finalOnly}`;
+  // 新しい記録用キー
+  return `descQuiz_v2_${type}_${rarity}_${collab}_${finalOnly}`;
 }
 
 function saveBest(){
