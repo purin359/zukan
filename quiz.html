@@ -441,7 +441,13 @@ function getKey(){
   const finalOnly = document.getElementById("finalOnly").checked;
   const mode = document.getElementById("gameModeSelect").value;
 
-  return `descQuiz_v3_${mode}_${type}_${rarity}_${collab}_${finalOnly}`;
+  // エンドレスは今までの記録を使う
+  if(mode === "endless"){
+    return `descQuiz_${type}_${rarity}_${collab}_${finalOnly}`;
+  }
+
+  // コンプリートだけ新しく別保存
+  return `descQuiz_complete_${type}_${rarity}_${collab}_${finalOnly}`;
 }
 
 function saveBest(){
