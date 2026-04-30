@@ -551,11 +551,11 @@ window.addEventListener("load", () => {
   const answer = document.getElementById("answer");
   const finalOnly = document.getElementById("finalOnly");
 
-  document.getElementById("searchInput").addEventListener("keydown", e => {
+ document.getElementById("answer").addEventListener("keydown", e => {
   if(e.isComposing || e.keyCode === 229) return;
 
   if(e.key === "Enter"){
-    searchFromInput();
+    answerButton();
   }
 });
 
