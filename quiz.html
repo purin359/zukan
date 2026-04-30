@@ -441,15 +441,13 @@ function getKey(){
   const finalOnly = document.getElementById("finalOnly").checked;
   const mode = document.getElementById("gameModeSelect").value;
 
-  // エンドレスは今までの記録を使う
   if(mode === "endless"){
-    return `descQuiz_${type}_${rarity}_${collab}_${finalOnly}`;
+    return `descQuiz_v2_${type}_${rarity}_${collab}_${finalOnly}`;
   }
 
-  // コンプリートだけ新しく別保存
   return `descQuiz_complete_${type}_${rarity}_${collab}_${finalOnly}`;
 }
-
+  
 function saveBest(){
   const key = getKey();
 
