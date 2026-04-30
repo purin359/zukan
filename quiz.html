@@ -95,6 +95,24 @@ button{
 #finalOnlyWrap{
   margin:8px 0;
 }
+
+  .selectRow{
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.selectRow select{
+  flex:1;
+}
+
+.answerBtnWrap{
+  text-align:center;
+}
+
+#answerBtn{
+  min-width:120px;
+}
 </style>
 </head>
 
@@ -102,12 +120,12 @@ button{
 
 <h2>説明文クイズ</h2>
 
-<div class="modeButtons">
-  <button id="allyBtn" class="active" onclick="setMode('ally')">味方</button>
-  <button id="enemyBtn" onclick="setMode('enemy')">敵</button>
-</div>
+<div class="selectRow">
+  <select id="modeSelect">
+    <option value="ally">味方</option>
+    <option value="enemy">敵</option>
+  </select>
 
-<div class="row">
   <select id="rarity">
     <option value="all">全て</option>
     <option value="basic">基本</option>
@@ -118,7 +136,7 @@ button{
     <option value="legendrare">伝説レア</option>
   </select>
 </div>
-
+  
 <div id="finalOnlyWrap">
   <label>
     <input type="checkbox" id="finalOnly">
@@ -135,7 +153,10 @@ button{
 
 <input id="answer" placeholder="キャラ名">
   <div id="suggest"></div>
-<button onclick="check()">回答</button>
+
+<div class="answerBtnWrap">
+  <button id="answerBtn" onclick="answerButton()">回答</button>
+</div>
 
 <div id="result"></div>
 
@@ -156,11 +177,8 @@ function normalize(str){
 }
 
 // ===== モード切替 =====
-function setMode(newMode){
-  mode = newMode;
-
-  document.getElementById("allyBtn").classList.toggle("active", mode === "ally");
-  document.getElementById("enemyBtn").classList.toggle("active", mode === "enemy");
+function changeMode(){
+  mode = document.getElementById("modeSelect").value;
 
   document.getElementById("rarity").style.display =
     mode === "ally" ? "block" : "none";
@@ -170,7 +188,7 @@ function setMode(newMode){
 
   startQuiz();
 }
-
+  
 // ===== データ取得 =====
 async function loadData(){
   const rarity = document.getElementById("rarity").value;
@@ -245,9 +263,23 @@ function nextQuestion(){
   document.getElementById("suggest").innerHTML = "";
   document.getElementById("result").innerHTML = "";
   document.getElementById("answer").focus();
+  waitingNext = false;
+document.getElementById("answerBtn").innerText = "回答";
 }
 
 // ===== 回答 =====
+let waitingNext = false;
+
+function answerButton(){
+  if(waitingNext){
+    waitingNext = false;
+    document.getElementById("answerBtn").innerText = "回答";
+    nextQuestion();
+  }else{
+    check();
+  }
+}
+
 function check(){
   if(!current) return;
 
@@ -271,9 +303,12 @@ function check(){
 
     score = 0;
     document.getElementById("score").innerText = 0;
+
+    waitingNext = true;
+    document.getElementById("answerBtn").innerText = "次の問題";
   }
 }
-
+  
 // ===== サジェスト =====
 function normalizeText(str){
   return (str || "")
@@ -359,6 +394,8 @@ window.addEventListener("load", () => {
   const answer = document.getElementById("answer");
   const rarity = document.getElementById("rarity");
   const finalOnly = document.getElementById("finalOnly");
+  const modeSelect = document.getElementById("modeSelect");
+modeSelect.addEventListener("change", changeMode);
 
   answer.addEventListener("keydown", e => {
     if(e.key === "Enter"){
