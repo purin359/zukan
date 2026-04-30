@@ -19,11 +19,6 @@ input,select,button{
   box-sizing:border-box;
 }
 
-select{
-  flex:1;
-  width:100%;
-}
-
 button{
   background:#4CAF50;
   color:white;
@@ -32,26 +27,15 @@ button{
   cursor:pointer;
 }
 
-.modeButtons{
+.selectRow{
   display:flex;
-  gap:6px;
+  gap:8px;
   margin-bottom:8px;
 }
 
-.modeButtons button{
+.selectRow select{
   flex:1;
-  font-size:14px;
-  padding:8px;
-}
-
-.modeButtons button.active{
-  background:#2196F3;
-}
-
-.row{
-  display:flex;
-  gap:8px;
-  align-items:center;
+  width:100%;
 }
 
 .scoreRow{
@@ -59,6 +43,10 @@ button{
   gap:20px;
   margin:8px 0;
   font-weight:bold;
+}
+
+#finalOnlyWrap{
+  margin:8px 0;
 }
 
 #desc{
@@ -89,29 +77,22 @@ button{
   background:#eee;
 }
 
-.correct{color:blue; font-weight:bold;}
-.wrong{color:red; font-weight:bold;}
-
-#finalOnlyWrap{
-  margin:8px 0;
-}
-
-  .selectRow{
-  display:flex;
-  gap:8px;
-  margin-bottom:8px;
-}
-
-.selectRow select{
-  flex:1;
-}
-
 .answerBtnWrap{
   text-align:center;
 }
 
 #answerBtn{
   min-width:120px;
+}
+
+.correct{
+  color:blue;
+  font-weight:bold;
+}
+
+.wrong{
+  color:red;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -142,7 +123,7 @@ button{
     <option value="1">コラボ</option>
   </select>
 </div>
-  
+
 <div id="finalOnlyWrap">
   <label>
     <input type="checkbox" id="finalOnly">
@@ -157,8 +138,8 @@ button{
 
 <div id="desc">読み込み中...</div>
 
-<input id="answer" placeholder="キャラ名">
-  <div id="suggest"></div>
+<input id="answer" placeholder="キャラ名 または ID">
+<div id="suggest"></div>
 
 <div class="answerBtnWrap">
   <button id="answerBtn" onclick="answerButton()">回答</button>
@@ -171,36 +152,63 @@ let quizList = [];
 let suggestList = [];
 let current = null;
 let score = 0;
-let mode = "ally";
+let waitingNext = false;
 
 // ===== 正規化 =====
 function normalize(str){
   return (str || "")
-    .replace(/\s/g,"")
-    .replace(/　/g,"")
     .toLowerCase()
-    .normalize("NFKC");
+    .normalize("NFKC")
+    .replace(/[ぁ-ん]/g, ch =>
+      String.fromCharCode(ch.charCodeAt(0) + 0x60)
+    )
+    .replace(/\s+/g, "")
+    .replace(/　/g, "");
 }
 
-// ===== モード切替 =====
-function changeMode(){
-  mode = document.getElementById("modeSelect").value;
+// ===== ID生成 =====
+function getAllyIdString(ch, form, index){
+  const idStr = String(ch.id ?? "").padStart(3, "0");
 
-  document.getElementById("rarity").style.display =
-    mode === "ally" ? "block" : "none";
+  let stage;
+  if(form.stage !== undefined){
+    stage = Number(form.stage) - 1;
+  }else{
+    stage = index;
+  }
 
-  document.getElementById("finalOnlyWrap").style.display =
-    mode === "ally" ? "block" : "none";
-
-  startQuiz();
+  return `${idStr}-${stage}`;
 }
-  
+
+function getEnemyIdString(f){
+  return String(f.id ?? "");
+}
+
+// ===== 表示切替 =====
+function updateControlVisibility(){
+  const type = document.getElementById("typeSelect").value;
+  const raritySelect = document.getElementById("raritySelect");
+  const finalOnlyWrap = document.getElementById("finalOnlyWrap");
+
+  if(type === "enemy"){
+    raritySelect.disabled = true;
+    finalOnlyWrap.style.display = "none";
+  }else{
+    raritySelect.disabled = false;
+    finalOnlyWrap.style.display = "block";
+  }
+}
+
 // ===== データ取得 =====
 async function loadData(){
-  const rarity = document.getElementById("rarity").value;
+  const type = document.getElementById("typeSelect").value;
+  const rarity = document.getElementById("raritySelect").value;
+  const collabFilter = document.getElementById("collabFilter").value;
   const finalOnly = document.getElementById("finalOnly").checked;
 
-  if(mode === "enemy"){
+  quizList = [];
+
+  if(type === "enemy"){
     const enemy = await fetch("enemy.json")
       .then(r => r.json())
       .catch(() => []);
@@ -210,7 +218,8 @@ async function loadData(){
       .map(f => ({
         name: f.name,
         desc: f.description || "",
-        code: String(f.id)
+        code: getEnemyIdString(f),
+        collab: f.collab ?? 0
       }));
 
   }else{
@@ -244,22 +253,19 @@ async function loadData(){
       }
 
       return forms
-  .filter(f => f.name && f.description)
-  .map(f => ({
-    name: f.name,
-    desc: f.description || "",
-    code: getIdStageString(ch.id, f.stage),
-    collab: ch.collab ?? 0
-  }));
+        .filter(f => f.name && f.description)
+        .map((f, index) => ({
+          name: f.name,
+          desc: f.description || "",
+          code: getAllyIdString(ch, f, index),
+          collab: ch.collab ?? 0
+        }));
     });
   }
 
-  // ★コラボフィルター適用
-const collabFilter = document.getElementById("collabFilter").value;
-
-if(collabFilter !== "all"){
-  quizList = quizList.filter(q => String(q.collab) === collabFilter);
-}
+  if(collabFilter !== "all"){
+    quizList = quizList.filter(q => String(q.collab) === collabFilter);
+  }
 
   suggestList = quizList.map(q => q.name);
 }
@@ -268,10 +274,12 @@ if(collabFilter !== "all"){
 function nextQuestion(){
   waitingNext = false;
   document.getElementById("answerBtn").innerText = "回答";
-  
+
   if(quizList.length === 0){
     current = null;
     document.getElementById("desc").innerText = "問題データがありません";
+    document.getElementById("answer").value = "";
+    document.getElementById("suggest").innerHTML = "";
     return;
   }
 
@@ -284,15 +292,9 @@ function nextQuestion(){
   document.getElementById("answer").focus();
 }
 
-// ===== 回答 =====
-let waitingNext = false;
-
+// ===== 回答ボタン =====
 function answerButton(){
-
   if(waitingNext){
-    // 次の問題へ
-    waitingNext = false;
-    document.getElementById("answerBtn").innerText = "回答";
     nextQuestion();
     return;
   }
@@ -300,18 +302,18 @@ function answerButton(){
   check();
 }
 
+// ===== 判定 =====
 function check(){
   if(!current) return;
 
   const input = document.getElementById("answer").value.trim();
   if(!input) return;
 
-  if(
-  normalize(input) === normalize(current.name) ||
-  normalize(input) === normalize(current.code)
-){
-    
-    // 正解
+  const inputNorm = normalize(input);
+  const nameNorm = normalize(current.name);
+  const codeNorm = normalize(current.code);
+
+  if(inputNorm === nameNorm || inputNorm === codeNorm){
     score++;
     document.getElementById("score").innerText = score;
 
@@ -320,37 +322,21 @@ function check(){
 
     saveBest();
 
-    // 自動で次へ
     setTimeout(nextQuestion, 500);
 
   }else{
-    // ❌ 不正解
     document.getElementById("result").innerHTML =
-      `<span class="wrong">不正解</span><br>答え：${current.name}`;
+      `<span class="wrong">不正解</span><br>答え：${current.name}<br>ID：${current.code}`;
 
-    // スコアリセット
     score = 0;
     document.getElementById("score").innerText = 0;
 
-    // 状態変更
     waitingNext = true;
-
-    // ボタン変更
     document.getElementById("answerBtn").innerText = "次の問題";
   }
 }
-  
-// ===== サジェスト =====
-function normalizeText(str){
-  return (str || "")
-    .toLowerCase()
-    .normalize("NFKC")
-    .replace(/[ぁ-ん]/g, ch =>
-      String.fromCharCode(ch.charCodeAt(0) + 0x60)
-    )
-    .replace(/\s+/g, "");
-}
 
+// ===== サジェスト =====
 function updateSuggest(){
   const input = document.getElementById("answer").value.trim();
   const suggest = document.getElementById("suggest");
@@ -359,10 +345,10 @@ function updateSuggest(){
 
   if(!input) return;
 
-  const key = normalizeText(input);
+  const key = normalize(input);
 
   const list = suggestList
-    .filter(name => normalizeText(name).includes(key))
+    .filter(name => normalize(name).includes(key))
     .slice(0, 10);
 
   list.forEach(name => {
@@ -378,7 +364,7 @@ function updateSuggest(){
     suggest.appendChild(div);
   });
 }
-  
+
 // ===== 記録 =====
 function getKey(){
   const type = document.getElementById("typeSelect").value;
@@ -386,7 +372,6 @@ function getKey(){
   const collab = document.getElementById("collabFilter").value;
   const finalOnly = document.getElementById("finalOnly").checked;
 
-  // 新しい記録用キー
   return `descQuiz_v2_${type}_${rarity}_${collab}_${finalOnly}`;
 }
 
@@ -408,48 +393,48 @@ function loadBest(){
 
 // ===== 開始・リセット =====
 async function startQuiz(){
+  updateControlVisibility();
+
   score = 0;
   current = null;
+  waitingNext = false;
   quizList = [];
   suggestList = [];
 
   document.getElementById("score").innerText = 0;
+  document.getElementById("best").innerText = 0;
   document.getElementById("desc").innerText = "読み込み中...";
   document.getElementById("answer").value = "";
   document.getElementById("suggest").innerHTML = "";
   document.getElementById("result").innerHTML = "";
+  document.getElementById("answerBtn").innerText = "回答";
 
   await loadData();
   loadBest();
   nextQuestion();
 }
 
+function resetQuiz(){
+  startQuiz();
+}
+
+// ===== 初期設定 =====
 window.addEventListener("load", () => {
   const answer = document.getElementById("answer");
-  const rarity = document.getElementById("rarity");
   const finalOnly = document.getElementById("finalOnly");
-  const modeSelect = document.getElementById("modeSelect");
-modeSelect.addEventListener("change", changeMode);
 
   answer.addEventListener("keydown", e => {
     if(e.key === "Enter"){
-      check();
+      answerButton();
     }
   });
 
   answer.addEventListener("input", updateSuggest);
 
-  rarity.addEventListener("change", startQuiz);
   finalOnly.addEventListener("change", startQuiz);
 
   startQuiz();
 });
-
-  function getIdStageString(id, stage){
-  const idStr = String(id).padStart(3, "0");
-  const stageNum = stage - 1;
-  return `${idStr}-${stageNum}`;
-}
 </script>
 
 </body>
