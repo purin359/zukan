@@ -308,18 +308,6 @@ function check(){
 
   const input = document.getElementById("answer").value.trim();
 
-// 空欄でも判定させる（不正解扱い）
-const inputNorm = normalize(input);
-const nameNorm = normalize(current.name);
-const codeNorm = normalize(current.code);
-
-if(inputNorm === nameNorm || inputNorm === codeNorm){
-  // 正解処理
-}else{
-  // 不正解処理
-}
-  
-
   const inputNorm = normalize(input);
   const nameNorm = normalize(current.name);
   const codeNorm = normalize(current.code);
