@@ -377,11 +377,12 @@ function check(){
       `<span class="correct">正解！</span>`;
 
     if(gameMode === "complete"){
-      answeredCodes.add(matched.code);
-      updateRemainCount();
-    }else{
-      saveBest();
-    }
+  answeredCodes.add(matched.code);
+  updateRemainCount();
+  saveBest();
+}else{
+  saveBest();
+}
 
     setTimeout(nextQuestion, 500);
 
@@ -455,29 +456,44 @@ function getKey(){
 function saveBest(){
   const key = getKey();
 
+  // ===== コンプリート =====
   if(gameMode === "complete"){
     const timeText = formatTime(elapsedTime);
-    const clearText = `${score}問 / タイム：${timeText}`;
+    const newText = isCleared
+      ? `${score}問 / タイム：${timeText}`
+      : `${score}問`;
 
     const old = localStorage.getItem(key);
 
     if(!old){
-      localStorage.setItem(key, clearText);
-      document.getElementById("best").innerText = clearText;
+      localStorage.setItem(key, newText);
+      document.getElementById("best").innerText = newText;
       return;
     }
+
+    const oldScoreMatch = old.match(/^(\d+)問/);
+    const oldScore = oldScoreMatch ? Number(oldScoreMatch[1]) : 0;
 
     const oldTimeMatch = old.match(/タイム：(\d{2}:\d{2})/);
     const oldMs = oldTimeMatch ? timeToMs(oldTimeMatch[1]) : Infinity;
 
-    if(elapsedTime < oldMs){
-      localStorage.setItem(key, clearText);
-      document.getElementById("best").innerText = clearText;
+    // スコアが高いなら保存
+    if(score > oldScore){
+      localStorage.setItem(key, newText);
+      document.getElementById("best").innerText = newText;
+      return;
+    }
+
+    // スコア同点で、クリア済み同士ならタイムが短い方を保存
+    if(score === oldScore && isCleared && elapsedTime < oldMs){
+      localStorage.setItem(key, newText);
+      document.getElementById("best").innerText = newText;
     }
 
     return;
   }
 
+  // ===== エンドレス =====
   const best = Number(localStorage.getItem(key) || 0);
 
   if(score > best){
