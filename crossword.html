@@ -54,6 +54,7 @@ button{
   line-height:1.6;
 }
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -80,6 +81,8 @@ button{
 </label>
 
 <button onclick="makeCrossword()">作成</button>
+
+<button onclick="saveImage()">画像保存</button>
 
 <div id="status"></div>
 <div id="grid"></div>
@@ -411,6 +414,20 @@ function showUsed(used){
 }
 
 window.addEventListener("load", makeCrossword);
+
+async function saveImage(){
+  const target = document.getElementById("grid");
+
+  const canvas = await html2canvas(target,{
+    backgroundColor:"#000",
+    scale:2
+  });
+
+  const link = document.createElement("a");
+  link.download = "crossword.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
 </script>
 
 </body>
