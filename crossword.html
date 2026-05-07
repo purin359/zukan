@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>キャラ名クロスワード試作</title>
+<style>
+body{
+  font-family:sans-serif;
+  padding:16px;
+  max-width:700px;
+  margin:auto;
+}
+
+button,select,input{
+  font-size:16px;
+  padding:8px;
+  margin:4px;
+}
+
+#grid{
+  display:grid;
+  gap:2px;
+  margin-top:16px;
+  justify-content:start;
+}
+
+.cell{
+  width:28px;
+  height:28px;
+  border:1px solid #ccc;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  background:white;
+}
+
+.empty{
+  border:1px solid transparent;
+  background:transparent;
+}
+
+#used{
+  margin-top:16px;
+}
+</style>
+</head>
+<body>
+
+<h2>キャラ名クロスワード試作</h2>
+
+<select id="rarity">
+  <option value="all">全て</option>
+  <option value="basic">基本</option>
+  <option value="ex">EX</option>
+  <option value="rare">レア</option>
+  <option value="superrare">激レア</option>
+  <option value="ultrarare">超激レア</option>
+  <option value="legendrare">伝説レア</option>
+</select>
+
+<input id="wordCount" type="number" value="10" min="3" max="30">
+<button onclick="makeCrossword()">作成</button>
+
+<div id="grid"></div>
+<div id="used"></div>
+
+<script>
+const SIZE = 25;
+let allNames = [];
+
+// ===== JSON読み込み =====
+async function loadNames(){
+  const fileMap = {
+    basic:"basic.json",
+    ex:"ex.json",
+    rare:"rare.json",
+    superrare:"superrare.json",
+    ultrarare:"ultrarare.json",
+    legendrare:"legendrare.json"
+  };
+
+  const rarity = document.getElementById("rarity").value;
+
+  const files =
+    rarity === "all"
+      ? Object.values(fileMap)
+      : [fileMap[rarity]];
+
+  const loaded = await Promise.all(
+    files.map(file => fetch(file).then(r=>r.json()).catch(()=>[]))
+  );
+
+  const data = loaded.flat();
+
+  allNames = [];
+
+  data.forEach(ch=>{
+    (ch.forms || []).forEach(f=>{
+      if(f.name){
+        allNames.push(cleanName(f.name));
+      }
+    });
+  });
+
+  allNames = [...new Set(allNames)]
+    .filter(n => n.length >= 2 && n.length <= 12);
+}
+
+function cleanName(name){
+  return String(name)
+    .replace(/\s+/g,"")
+    .replace(/　/g,"")
+    .replace(/\n/g,"")
+    .trim();
+}
+
+function shuffle(arr){
+  return [...arr].sort(()=>Math.random()-0.5);
+}
+
+// ===== 盤面 =====
+function createBoard(){
+  return Array.from({length:SIZE},()=>Array(SIZE).fill(""));
+}
+
+function canPlace(board, word, x, y, dir){
+  const dx = dir === "H" ? 1 : 0;
+  const dy = dir === "V" ? 1 : 0;
+
+  for(let i=0;i<word.length;i++){
+    const nx = x + dx*i;
+    const ny = y + dy*i;
+
+    if(nx < 0 || ny < 0 || nx >= SIZE || ny >= SIZE) return false;
+
+    const cell = board[ny][nx];
+
+    if(cell && cell !== word[i]) return false;
+  }
+
+  return true;
+}
+
+function placeWord(board, word, x, y, dir){
+  const dx = dir === "H" ? 1 : 0;
+  const dy = dir === "V" ? 1 : 0;
+
+  for(let i=0;i<word.length;i++){
+    board[y + dy*i][x + dx*i] = word[i];
+  }
+}
+
+function findPlace(board, word){
+  const candidates = [];
+
+  for(let y=0;y<SIZE;y++){
+    for(let x=0;x<SIZE;x++){
+      const cell = board[y][x];
+      if(!cell) continue;
+
+      for(let i=0;i<word.length;i++){
+        if(word[i] !== cell) continue;
+
+        // 横置き
+        candidates.push({
+          x:x-i,
+          y:y,
+          dir:"H"
+        });
+
+        // 縦置き
+        candidates.push({
+          x:x,
+          y:y-i,
+          dir:"V"
+        });
+      }
+    }
+  }
+
+  const shuffled = shuffle(candidates);
+
+  return shuffled.find(p => canPlace(board, word, p.x, p.y, p.dir));
+}
+
+// ===== 作成 =====
+async function makeCrossword(){
+  await loadNames();
+
+  const count = Number(document.getElementById("wordCount").value || 10);
+  const words = shuffle(allNames).slice(0, count * 3);
+
+  const board = createBoard();
+  const used = [];
+
+  const first = words.shift();
+  const startX = Math.floor((SIZE - first.length) / 2);
+  const startY = Math.floor(SIZE / 2);
+
+  placeWord(board, first, startX, startY, "H");
+  used.push(first);
+
+  for(const word of words){
+    if(used.length >= count) break;
+
+    const pos = findPlace(board, word);
+
+    if(pos){
+      placeWord(board, word, pos.x, pos.y, pos.dir);
+      used.push(word);
+    }
+  }
+
+  drawBoard(board);
+  showUsed(used);
+}
+
+// ===== 表示 =====
+function drawBoard(board){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  grid.style.gridTemplateColumns = `repeat(${SIZE}, 28px)`;
+
+  board.forEach(row=>{
+    row.forEach(cell=>{
+      const div = document.createElement("div");
+      div.className = cell ? "cell" : "cell empty";
+      div.textContent = cell;
+      grid.appendChild(div);
+    });
+  });
+}
+
+function showUsed(used){
+  document.getElementById("used").innerHTML =
+    `<b>配置できた名前：${used.length}個</b><br>` +
+    used.join("、");
+}
+
+window.addEventListener("load", makeCrossword);
+</script>
+
+</body>
+</html>
