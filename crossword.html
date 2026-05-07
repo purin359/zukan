@@ -2,12 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>キャラ名クロスワード試作</title>
+<title>高密度キャラ名クロスワード</title>
 <style>
 body{
   font-family:sans-serif;
   padding:16px;
-  max-width:700px;
+  max-width:900px;
   margin:auto;
 }
 
@@ -17,37 +17,47 @@ button,select,input{
   margin:4px;
 }
 
+button{
+  background:#4CAF50;
+  color:white;
+  border:none;
+  border-radius:8px;
+}
+
 #grid{
   display:grid;
-  gap:2px;
+  gap:1px;
   margin-top:16px;
   justify-content:start;
+  background:#000;
+  padding:4px;
+  overflow:auto;
 }
 
 .cell{
-  width:28px;
-  height:28px;
-  border:1px solid #ccc;
+  width:26px;
+  height:26px;
+  background:white;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:18px;
   font-weight:bold;
-  background:white;
 }
 
 .empty{
-  border:1px solid transparent;
-  background:transparent;
+  background:#000;
 }
 
 #used{
   margin-top:16px;
+  line-height:1.6;
 }
 </style>
 </head>
 <body>
 
-<h2>キャラ名クロスワード試作</h2>
+<h2>高密度キャラ名クロスワード試作</h2>
 
 <select id="rarity">
   <option value="all">全て</option>
@@ -59,17 +69,26 @@ button,select,input{
   <option value="legendrare">伝説レア</option>
 </select>
 
-<input id="wordCount" type="number" value="10" min="3" max="30">
+<label>
+  目標単語数
+  <input id="wordCount" type="number" value="80" min="10" max="200">
+</label>
+
+<label>
+  試行回数
+  <input id="tryCount" type="number" value="300" min="10" max="2000">
+</label>
+
 <button onclick="makeCrossword()">作成</button>
 
+<div id="status"></div>
 <div id="grid"></div>
 <div id="used"></div>
 
 <script>
-const SIZE = 25;
+const SIZE = 35;
 let allNames = [];
 
-// ===== JSON読み込み =====
 async function loadNames(){
   const fileMap = {
     basic:"basic.json",
@@ -82,10 +101,9 @@ async function loadNames(){
 
   const rarity = document.getElementById("rarity").value;
 
-  const files =
-    rarity === "all"
-      ? Object.values(fileMap)
-      : [fileMap[rarity]];
+  const files = rarity === "all"
+    ? Object.values(fileMap)
+    : [fileMap[rarity]];
 
   const loaded = await Promise.all(
     files.map(file => fetch(file).then(r=>r.json()).catch(()=>[]))
@@ -104,7 +122,7 @@ async function loadNames(){
   });
 
   allNames = [...new Set(allNames)]
-    .filter(n => n.length >= 2 && n.length <= 12);
+    .filter(n => n.length >= 2 && n.length <= 16);
 }
 
 function cleanName(name){
@@ -116,62 +134,58 @@ function cleanName(name){
 }
 
 function shuffle(arr){
-  return [...arr].sort(()=>Math.random()-0.5);
+  return [...arr].sort(()=>Math.random() - 0.5);
 }
 
-// ===== 盤面 =====
 function createBoard(){
   return Array.from({length:SIZE},()=>Array(SIZE).fill(""));
+}
+
+function cloneBoard(board){
+  return board.map(row => [...row]);
+}
+
+function inBoard(x,y){
+  return x >= 0 && y >= 0 && x < SIZE && y < SIZE;
 }
 
 function canPlace(board, word, x, y, dir){
   const dx = dir === "H" ? 1 : 0;
   const dy = dir === "V" ? 1 : 0;
 
-  // 範囲外チェック
   for(let i=0;i<word.length;i++){
     const nx = x + dx*i;
     const ny = y + dy*i;
 
-    if(nx < 0 || ny < 0 || nx >= SIZE || ny >= SIZE) return false;
+    if(!inBoard(nx,ny)) return false;
 
     const cell = board[ny][nx];
-
-    // 既存文字と違う文字が重なるのは不可
     if(cell && cell !== word[i]) return false;
   }
 
-  // 単語の前後に文字がある場合は不可
-  // 例：ブリキネコ + ネコビルダー → ブリキネコビルダー を防ぐ
   const beforeX = x - dx;
   const beforeY = y - dy;
   const afterX = x + dx * word.length;
   const afterY = y + dy * word.length;
 
-  if(inBoard(beforeX, beforeY) && board[beforeY][beforeX]) return false;
-  if(inBoard(afterX, afterY) && board[afterY][afterX]) return false;
+  if(inBoard(beforeX,beforeY) && board[beforeY][beforeX]) return false;
+  if(inBoard(afterX,afterY) && board[afterY][afterX]) return false;
 
-  // 横置きなら上下、縦置きなら左右に余計な文字がある場合は不可
   for(let i=0;i<word.length;i++){
     const nx = x + dx*i;
     const ny = y + dy*i;
 
-    const cell = board[ny][nx];
-    const isCross = cell === word[i];
+    const isCross = board[ny][nx] === word[i];
 
     if(dir === "H"){
-      // 交差している場所は縦方向に文字があってOK
-      // ただし、交差していない場所の上下に文字があると
-      // ハッカーぐ のような変な連結が起きるので不可
       if(!isCross){
-        if(inBoard(nx, ny - 1) && board[ny - 1][nx]) return false;
-        if(inBoard(nx, ny + 1) && board[ny + 1][nx]) return false;
+        if(inBoard(nx,ny-1) && board[ny-1][nx]) return false;
+        if(inBoard(nx,ny+1) && board[ny+1][nx]) return false;
       }
     }else{
-      // 縦置きも同じ
       if(!isCross){
-        if(inBoard(nx - 1, ny) && board[ny][nx - 1]) return false;
-        if(inBoard(nx + 1, ny) && board[ny][nx + 1]) return false;
+        if(inBoard(nx-1,ny) && board[ny][nx-1]) return false;
+        if(inBoard(nx+1,ny) && board[ny][nx+1]) return false;
       }
     }
   }
@@ -179,27 +193,6 @@ function canPlace(board, word, x, y, dir){
   return true;
 }
 
-  function countCross(board, word, x, y, dir){
-  const dx = dir === "H" ? 1 : 0;
-  const dy = dir === "V" ? 1 : 0;
-  let count = 0;
-
-  for(let i=0;i<word.length;i++){
-    const nx = x + dx*i;
-    const ny = y + dy*i;
-
-    if(board[ny][nx] === word[i]){
-      count++;
-    }
-  }
-
-  return count;
-}
-
-  function inBoard(x, y){
-  return x >= 0 && y >= 0 && x < SIZE && y < SIZE;
-}
-  
 function placeWord(board, word, x, y, dir){
   const dx = dir === "H" ? 1 : 0;
   const dy = dir === "V" ? 1 : 0;
@@ -209,7 +202,65 @@ function placeWord(board, word, x, y, dir){
   }
 }
 
-function findPlace(board, word){
+function countCross(board, word, x, y, dir){
+  const dx = dir === "H" ? 1 : 0;
+  const dy = dir === "V" ? 1 : 0;
+  let count = 0;
+
+  for(let i=0;i<word.length;i++){
+    const nx = x + dx*i;
+    const ny = y + dy*i;
+
+    if(board[ny][nx] === word[i]) count++;
+  }
+
+  return count;
+}
+
+function centerScore(word, x, y, dir){
+  const dx = dir === "H" ? 1 : 0;
+  const dy = dir === "V" ? 1 : 0;
+
+  const endX = x + dx * (word.length - 1);
+  const endY = y + dy * (word.length - 1);
+
+  const cx = (x + endX) / 2;
+  const cy = (y + endY) / 2;
+
+  const center = SIZE / 2;
+  const dist = Math.abs(cx - center) + Math.abs(cy - center);
+
+  return SIZE - dist;
+}
+
+function getBounds(board){
+  let minX = SIZE, minY = SIZE, maxX = 0, maxY = 0;
+  let filled = 0;
+
+  for(let y=0;y<SIZE;y++){
+    for(let x=0;x<SIZE;x++){
+      if(board[y][x]){
+        filled++;
+        minX = Math.min(minX,x);
+        minY = Math.min(minY,y);
+        maxX = Math.max(maxX,x);
+        maxY = Math.max(maxY,y);
+      }
+    }
+  }
+
+  if(filled === 0){
+    return {minX:0,minY:0,maxX:0,maxY:0,area:0,filled:0};
+  }
+
+  return {
+    minX,minY,maxX,maxY,
+    area:(maxX-minX+1) * (maxY-minY+1),
+    filled
+  };
+}
+
+function findBestPlace(board, word){
   const candidates = [];
 
   for(let y=0;y<SIZE;y++){
@@ -220,43 +271,41 @@ function findPlace(board, word){
       for(let i=0;i<word.length;i++){
         if(word[i] !== cell) continue;
 
-        // 横置き
-        candidates.push({
-          x:x-i,
-          y:y,
-          dir:"H"
-        });
-
-        // 縦置き
-        candidates.push({
-          x:x,
-          y:y-i,
-          dir:"V"
-        });
+        candidates.push({x:x-i,y,dir:"H"});
+        candidates.push({x,y:y-i,dir:"V"});
       }
     }
   }
 
-  const valid = shuffled
-  .filter(p => canPlace(board, word, p.x, p.y, p.dir))
-  .map(p => ({
-    ...p,
-    cross: countCross(board, word, p.x, p.y, p.dir)
-  }))
-  .sort((a,b) => b.cross - a.cross);
+  let best = null;
+  let bestScore = -Infinity;
 
-return valid[0];
+  shuffle(candidates).forEach(p=>{
+    if(!canPlace(board, word, p.x, p.y, p.dir)) return;
+
+    const cross = countCross(board, word, p.x, p.y, p.dir);
+    const center = centerScore(word, p.x, p.y, p.dir);
+
+    const score =
+      cross * 1000 +
+      word.length * 12 +
+      center * 3 +
+      Math.random();
+
+    if(score > bestScore){
+      bestScore = score;
+      best = p;
+    }
+  });
+
+  return best;
 }
 
-// ===== 作成 =====
-async function makeCrossword(){
-  await loadNames();
-
-  const count = Number(document.getElementById("wordCount").value || 10);
-  const words = shuffle(allNames).slice(0, count * 3);
-
+function makeOne(words, targetCount){
   const board = createBoard();
   const used = [];
+
+  words.sort((a,b)=>b.length-a.length);
 
   const first = words.shift();
   const startX = Math.floor((SIZE - first.length) / 2);
@@ -265,35 +314,94 @@ async function makeCrossword(){
   placeWord(board, first, startX, startY, "H");
   used.push(first);
 
-  for(const word of words){
-    if(used.length >= count) break;
+  let retryWords = shuffle(words);
 
-    const pos = findPlace(board, word);
+  for(let pass=0; pass<3; pass++){
+    for(const word of retryWords){
+      if(used.length >= targetCount) break;
+      if(used.includes(word)) continue;
 
-    if(pos){
-      placeWord(board, word, pos.x, pos.y, pos.dir);
-      used.push(word);
+      const pos = findBestPlace(board, word);
+
+      if(pos){
+        placeWord(board, word, pos.x, pos.y, pos.dir);
+        used.push(word);
+      }
+    }
+
+    retryWords = shuffle(words);
+  }
+
+  const bounds = getBounds(board);
+
+  const score =
+    used.length * 10000 +
+    bounds.filled * 50 -
+    bounds.area;
+
+  return {
+    board: cloneBoard(board),
+    used:[...used],
+    score,
+    bounds
+  };
+}
+
+async function makeCrossword(){
+  document.getElementById("status").innerText = "生成中...";
+  await loadNames();
+
+  const targetCount = Number(document.getElementById("wordCount").value || 80);
+  const tryCount = Number(document.getElementById("tryCount").value || 300);
+
+  let best = null;
+
+  for(let t=0;t<tryCount;t++){
+    const words = shuffle(allNames).slice(0, targetCount * 4);
+    const result = makeOne(words, targetCount);
+
+    if(!best || result.score > best.score){
+      best = result;
+    }
+
+    if(t % 20 === 0){
+      document.getElementById("status").innerText =
+        `生成中... ${t}/${tryCount}`;
+      await new Promise(r=>setTimeout(r,0));
     }
   }
 
-  drawBoard(board);
-  showUsed(used);
+  document.getElementById("status").innerText =
+    `完成：${best.used.length}個配置`;
+
+  drawBoard(best.board, best.bounds);
+  showUsed(best.used);
 }
 
-// ===== 表示 =====
-function drawBoard(board){
+function drawBoard(board, bounds){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-  grid.style.gridTemplateColumns = `repeat(${SIZE}, 28px)`;
 
-  board.forEach(row=>{
-    row.forEach(cell=>{
+  const minX = Math.max(0, bounds.minX - 1);
+  const minY = Math.max(0, bounds.minY - 1);
+  const maxX = Math.min(SIZE - 1, bounds.maxX + 1);
+  const maxY = Math.min(SIZE - 1, bounds.maxY + 1);
+
+  const width = maxX - minX + 1;
+
+  grid.style.gridTemplateColumns = `repeat(${width}, 26px)`;
+
+  for(let y=minY;y<=maxY;y++){
+    for(let x=minX;x<=maxX;x++){
       const div = document.createElement("div");
+      const cell = board[y][x];
+
       div.className = cell ? "cell" : "cell empty";
       div.textContent = cell;
+
       grid.appendChild(div);
-    });
-  });
+    }
+  }
 }
 
 function showUsed(used){
