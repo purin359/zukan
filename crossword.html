@@ -179,6 +179,23 @@ function canPlace(board, word, x, y, dir){
   return true;
 }
 
+  function countCross(board, word, x, y, dir){
+  const dx = dir === "H" ? 1 : 0;
+  const dy = dir === "V" ? 1 : 0;
+  let count = 0;
+
+  for(let i=0;i<word.length;i++){
+    const nx = x + dx*i;
+    const ny = y + dy*i;
+
+    if(board[ny][nx] === word[i]){
+      count++;
+    }
+  }
+
+  return count;
+}
+
   function inBoard(x, y){
   return x >= 0 && y >= 0 && x < SIZE && y < SIZE;
 }
@@ -220,9 +237,15 @@ function findPlace(board, word){
     }
   }
 
-  const shuffled = shuffle(candidates);
+  const valid = shuffled
+  .filter(p => canPlace(board, word, p.x, p.y, p.dir))
+  .map(p => ({
+    ...p,
+    cross: countCross(board, word, p.x, p.y, p.dir)
+  }))
+  .sort((a,b) => b.cross - a.cross);
 
-  return shuffled.find(p => canPlace(board, word, p.x, p.y, p.dir));
+return valid[0];
 }
 
 // ===== 作成 =====
