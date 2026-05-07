@@ -128,6 +128,7 @@ function canPlace(board, word, x, y, dir){
   const dx = dir === "H" ? 1 : 0;
   const dy = dir === "V" ? 1 : 0;
 
+  // 範囲外チェック
   for(let i=0;i<word.length;i++){
     const nx = x + dx*i;
     const ny = y + dy*i;
@@ -136,12 +137,52 @@ function canPlace(board, word, x, y, dir){
 
     const cell = board[ny][nx];
 
+    // 既存文字と違う文字が重なるのは不可
     if(cell && cell !== word[i]) return false;
+  }
+
+  // 単語の前後に文字がある場合は不可
+  // 例：ブリキネコ + ネコビルダー → ブリキネコビルダー を防ぐ
+  const beforeX = x - dx;
+  const beforeY = y - dy;
+  const afterX = x + dx * word.length;
+  const afterY = y + dy * word.length;
+
+  if(inBoard(beforeX, beforeY) && board[beforeY][beforeX]) return false;
+  if(inBoard(afterX, afterY) && board[afterY][afterX]) return false;
+
+  // 横置きなら上下、縦置きなら左右に余計な文字がある場合は不可
+  for(let i=0;i<word.length;i++){
+    const nx = x + dx*i;
+    const ny = y + dy*i;
+
+    const cell = board[ny][nx];
+    const isCross = cell === word[i];
+
+    if(dir === "H"){
+      // 交差している場所は縦方向に文字があってOK
+      // ただし、交差していない場所の上下に文字があると
+      // ハッカーぐ のような変な連結が起きるので不可
+      if(!isCross){
+        if(inBoard(nx, ny - 1) && board[ny - 1][nx]) return false;
+        if(inBoard(nx, ny + 1) && board[ny + 1][nx]) return false;
+      }
+    }else{
+      // 縦置きも同じ
+      if(!isCross){
+        if(inBoard(nx - 1, ny) && board[ny][nx - 1]) return false;
+        if(inBoard(nx + 1, ny) && board[ny][nx + 1]) return false;
+      }
+    }
   }
 
   return true;
 }
 
+  function inBoard(x, y){
+  return x >= 0 && y >= 0 && x < SIZE && y < SIZE;
+}
+  
 function placeWord(board, word, x, y, dir){
   const dx = dir === "H" ? 1 : 0;
   const dy = dir === "V" ? 1 : 0;
