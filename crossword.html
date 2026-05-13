@@ -39,7 +39,8 @@ input,button,select{
   display:grid;
   justify-content:center;
   gap:0;
-  margin-top:20px;
+  margin:20px auto 0 auto;
+  width:max-content;
 }
 
 .cell{
@@ -62,21 +63,16 @@ input,button,select{
   border:none;
   padding:0;
   margin:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
   text-align:center;
 
-  font-size:24px;
+  font-size:22px;
   font-weight:bold;
-  line-height:1;
+  line-height:40px;
 
   background:transparent;
   box-sizing:border-box;
 }
-
+  
 .cell input:focus{
   outline:2px solid #4CAF50;
   position:relative;
@@ -727,6 +723,31 @@ div.addEventListener("click", () => {
     input.focus();
     input.select();
   }
+}
+
+  function saveBoardImage(){
+
+  const board = document.getElementById("board");
+
+  html2canvas(board, {
+    backgroundColor: "#ffffff",
+    scale: 2,
+    width: colCount * 40,
+    height: rowCount * 40,
+    windowWidth: colCount * 40,
+    windowHeight: rowCount * 40
+  }).then(canvas => {
+
+    const link = document.createElement("a");
+
+    const name =
+      document.getElementById("boardName").value.trim() || "crossword";
+
+    link.download = name + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+  });
 }
 
 window.addEventListener("load", async () => {
