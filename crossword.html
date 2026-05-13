@@ -10,7 +10,7 @@
 <style>
 :root{
   --cell-size:40px;
-  --cell-font:22px;
+  --cell-font:15px;
 }
 
 body{
@@ -139,14 +139,20 @@ input,button,select{
   border:none;
   padding:0;
   margin:0;
+
   text-align:center;
-  font-size:var(--cell-font);
+
+  font-size:calc(var(--cell-size) * 0.55);
   font-weight:bold;
-  line-height:var(--cell-size);
+
+  line-height:1;
+
   background:transparent;
   box-sizing:border-box;
-}
 
+  transform:translateY(1px);
+}
+  
 .cell input:focus{
   outline:2px solid #4CAF50;
   position:relative;
