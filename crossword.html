@@ -68,6 +68,24 @@ input, button{
 .mode{
   margin-top:10px;
 }
+
+  .searchArea{
+  max-width:700px;
+  margin:30px auto;
+  padding:15px;
+  background:white;
+  border:1px solid #ccc;
+  border-radius:10px;
+}
+
+.searchArea input{
+  margin:6px;
+}
+
+.resultItem{
+  padding:6px 10px;
+  border-bottom:1px solid #ddd;
+}
 </style>
 </head>
 
@@ -94,6 +112,45 @@ input, button{
   </select>
 
   <button onclick="deleteBoard()">削除</button>
+</div>
+
+  <div class="searchArea">
+  <h2>キャラ名検索</h2>
+
+  <button onclick="loadCharacterNames()">JSON読み込み</button>
+
+  <div>
+    文字数：
+    <input type="number" id="searchLength" min="1" placeholder="例: 5">
+  </div>
+
+  <div>
+    検索文字：
+    <input type="text" id="searchText" placeholder="例: ネコ">
+  </div>
+
+  <div>
+    位置指定：
+    <input type="number" id="searchPos" min="1" placeholder="例: 2">
+    文字目にある
+  </div>
+
+  <div>
+    <label>
+      <input type="checkbox" id="startsWithCheck">
+      頭にある
+    </label>
+
+    <label>
+      <input type="checkbox" id="endsWithCheck">
+      末尾にある
+    </label>
+  </div>
+
+  <button onclick="searchCharacters()">検索</button>
+
+  <p id="searchCount"></p>
+  <div id="searchResults"></div>
 </div>
 
   <div class="mode">
@@ -270,6 +327,110 @@ function updateBoardList(){
     option.value = name;
     option.textContent = name;
     select.appendChild(option);
+  });
+}
+
+  let characterNames = [];
+
+const jsonFiles = [
+  "basic.json",
+  "EX.json",
+  "rare.json",
+  "superrare.json",
+  "ultrarare.json",
+  "legendrare.json"
+];
+
+async function loadCharacterNames(){
+  characterNames = [];
+
+  for(const file of jsonFiles){
+    try{
+      const res = await fetch(file);
+      const data = await res.json();
+
+      data.forEach(char => {
+        if(char.forms){
+          char.forms.forEach(form => {
+            if(form.name){
+              characterNames.push({
+                name: form.name,
+                id: char.id,
+                rarity: char.rarity,
+                stage: form.stage,
+                file: file
+              });
+            }
+          });
+        }
+      });
+
+    }catch(e){
+      console.warn(file + " を読み込めませんでした", e);
+    }
+  }
+
+  document.getElementById("searchCount").textContent =
+    characterNames.length + "件の名前を読み込みました";
+
+  searchCharacters();
+}
+
+function searchCharacters(){
+  const lengthValue = document.getElementById("searchLength").value;
+  const text = document.getElementById("searchText").value.trim();
+  const posValue = document.getElementById("searchPos").value;
+  const startsWith = document.getElementById("startsWithCheck").checked;
+  const endsWith = document.getElementById("endsWithCheck").checked;
+
+  let results = characterNames.filter(item => {
+    const name = item.name;
+
+    if(lengthValue){
+      if(name.length !== Number(lengthValue)) return false;
+    }
+
+    if(text){
+      if(startsWith){
+        if(!name.startsWith(text)) return false;
+      }else if(endsWith){
+        if(!name.endsWith(text)) return false;
+      }else if(posValue){
+        const pos = Number(posValue) - 1;
+        if(name.indexOf(text) !== pos) return false;
+      }else{
+        if(!name.includes(text)) return false;
+      }
+    }
+
+    return true;
+  });
+
+  displaySearchResults(results);
+}
+
+function displaySearchResults(results){
+  const count = document.getElementById("searchCount");
+  const area = document.getElementById("searchResults");
+
+  count.textContent = results.length + "件見つかりました";
+  area.innerHTML = "";
+
+  results.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "resultItem";
+
+    div.textContent =
+      item.name +
+      " / " +
+      item.name.length +
+      "文字 / " +
+      item.file +
+      " / 第" +
+      item.stage +
+      "形態";
+
+    area.appendChild(div);
   });
 }
 
