@@ -334,13 +334,25 @@ function renderBoard(){
   boardData[r][c] = input.value;
 });
 
-input.addEventListener("pointerdown", (e) => {
+input.addEventListener("click", (e) => {
   e.stopPropagation();
 });
 
-input.addEventListener("click", (e) => {
-  e.stopPropagation();
-  input.focus();
+input.addEventListener("keydown", (e) => {
+
+  let nr = r;
+  let nc = c;
+
+  if(e.key === "ArrowUp") nr--;
+  else if(e.key === "ArrowDown") nr++;
+  else if(e.key === "ArrowLeft") nc--;
+  else if(e.key === "ArrowRight") nc++;
+  else return;
+
+  e.preventDefault();
+
+  focusCell(nr, nc);
+
 });
 
         input.addEventListener("keydown", (e) => {
@@ -616,10 +628,6 @@ function saveBoardImage(){
     link.click();
   });
 }
-
-window.addEventListener("resize", () => {
-  renderBoard();
-});
 
 window.addEventListener("load", async () => {
   createBoard();
