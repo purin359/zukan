@@ -334,12 +334,13 @@ function renderBoard(){
   boardData[r][c] = input.value;
 });
 
-input.addEventListener("click", (e) => {
+input.addEventListener("pointerdown", (e) => {
   e.stopPropagation();
 });
 
-input.addEventListener("touchstart", (e) => {
+input.addEventListener("click", (e) => {
   e.stopPropagation();
+  input.focus();
 });
 
         input.addEventListener("keydown", (e) => {
