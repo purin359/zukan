@@ -84,6 +84,18 @@ input, button{
   <button onclick="clearLetters()">文字だけ消す</button>
   <button onclick="resetBoard()">全部リセット</button>
 
+  <div class="saveArea">
+  <input type="text" id="boardName" placeholder="盤面名">
+
+  <button onclick="saveCurrentBoard()">保存</button>
+
+  <select id="savedBoards" onchange="loadBoard()">
+    <option value="">保存済み盤面を選択</option>
+  </select>
+
+  <button onclick="deleteBoard()">削除</button>
+</div>
+
   <div class="mode">
     <label>
       <input type="radio" name="mode" value="letter" checked>
@@ -175,7 +187,94 @@ function resetBoard(){
   renderBoard();
 }
 
+/* ===== 保存機能 ===== */
+
+function getSavedBoards(){
+  return JSON.parse(localStorage.getItem("crosswordBoards") || "{}");
+}
+
+function saveBoards(boards){
+  localStorage.setItem("crosswordBoards", JSON.stringify(boards));
+}
+
+function saveCurrentBoard(){
+  const name = document.getElementById("boardName").value.trim();
+
+  if(!name){
+    alert("盤面名を入力してください");
+    return;
+  }
+
+  const boards = getSavedBoards();
+
+  boards[name] = {
+    rows: rowCount,
+    cols: colCount,
+    data: boardData
+  };
+
+  saveBoards(boards);
+  updateBoardList();
+
+  alert("保存しました");
+}
+
+function loadBoard(){
+  const select = document.getElementById("savedBoards");
+  const name = select.value;
+
+  if(!name) return;
+
+  const boards = getSavedBoards();
+  const saved = boards[name];
+
+  rowCount = saved.rows;
+  colCount = saved.cols;
+  boardData = saved.data;
+
+  document.getElementById("rows").value = rowCount;
+  document.getElementById("cols").value = colCount;
+  document.getElementById("boardName").value = name;
+
+  renderBoard();
+}
+
+function deleteBoard(){
+  const select = document.getElementById("savedBoards");
+  const name = select.value;
+
+  if(!name){
+    alert("削除する盤面を選んでください");
+    return;
+  }
+
+  if(!confirm(`「${name}」を削除しますか？`)) return;
+
+  const boards = getSavedBoards();
+  delete boards[name];
+
+  saveBoards(boards);
+  updateBoardList();
+
+  alert("削除しました");
+}
+
+function updateBoardList(){
+  const select = document.getElementById("savedBoards");
+  select.innerHTML = '<option value="">保存済み盤面を選択</option>';
+
+  const boards = getSavedBoards();
+
+  Object.keys(boards).forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  });
+}
+
 createBoard();
+updateBoardList();
 </script>
 
 </body>
