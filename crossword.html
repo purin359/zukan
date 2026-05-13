@@ -9,30 +9,30 @@
 
 <style>
 :root{
-  --cell-size:24px;
-  --cell-font:15px;
+  --cell-size:16px;
+  --cell-font:10px;
 }
 
 body{
   font-family:sans-serif;
   background:#f5f6fa;
   margin:0;
-  padding:4px;
+  padding:1px;
   color:#222;
 }
 
 h1{
   text-align:center;
-  font-size:18px;
-  margin:4px 0 6px;
+  font-size:13px;
+  margin:1px 0 2px;
 }
 
 .panel{
   background:white;
   border:1px solid #ddd;
-  border-radius:8px;
-  padding:4px;
-  margin-bottom:4px;
+  border-radius:4px;
+  padding:1px;
+  margin-bottom:1px;
 }
 
 .row{
@@ -40,53 +40,46 @@ h1{
   flex-wrap:wrap;
   align-items:center;
   justify-content:center;
-  gap:3px;
-  margin:2px 0;
+  gap:1px;
+  margin:1px 0;
 }
 
 input,button,select{
-  font-size:12px;
-  padding:3px 5px;
+  font-size:9px;
+  padding:0 2px;
   margin:0;
-  box-sizing:border-box;
+  min-height:18px;
+  border-radius:3px;
 }
 
 button{
-  min-height:26px;
   border:1px solid #aaa;
-  border-radius:5px;
   background:#f7f7f7;
-  cursor:pointer;
 }
 
-button:active{
-  background:#ddd;
-}
-
-.smallInput{
-  width:48px;
+label{
+  font-size:9px;
 }
 
 #searchText{
-  width:120px;
+  width:62px;
+}
+
+.smallInput{
+  width:30px;
 }
 
 #rows,
 #cols{
-  width:48px;
+  width:30px;
 }
 
 #boardName{
-  width:110px;
+  width:52px;
 }
 
 #savedBoards{
-  width:130px;
-}
-
-label{
-  font-size:12px;
-  white-space:nowrap;
+  width:70px;
 }
 
 #selectedWordText{
@@ -95,50 +88,45 @@ label{
 }
 
 #searchCount{
-  font-size:12px;
-  margin:2px 0;
+  font-size:9px;
+  margin:0;
   text-align:center;
 }
 
 #searchResults{
   display:flex;
   flex-wrap:wrap;
-  gap:3px 0;
-  max-height:46px;
+  gap:1px 0;
+  max-height:24px;
   overflow:auto;
   background:white;
   border:1px solid #ddd;
-  border-radius:6px;
-  padding:3px;
-  margin-bottom:4px;
+  border-radius:4px;
+  padding:1px;
+  margin-bottom:1px;
 }
 
 .resultItem{
-  font-size:12px;
-  padding:0 6px;
+  font-size:9px;
+  padding:0 3px;
   border-right:1px solid #999;
-  cursor:pointer;
-  line-height:1.5;
+  line-height:1.2;
 }
 
 .resultItem:last-child{
   border-right:none;
 }
 
-.resultItem:hover{
-  background:#fff3b0;
-}
-
 .boardWrap{
   width:100%;
   overflow:auto;
-  padding-bottom:8px;
+  padding-bottom:2px;
 }
 
 #board{
   display:grid;
   gap:0;
-  margin:6px auto 0;
+  margin:2px auto 0;
   width:max-content;
   border-left:1px solid #333;
   border-top:1px solid #333;
@@ -172,38 +160,10 @@ label{
 }
 
 .cell input:focus{
-  outline:2px solid #4CAF50;
+  outline:1px solid #4CAF50;
   position:relative;
   z-index:1;
-}
-
-@media (max-width:380px){
-  :root{
-    --cell-size:22px;
-    --cell-font:14px;
-  }
-
-  h1{
-    font-size:16px;
-  }
-
-  #searchText{
-    width:95px;
-  }
-
-  #boardName{
-    width:90px;
-  }
-
-  #savedBoards{
-    width:110px;
-  }
-
-  input,button,select,label{
-    font-size:11px;
-  }
-}
-</style>
+}</style>
 </head>
 
 <body>
