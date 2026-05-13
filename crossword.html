@@ -330,8 +330,16 @@ function renderBoard(){
         input.value = boardData[r][c];
 
         input.addEventListener("input", () => {
-          boardData[r][c] = input.value;
-        });
+  boardData[r][c] = input.value;
+});
+
+input.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
+
+input.addEventListener("touchstart", (e) => {
+  e.stopPropagation();
+});
 
         input.addEventListener("keydown", (e) => {
           let nr = r;
