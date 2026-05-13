@@ -96,8 +96,6 @@ input, button{
   <div class="searchArea">
   <h2>キャラ名検索</h2>
 
-  <button onclick="loadCharacterNames()">JSON読み込み</button>
-
   <div>
     文字数：
     <input type="number" id="searchLength" min="1" placeholder="例: 5">
@@ -435,8 +433,12 @@ function displaySearchResults(results){
   });
 }
 
-createBoard();
-updateBoardList();
+window.addEventListener("load", async () => {
+  createBoard();
+  updateBoardList();
+
+  await loadCharacterNames();
+});
 </script>
 
 </body>
