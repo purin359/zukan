@@ -41,14 +41,15 @@ input,button,select{
   gap:0;
   margin:20px auto 0 auto;
   width:max-content;
+  border-left:1px solid #333;
+  border-top:1px solid #333;
 }
 
 .cell{
   width:40px;
   height:40px;
-  border:1px solid #333;
-  margin-left:-1px;
-  margin-top:-1px;
+  border-right:1px solid #333;
+  border-bottom:1px solid #333;
   background:white;
   box-sizing:border-box;
 }
@@ -683,13 +684,13 @@ div.addEventListener("click", () => {
 
   html2canvas(board, {
     backgroundColor: "#ffffff",
-    scale: 2
+    scale: 2,
+    width: colCount * 40 + 1,
+    height: rowCount * 40 + 1
   }).then(canvas => {
 
     const link = document.createElement("a");
-
-    const name =
-      document.getElementById("boardName").value.trim() || "crossword";
+    const name = document.getElementById("boardName").value.trim() || "crossword";
 
     link.download = name + ".png";
     link.href = canvas.toDataURL("image/png");
@@ -723,31 +724,6 @@ div.addEventListener("click", () => {
     input.focus();
     input.select();
   }
-}
-
-  function saveBoardImage(){
-
-  const board = document.getElementById("board");
-
-  html2canvas(board, {
-    backgroundColor: "#ffffff",
-    scale: 2,
-    width: colCount * 40,
-    height: rowCount * 40,
-    windowWidth: colCount * 40,
-    windowHeight: rowCount * 40
-  }).then(canvas => {
-
-    const link = document.createElement("a");
-
-    const name =
-      document.getElementById("boardName").value.trim() || "crossword";
-
-    link.download = name + ".png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-
-  });
 }
 
 window.addEventListener("load", async () => {
