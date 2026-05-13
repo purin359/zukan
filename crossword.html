@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>クロスワード盤面作成</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 <style>
 body{
   font-family:sans-serif;
@@ -174,6 +176,8 @@ input,button,select{
   <button onclick="clearLetters()">文字だけ消す</button>
 
   <button onclick="resetBoard()">全部リセット</button>
+
+  <button onclick="saveBoardImage()">画像保存</button>
 
   <div class="mode">
     <label>
@@ -555,6 +559,27 @@ function displaySearchResults(results){
     div.textContent = item.name;
 
     area.appendChild(div);
+
+  });
+}
+
+  function saveBoardImage(){
+
+  const board = document.getElementById("board");
+
+  html2canvas(board, {
+    backgroundColor: "#ffffff",
+    scale: 2
+  }).then(canvas => {
+
+    const link = document.createElement("a");
+
+    const name =
+      document.getElementById("boardName").value.trim() || "crossword";
+
+    link.download = name + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
 
   });
 }
