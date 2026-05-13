@@ -351,6 +351,7 @@ function insertWord(startRow, startCol){
 
   const dir = getInsertDirection();
 
+  // 先に置けるかチェック
   for(let i = 0; i < selectedWord.length; i++){
 
     const r = dir === "vertical" ? startRow + i : startRow;
@@ -362,22 +363,20 @@ function insertWord(startRow, startCol){
     }
 
     const current = boardData[r][c];
-const newChar = selectedWord[i];
+    const newChar = selectedWord[i];
 
-if(current === "#"){
-  alert("黒マスに重なっています");
-  return;
-}
+    if(current === "#"){
+      alert("黒マスに重なっています");
+      return;
+    }
 
-if(current !== "" && current !== newChar){
+    if(current !== "" && current !== newChar){
+      alert(`文字が重なっています\n(${current} と ${newChar})`);
+      return;
+    }
+  }
 
-  alert(
-    `文字が重なっています\n(${current} と ${newChar})`
-  );
-
-  return;
-}
-
+  // 問題なければ挿入
   for(let i = 0; i < selectedWord.length; i++){
 
     const r = dir === "vertical" ? startRow + i : startRow;
