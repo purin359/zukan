@@ -5,49 +5,124 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>クロスワード盤面作成</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
+:root{
+  --cell-size:40px;
+  --cell-font:22px;
+}
+
 body{
   font-family:sans-serif;
   background:#f5f6fa;
   margin:0;
-  padding:20px;
+  padding:6px;
 }
 
 h1{
   text-align:center;
-  margin-bottom:20px;
-}
-
-.controls{
-  text-align:center;
-  margin-bottom:12px;
+  font-size:22px;
+  margin:8px 0 10px;
 }
 
 input,button,select{
-  font-size:16px;
-  padding:6px 10px;
-  margin:4px;
+  font-size:14px;
+  padding:4px 6px;
+  margin:2px;
+}
+
+.controls,
+.saveArea{
+  text-align:center;
+  margin-bottom:6px;
 }
 
 .mode{
-  margin-top:8px;
+  margin-top:4px;
+}
+
+.searchBar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  align-items:center;
+  margin:6px 0;
+}
+
+.searchBar input{
+  height:30px;
+  font-size:14px;
+  padding:3px 6px;
+}
+
+.smallInput{
+  width:64px;
+}
+
+#searchText{
+  width:130px;
+}
+
+.searchBar button{
+  height:30px;
+  padding:0 10px;
+}
+
+.insertArea{
+  font-size:14px;
+  margin:2px 0;
+}
+
+#searchCount{
+  margin:4px 0;
+  font-size:13px;
+}
+
+#searchResults{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px 0;
+  margin-bottom:6px;
+}
+
+.resultItem{
+  font-size:14px;
+  padding:0 8px;
+  border-right:1px solid #999;
+  cursor:pointer;
+}
+
+.resultItem:first-child{
+  padding-left:0;
+}
+
+.resultItem:last-child{
+  border-right:none;
+}
+
+.resultItem:hover{
+  background:#fff3b0;
+}
+
+.boardWrap{
+  width:100%;
+  overflow:auto;
+  padding-bottom:10px;
 }
 
 #board{
   display:grid;
-  justify-content:center;
   gap:0;
-  margin:20px auto 0 auto;
+  margin:10px auto 0 auto;
   width:max-content;
   border-left:1px solid #333;
   border-top:1px solid #333;
 }
 
 .cell{
-  width:40px;
-  height:40px;
+  width:var(--cell-size);
+  height:var(--cell-size);
   border-right:1px solid #333;
   border-bottom:1px solid #333;
   background:white;
@@ -65,89 +140,44 @@ input,button,select{
   padding:0;
   margin:0;
   text-align:center;
-
-  font-size:22px;
+  font-size:var(--cell-font);
   font-weight:bold;
-  line-height:40px;
-
+  line-height:var(--cell-size);
   background:transparent;
   box-sizing:border-box;
 }
-  
+
 .cell input:focus{
   outline:2px solid #4CAF50;
   position:relative;
   z-index:1;
 }
 
-.searchBar{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  align-items:center;
-  margin:16px 0 8px 0;
-}
+@media (max-width:700px){
+  :root{
+    --cell-size:28px;
+    --cell-font:18px;
+  }
 
-.searchBar input{
-  height:32px;
-  font-size:14px;
-  padding:4px 8px;
-}
+  h1{
+    font-size:18px;
+  }
 
-.smallInput{
-  width:70px;
-}
+  input,button,select{
+    font-size:13px;
+  }
 
-#searchText{
-  width:140px;
-}
+  .searchBar{
+    gap:3px;
+  }
 
-.searchBar button{
-  height:32px;
-  padding:0 12px;
-}
+  .smallInput{
+    width:58px;
+  }
 
-#searchCount{
-  margin:6px 0;
-  font-size:14px;
-}
-
-#searchResults{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px 0;
-}
-
-.resultItem{
-  font-size:14px;
-  padding:0 8px;
-  border-right:1px solid #999;
-}
-
-.resultItem:first-child{
-  padding-left:0;
-}
-
-.resultItem:last-child{
-  border-right:none;
-}
-
-.saveArea{
-  text-align:center;
-  margin-top:10px;
-}
-
-  .insertArea{
-  font-size:14px;
-  margin:6px 0 10px 0;
-}
-
-.resultItem{
-  cursor:pointer;
-}
-
-.resultItem:hover{
-  background:#fff3b0;
+  #searchText{
+    width:110px;
+  }
 }
 </style>
 </head>
@@ -156,84 +186,51 @@ input,button,select{
 
 <h1>クロスワード盤面作成</h1>
 
-  <div class="searchBar">
+<div class="searchBar">
 
   <input type="number" id="searchLength" placeholder="文字数" class="smallInput">
-
   <input type="text" id="searchText" placeholder="検索文字">
-
   <input type="number" id="searchPos" placeholder="位置" class="smallInput">
 
-  <label>
-    <input type="checkbox" id="startsWithCheck">
-    頭
-  </label>
-
-  <label>
-    <input type="checkbox" id="endsWithCheck">
-    末尾
-  </label>
+  <label><input type="checkbox" id="startsWithCheck">頭</label>
+  <label><input type="checkbox" id="endsWithCheck">末尾</label>
 
   <button onclick="searchCharacters()">検索</button>
 
-    <div class="insertArea">
-  選択中：
-  <span id="selectedWordText">なし</span>
+  <div class="insertArea">
+    選択中：<span id="selectedWordText">なし</span>
 
-  <label>
-    <input type="radio" name="insertDirection" value="horizontal" checked>
-    横
-  </label>
+    <label><input type="radio" name="insertDirection" value="horizontal" checked>横</label>
+    <label><input type="radio" name="insertDirection" value="vertical">縦</label>
 
-  <label>
-    <input type="radio" name="insertDirection" value="vertical">
-    縦
-  </label>
-
-  <button onclick="clearSelectedWord()">選択解除</button>
-</div>
-
-</div>
-
-<p id="searchCount"></p>
-
-<div id="searchResults"></div>
-
-
-<div class="controls">
-
-  縦：
-  <input type="number" id="rows" value="10" min="1" max="50">
-
-  横：
-  <input type="number" id="cols" value="10" min="1" max="30">
-
-  <button onclick="createBoard()">盤面作成</button>
-
-  <button onclick="clearLetters()">文字だけ消す</button>
-
-  <button onclick="resetBoard()">全部リセット</button>
-
-  <button onclick="saveBoardImage()">画像保存</button>
-
-  <div class="mode">
-    <label>
-      <input type="radio" name="mode" value="letter" checked>
-      文字入力
-    </label>
-
-    <label>
-      <input type="radio" name="mode" value="black">
-      黒マス指定
-    </label>
+    <button onclick="clearSelectedWord()">選択解除</button>
   </div>
 
 </div>
 
+<p id="searchCount"></p>
+<div id="searchResults"></div>
+
+<div class="controls">
+  縦：
+  <input type="number" id="rows" value="10" min="1" max="50">
+
+  横：
+  <input type="number" id="cols" value="10" min="1" max="50">
+
+  <button onclick="createBoard()">盤面作成</button>
+  <button onclick="clearLetters()">文字だけ消す</button>
+  <button onclick="resetBoard()">全部リセット</button>
+  <button onclick="saveBoardImage()">画像保存</button>
+
+  <div class="mode">
+    <label><input type="radio" name="mode" value="letter" checked>文字入力</label>
+    <label><input type="radio" name="mode" value="black">黒マス指定</label>
+  </div>
+</div>
+
 <div class="saveArea">
-
   <input type="text" id="boardName" placeholder="盤面名">
-
   <button onclick="saveCurrentBoard()">保存</button>
 
   <select id="savedBoards" onchange="loadBoard()">
@@ -241,17 +238,17 @@ input,button,select{
   </select>
 
   <button onclick="deleteBoard()">削除</button>
-
 </div>
 
-<div id="board"></div>
+<div class="boardWrap">
+  <div id="board"></div>
+</div>
 
 <script>
 let boardData = [];
 let rowCount = 10;
 let colCount = 10;
 let selectedWord = "";
-let insertDirection = "horizontal";
 
 let characterNames = [];
 
@@ -264,12 +261,19 @@ const jsonFiles = [
   "legendrare.json"
 ];
 
+function getCellSize(){
+  return window.innerWidth <= 700 ? 28 : 40;
+}
+
 function getMode(){
   return document.querySelector('input[name="mode"]:checked').value;
 }
 
-function createBoard(){
+function getInsertDirection(){
+  return document.querySelector('input[name="insertDirection"]:checked').value;
+}
 
+function createBoard(){
   rowCount = Number(document.getElementById("rows").value);
   colCount = Number(document.getElementById("cols").value);
 
@@ -281,20 +285,16 @@ function createBoard(){
 }
 
 function renderBoard(){
-
   const board = document.getElementById("board");
+  const cellSize = getCellSize();
 
   board.innerHTML = "";
-
-  board.style.gridTemplateColumns =
-    `repeat(${colCount}, 40px)`;
+  board.style.gridTemplateColumns = `repeat(${colCount}, ${cellSize}px)`;
 
   for(let r = 0; r < rowCount; r++){
-
     for(let c = 0; c < colCount; c++){
 
       const cell = document.createElement("div");
-
       cell.className = "cell";
 
       if(boardData[r][c] === "#"){
@@ -302,32 +302,24 @@ function renderBoard(){
       }
 
       cell.addEventListener("click", () => {
+        if(getMode() === "black"){
+          boardData[r][c] = boardData[r][c] === "#" ? "" : "#";
+          renderBoard();
+          return;
+        }
 
-  if(getMode() === "black"){
-
-    boardData[r][c] =
-      boardData[r][c] === "#" ? "" : "#";
-
-    renderBoard();
-    return;
-  }
-
-  if(getMode() === "letter" && selectedWord){
-    insertWord(r, c);
-  }
-
-});
+        if(getMode() === "letter" && selectedWord){
+          insertWord(r, c);
+        }
+      });
 
       if(boardData[r][c] !== "#"){
-
         const input = document.createElement("input");
 
         input.className = "cellInput";
         input.dataset.row = r;
         input.dataset.col = c;
-
         input.maxLength = 1;
-
         input.value = boardData[r][c];
 
         input.addEventListener("input", () => {
@@ -335,19 +327,18 @@ function renderBoard(){
         });
 
         input.addEventListener("keydown", (e) => {
-  let nr = r;
-  let nc = c;
+          let nr = r;
+          let nc = c;
 
-  if(e.key === "ArrowUp") nr--;
-  else if(e.key === "ArrowDown") nr++;
-  else if(e.key === "ArrowLeft") nc--;
-  else if(e.key === "ArrowRight") nc++;
-  else return;
+          if(e.key === "ArrowUp") nr--;
+          else if(e.key === "ArrowDown") nr++;
+          else if(e.key === "ArrowLeft") nc--;
+          else if(e.key === "ArrowRight") nc++;
+          else return;
 
-  e.preventDefault();
-
-  focusCell(nr, nc);
-});
+          e.preventDefault();
+          focusCell(nr, nc);
+        });
 
         cell.appendChild(input);
       }
@@ -357,19 +348,12 @@ function renderBoard(){
   }
 }
 
-  function getInsertDirection(){
-  return document.querySelector('input[name="insertDirection"]:checked').value;
-}
-
 function insertWord(startRow, startCol){
-
   if(!selectedWord) return;
 
   const dir = getInsertDirection();
 
-  // 先に置けるかチェック
   for(let i = 0; i < selectedWord.length; i++){
-
     const r = dir === "vertical" ? startRow + i : startRow;
     const c = dir === "horizontal" ? startCol + i : startCol;
 
@@ -392,9 +376,7 @@ function insertWord(startRow, startCol){
     }
   }
 
-  // 問題なければ挿入
   for(let i = 0; i < selectedWord.length; i++){
-
     const r = dir === "vertical" ? startRow + i : startRow;
     const c = dir === "horizontal" ? startCol + i : startCol;
 
@@ -405,15 +387,11 @@ function insertWord(startRow, startCol){
 }
 
 function clearLetters(){
-
   for(let r = 0; r < rowCount; r++){
-
     for(let c = 0; c < colCount; c++){
-
       if(boardData[r][c] !== "#"){
         boardData[r][c] = "";
       }
-
     }
   }
 
@@ -421,7 +399,6 @@ function clearLetters(){
 }
 
 function resetBoard(){
-
   boardData = Array.from({length: rowCount}, () =>
     Array.from({length: colCount}, () => "")
   );
@@ -429,25 +406,30 @@ function resetBoard(){
   renderBoard();
 }
 
-/* 保存 */
+function focusCell(r, c){
+  if(r < 0 || r >= rowCount || c < 0 || c >= colCount) return;
+  if(boardData[r][c] === "#") return;
+
+  const input = document.querySelector(
+    `.cellInput[data-row="${r}"][data-col="${c}"]`
+  );
+
+  if(input){
+    input.focus();
+    input.select();
+  }
+}
 
 function getSavedBoards(){
-  return JSON.parse(
-    localStorage.getItem("crosswordBoards") || "{}"
-  );
+  return JSON.parse(localStorage.getItem("crosswordBoards") || "{}");
 }
 
 function saveBoards(boards){
-  localStorage.setItem(
-    "crosswordBoards",
-    JSON.stringify(boards)
-  );
+  localStorage.setItem("crosswordBoards", JSON.stringify(boards));
 }
 
 function saveCurrentBoard(){
-
-  const name =
-    document.getElementById("boardName").value.trim();
+  const name = document.getElementById("boardName").value.trim();
 
   if(!name){
     alert("盤面名を入力してください");
@@ -463,21 +445,16 @@ function saveCurrentBoard(){
   };
 
   saveBoards(boards);
-
   updateBoardList();
 
   alert("保存しました");
 }
 
 function loadBoard(){
-
-  const name =
-    document.getElementById("savedBoards").value;
-
+  const name = document.getElementById("savedBoards").value;
   if(!name) return;
 
   const boards = getSavedBoards();
-
   const saved = boards[name];
 
   rowCount = saved.rows;
@@ -492,9 +469,7 @@ function loadBoard(){
 }
 
 function deleteBoard(){
-
-  const name =
-    document.getElementById("savedBoards").value;
+  const name = document.getElementById("savedBoards").value;
 
   if(!name){
     alert("削除する盤面を選択してください");
@@ -504,236 +479,135 @@ function deleteBoard(){
   if(!confirm(`「${name}」を削除しますか？`)) return;
 
   const boards = getSavedBoards();
-
   delete boards[name];
 
   saveBoards(boards);
-
   updateBoardList();
 }
 
 function updateBoardList(){
-
-  const select =
-    document.getElementById("savedBoards");
-
-  select.innerHTML =
-    '<option value="">保存済み盤面</option>';
+  const select = document.getElementById("savedBoards");
+  select.innerHTML = '<option value="">保存済み盤面</option>';
 
   const boards = getSavedBoards();
 
   Object.keys(boards).forEach(name => {
-
     const option = document.createElement("option");
-
     option.value = name;
     option.textContent = name;
-
     select.appendChild(option);
-
   });
 }
 
-/* JSON読み込み */
-
 async function loadCharacterNames(){
-
   characterNames = [];
 
   for(const file of jsonFiles){
-
     try{
-
       const res = await fetch(file);
-
       const data = await res.json();
 
       data.forEach(char => {
-
         if(char.forms){
-
           char.forms.forEach(form => {
-
             if(form.name){
-
-              characterNames.push({
-                name: form.name
-              });
-
+              characterNames.push({ name: form.name });
             }
-
           });
-
         }
-
       });
 
     }catch(e){
-
       console.warn(file + " 読み込み失敗");
-
     }
-
   }
-
 }
 
-/* 検索 */
-
 function searchCharacters(){
+  const lengthValue = document.getElementById("searchLength").value;
+  const text = document.getElementById("searchText").value.trim();
+  const posValue = document.getElementById("searchPos").value;
+  const startsWith = document.getElementById("startsWithCheck").checked;
+  const endsWith = document.getElementById("endsWithCheck").checked;
 
-  const lengthValue =
-    document.getElementById("searchLength").value;
-
-  const text =
-    document.getElementById("searchText")
-      .value
-      .trim();
-
-  const posValue =
-    document.getElementById("searchPos").value;
-
-  const startsWith =
-    document.getElementById("startsWithCheck").checked;
-
-  const endsWith =
-    document.getElementById("endsWithCheck").checked;
-
-  let results = characterNames.filter(item => {
-
+  const results = characterNames.filter(item => {
     const name = item.name;
 
-    if(lengthValue){
-
-      if(name.length !== Number(lengthValue)){
-        return false;
-      }
-
+    if(lengthValue && name.length !== Number(lengthValue)){
+      return false;
     }
 
     if(text){
-
       if(startsWith){
-
-        if(!name.startsWith(text)){
-          return false;
-        }
-
+        if(!name.startsWith(text)) return false;
       }else if(endsWith){
-
-        if(!name.endsWith(text)){
-          return false;
-        }
-
+        if(!name.endsWith(text)) return false;
       }else if(posValue){
-
         const pos = Number(posValue) - 1;
-
-        if(name.indexOf(text) !== pos){
-          return false;
-        }
-
+        if(name.indexOf(text) !== pos) return false;
       }else{
-
-        if(!name.includes(text)){
-          return false;
-        }
-
+        if(!name.includes(text)) return false;
       }
-
     }
 
     return true;
-
   });
 
   displaySearchResults(results);
 }
 
 function displaySearchResults(results){
+  document.getElementById("searchCount").textContent = results.length + "件";
 
-  document.getElementById("searchCount").textContent =
-    results.length + "件";
-
-  const area =
-    document.getElementById("searchResults");
-
+  const area = document.getElementById("searchResults");
   area.innerHTML = "";
 
   results.forEach(item => {
-
     const div = document.createElement("div");
-
     div.className = "resultItem";
-
     div.textContent = item.name;
 
-div.addEventListener("click", () => {
-  selectedWord = item.name;
-  document.getElementById("selectedWordText").textContent = selectedWord;
-});
+    div.addEventListener("click", () => {
+      selectedWord = item.name;
+      document.getElementById("selectedWordText").textContent = selectedWord;
+    });
 
     area.appendChild(div);
-
   });
 }
 
-  function saveBoardImage(){
+function clearSelectedWord(){
+  selectedWord = "";
+  document.getElementById("selectedWordText").textContent = "なし";
+}
 
+function saveBoardImage(){
   const board = document.getElementById("board");
+  const cellSize = getCellSize();
 
   html2canvas(board, {
     backgroundColor: "#ffffff",
     scale: 2,
-    width: colCount * 40 + 1,
-    height: rowCount * 40 + 1
+    width: colCount * cellSize + 1,
+    height: rowCount * cellSize + 1
   }).then(canvas => {
-
     const link = document.createElement("a");
     const name = document.getElementById("boardName").value.trim() || "crossword";
 
     link.download = name + ".png";
     link.href = canvas.toDataURL("image/png");
     link.click();
-
   });
 }
 
-  function clearSelectedWord(){
-
-  selectedWord = "";
-
-  document.getElementById("selectedWordText")
-    .textContent = "なし";
-}
-
-  function focusCell(r, c){
-
-  if(r < 0 || r >= rowCount || c < 0 || c >= colCount){
-    return;
-  }
-
-  if(boardData[r][c] === "#"){
-    return;
-  }
-
-  const selector = `.cellInput[data-row="${r}"][data-col="${c}"]`;
-  const input = document.querySelector(selector);
-
-  if(input){
-    input.focus();
-    input.select();
-  }
-}
+window.addEventListener("resize", () => {
+  renderBoard();
+});
 
 window.addEventListener("load", async () => {
-
   createBoard();
-
   updateBoardList();
-
   await loadCharacterNames();
-
 });
 </script>
 
