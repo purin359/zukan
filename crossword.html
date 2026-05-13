@@ -192,6 +192,8 @@ input,button,select{
     <input type="radio" name="insertDirection" value="vertical">
     縦
   </label>
+
+  <button onclick="clearSelectedWord()">選択解除</button>
 </div>
 
 </div>
@@ -359,11 +361,22 @@ function insertWord(startRow, startCol){
       return;
     }
 
-    if(boardData[r][c] === "#"){
-      alert("黒マスに重なっています");
-      return;
-    }
-  }
+    const current = boardData[r][c];
+const newChar = selectedWord[i];
+
+if(current === "#"){
+  alert("黒マスに重なっています");
+  return;
+}
+
+if(current !== "" && current !== newChar){
+
+  alert(
+    `文字が重なっています\n(${current} と ${newChar})`
+  );
+
+  return;
+}
 
   for(let i = 0; i < selectedWord.length; i++){
 
@@ -669,6 +682,14 @@ div.addEventListener("click", () => {
     link.click();
 
   });
+}
+
+  function clearSelectedWord(){
+
+  selectedWord = "";
+
+  document.getElementById("selectedWordText")
+    .textContent = "なし";
 }
 
 window.addEventListener("load", async () => {
