@@ -325,6 +325,10 @@ function renderBoard(){
 
         const input = document.createElement("input");
 
+        input.className = "cellInput";
+        input.dataset.row = r;
+        input.dataset.col = c;
+
         input.maxLength = 1;
 
         input.value = boardData[r][c];
@@ -332,6 +336,21 @@ function renderBoard(){
         input.addEventListener("input", () => {
           boardData[r][c] = input.value;
         });
+
+        input.addEventListener("keydown", (e) => {
+  let nr = r;
+  let nc = c;
+
+  if(e.key === "ArrowUp") nr--;
+  else if(e.key === "ArrowDown") nr++;
+  else if(e.key === "ArrowLeft") nc--;
+  else if(e.key === "ArrowRight") nc++;
+  else return;
+
+  e.preventDefault();
+
+  focusCell(nr, nc);
+});
 
         cell.appendChild(input);
       }
@@ -689,6 +708,25 @@ div.addEventListener("click", () => {
 
   document.getElementById("selectedWordText")
     .textContent = "なし";
+}
+
+  function focusCell(r, c){
+
+  if(r < 0 || r >= rowCount || c < 0 || c >= colCount){
+    return;
+  }
+
+  if(boardData[r][c] === "#"){
+    return;
+  }
+
+  const selector = `.cellInput[data-row="${r}"][data-col="${c}"]`;
+  const input = document.querySelector(selector);
+
+  if(input){
+    input.focus();
+    input.select();
+  }
 }
 
 window.addEventListener("load", async () => {
