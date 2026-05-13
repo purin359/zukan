@@ -129,6 +129,19 @@ input,button,select{
   text-align:center;
   margin-top:10px;
 }
+
+  .insertArea{
+  font-size:14px;
+  margin:6px 0 10px 0;
+}
+
+.resultItem{
+  cursor:pointer;
+}
+
+.resultItem:hover{
+  background:#fff3b0;
+}
 </style>
 </head>
 
@@ -155,6 +168,21 @@ input,button,select{
   </label>
 
   <button onclick="searchCharacters()">検索</button>
+
+    <div class="insertArea">
+  選択中：
+  <span id="selectedWordText">なし</span>
+
+  <label>
+    <input type="radio" name="insertDirection" value="horizontal" checked>
+    横
+  </label>
+
+  <label>
+    <input type="radio" name="insertDirection" value="vertical">
+    縦
+  </label>
+</div>
 
 </div>
 
@@ -213,6 +241,8 @@ input,button,select{
 let boardData = [];
 let rowCount = 10;
 let colCount = 10;
+let selectedWord = "";
+let insertDirection = "horizontal";
 
 let characterNames = [];
 
@@ -264,15 +294,20 @@ function renderBoard(){
 
       cell.addEventListener("click", () => {
 
-        if(getMode() === "black"){
+  if(getMode() === "black"){
 
-          boardData[r][c] =
-            boardData[r][c] === "#" ? "" : "#";
+    boardData[r][c] =
+      boardData[r][c] === "#" ? "" : "#";
 
-          renderBoard();
-        }
+    renderBoard();
+    return;
+  }
 
-      });
+  if(getMode() === "letter" && selectedWord){
+    insertWord(r, c);
+  }
+
+});
 
       if(boardData[r][c] !== "#"){
 
@@ -292,6 +327,43 @@ function renderBoard(){
       board.appendChild(cell);
     }
   }
+}
+
+  function getInsertDirection(){
+  return document.querySelector('input[name="insertDirection"]:checked').value;
+}
+
+function insertWord(startRow, startCol){
+
+  if(!selectedWord) return;
+
+  const dir = getInsertDirection();
+
+  for(let i = 0; i < selectedWord.length; i++){
+
+    const r = dir === "vertical" ? startRow + i : startRow;
+    const c = dir === "horizontal" ? startCol + i : startCol;
+
+    if(r >= rowCount || c >= colCount){
+      alert("盤面からはみ出します");
+      return;
+    }
+
+    if(boardData[r][c] === "#"){
+      alert("黒マスに重なっています");
+      return;
+    }
+  }
+
+  for(let i = 0; i < selectedWord.length; i++){
+
+    const r = dir === "vertical" ? startRow + i : startRow;
+    const c = dir === "horizontal" ? startCol + i : startCol;
+
+    boardData[r][c] = selectedWord[i];
+  }
+
+  renderBoard();
 }
 
 function clearLetters(){
@@ -557,6 +629,11 @@ function displaySearchResults(results){
     div.className = "resultItem";
 
     div.textContent = item.name;
+
+div.addEventListener("click", () => {
+  selectedWord = item.name;
+  document.getElementById("selectedWordText").textContent = selectedWord;
+});
 
     area.appendChild(div);
 
