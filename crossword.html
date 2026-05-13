@@ -9,124 +9,112 @@
 
 <style>
 :root{
-  --cell-size:16px;
-  --cell-font:10px;
+  --cell-size:40px;
+  --cell-font:22px;
 }
 
 body{
   font-family:sans-serif;
   background:#f5f6fa;
   margin:0;
-  padding:1px;
-  color:#222;
+  padding:6px;
 }
 
 h1{
   text-align:center;
-  font-size:13px;
-  margin:1px 0 2px;
-}
-
-.panel{
-  background:white;
-  border:1px solid #ddd;
-  border-radius:4px;
-  padding:1px;
-  margin-bottom:1px;
-}
-
-.row{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:center;
-  gap:1px;
-  margin:1px 0;
+  font-size:22px;
+  margin:8px 0 10px;
 }
 
 input,button,select{
-  font-size:9px;
-  padding:0 2px;
-  margin:0;
-  min-height:18px;
-  border-radius:3px;
+  font-size:14px;
+  padding:4px 6px;
+  margin:2px;
 }
 
-button{
-  border:1px solid #aaa;
-  background:#f7f7f7;
+.controls,
+.saveArea{
+  text-align:center;
+  margin-bottom:6px;
 }
 
-label{
-  font-size:9px;
+.mode{
+  margin-top:4px;
 }
 
-#searchText{
-  width:62px;
+.searchBar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  align-items:center;
+  margin:6px 0;
+}
+
+.searchBar input{
+  height:30px;
+  font-size:14px;
+  padding:3px 6px;
 }
 
 .smallInput{
-  width:30px;
+  width:64px;
 }
 
-#rows,
-#cols{
-  width:30px;
+#searchText{
+  width:130px;
 }
 
-#boardName{
-  width:52px;
+.searchBar button{
+  height:30px;
+  padding:0 10px;
 }
 
-#savedBoards{
-  width:70px;
-}
-
-#selectedWordText{
-  font-weight:bold;
-  color:#0b7;
+.insertArea{
+  font-size:14px;
+  margin:2px 0;
 }
 
 #searchCount{
-  font-size:9px;
-  margin:0;
-  text-align:center;
+  margin:4px 0;
+  font-size:13px;
 }
 
 #searchResults{
   display:flex;
   flex-wrap:wrap;
-  gap:1px 0;
-  max-height:24px;
-  overflow:auto;
-  background:white;
-  border:1px solid #ddd;
-  border-radius:4px;
-  padding:1px;
-  margin-bottom:1px;
+  gap:4px 0;
+  margin-bottom:6px;
 }
 
 .resultItem{
-  font-size:9px;
-  padding:0 3px;
+  font-size:14px;
+  padding:0 8px;
   border-right:1px solid #999;
-  line-height:1.2;
+  cursor:pointer;
+}
+
+.resultItem:first-child{
+  padding-left:0;
 }
 
 .resultItem:last-child{
   border-right:none;
 }
 
+.resultItem:hover{
+  background:#fff3b0;
+}
+
 .boardWrap{
   width:100%;
   overflow:auto;
-  padding-bottom:2px;
+  padding-bottom:10px;
 }
 
 #board{
   display:grid;
   gap:0;
-  margin:2px auto 0;
+  margin:10px auto 0 auto;
   width:max-content;
   border-left:1px solid #333;
   border-top:1px solid #333;
@@ -151,107 +139,44 @@ label{
   border:none;
   padding:0;
   margin:0;
-
   text-align:center;
-  font-size:calc(var(--cell-size) * 0.55);
+  font-size:var(--cell-font);
   font-weight:bold;
-  line-height:1;
-
+  line-height:var(--cell-size);
   background:transparent;
   box-sizing:border-box;
-
-  transform:translateY(1px);
 }
 
 .cell input:focus{
-  outline:1px solid #4CAF50;
+  outline:2px solid #4CAF50;
   position:relative;
   z-index:1;
 }
 
-  @media (min-width: 900px){
-
+@media (max-width:700px){
   :root{
-  --cell-size:28px;
-  --cell-font:18px;
-}
-
-
-  body{
-    padding:12px;
+    --cell-size:28px;
+    --cell-font:18px;
   }
 
   h1{
-    font-size:28px;
-    margin:8px 0 12px;
-  }
-
-  .panel{
-    border-radius:10px;
-    padding:8px;
-    margin-bottom:8px;
-  }
-
-  .row{
-    gap:6px;
-    margin:4px 0;
+    font-size:18px;
   }
 
   input,button,select{
-    font-size:16px;
-    padding:4px 8px;
-    min-height:34px;
-    border-radius:6px;
+    font-size:13px;
   }
 
-  label{
-    font-size:15px;
-  }
-
-  #searchText{
-    width:180px;
+  .searchBar{
+    gap:3px;
   }
 
   .smallInput{
-    width:70px;
+    width:58px;
   }
 
-  #rows,
-  #cols{
-    width:60px;
-  }
-
-  #boardName{
-    width:140px;
-  }
-
-  #savedBoards{
-    width:180px;
-  }
-
-  #searchCount{
-    font-size:14px;
-    margin:4px 0;
-  }
-
-  #searchResults{
-    max-height:60px;
-    padding:4px;
-    margin-bottom:6px;
-  }
-
-  .resultItem{
-    font-size:14px;
-    padding:0 8px;
-    line-height:1.5;
-  }
-
-  .boardWrap{
-    padding-bottom:10px;
-  }
-
-  .cell input:focus{
-    outline:2px solid #4CAF50;
+  #searchText{
+    width:110px;
   }
 }
 </style>
@@ -261,50 +186,58 @@ label{
 
 <h1>クロスワード盤面作成</h1>
 
-<div class="panel">
-  <div class="row">
-    <input type="text" id="searchText" placeholder="検索文字">
-    <button onclick="searchCharacters()">検索</button>
-    <input type="number" id="searchLength" placeholder="文字数" class="smallInput">
-    <input type="number" id="searchPos" placeholder="位置" class="smallInput">
-    <label><input type="checkbox" id="startsWithCheck">頭</label>
-    <label><input type="checkbox" id="endsWithCheck">末尾</label>
-  </div>
+<div class="searchBar">
 
-  <div class="row">
-    選択：<span id="selectedWordText">なし</span>
+  <input type="number" id="searchLength" placeholder="文字数" class="smallInput">
+  <input type="text" id="searchText" placeholder="検索文字">
+  <input type="number" id="searchPos" placeholder="位置" class="smallInput">
+
+  <label><input type="checkbox" id="startsWithCheck">頭</label>
+  <label><input type="checkbox" id="endsWithCheck">末尾</label>
+
+  <button onclick="searchCharacters()">検索</button>
+
+  <div class="insertArea">
+    選択中：<span id="selectedWordText">なし</span>
+
     <label><input type="radio" name="insertDirection" value="horizontal" checked>横</label>
     <label><input type="radio" name="insertDirection" value="vertical">縦</label>
-    <button onclick="clearSelectedWord()">解除</button>
+
+    <button onclick="clearSelectedWord()">選択解除</button>
   </div>
+
 </div>
 
 <p id="searchCount"></p>
 <div id="searchResults"></div>
 
-<div class="panel">
-  <div class="row">
-    縦<input type="number" id="rows" value="10" min="1" max="50">
-    横<input type="number" id="cols" value="10" min="1" max="50">
-    <button onclick="createBoard()">作成</button>
-  </div>
+<div class="controls">
+  縦：
+  <input type="number" id="rows" value="10" min="1" max="50">
 
-  <div class="row">
-    <label><input type="radio" name="mode" value="letter" checked>文字</label>
-    <label><input type="radio" name="mode" value="black">黒マス</label>
-    <button onclick="clearLetters()">文字消去</button>
-    <button onclick="resetBoard()">全消去</button>
-    <button onclick="saveBoardImage()">画像保存</button>
-  </div>
+  横：
+  <input type="number" id="cols" value="10" min="1" max="50">
 
-  <div class="row">
-    <input type="text" id="boardName" placeholder="盤面名">
-    <button onclick="saveCurrentBoard()">保存</button>
-    <select id="savedBoards" onchange="loadBoard()">
-      <option value="">保存済み盤面</option>
-    </select>
-    <button onclick="deleteBoard()">削除</button>
+  <button onclick="createBoard()">盤面作成</button>
+  <button onclick="clearLetters()">文字だけ消す</button>
+  <button onclick="resetBoard()">全部リセット</button>
+  <button onclick="saveBoardImage()">画像保存</button>
+
+  <div class="mode">
+    <label><input type="radio" name="mode" value="letter" checked>文字入力</label>
+    <label><input type="radio" name="mode" value="black">黒マス指定</label>
   </div>
+</div>
+
+<div class="saveArea">
+  <input type="text" id="boardName" placeholder="盤面名">
+  <button onclick="saveCurrentBoard()">保存</button>
+
+  <select id="savedBoards" onchange="loadBoard()">
+    <option value="">保存済み盤面</option>
+  </select>
+
+  <button onclick="deleteBoard()">削除</button>
 </div>
 
 <div class="boardWrap">
@@ -316,6 +249,7 @@ let boardData = [];
 let rowCount = 10;
 let colCount = 10;
 let selectedWord = "";
+
 let characterNames = [];
 
 const jsonFiles = [
@@ -328,10 +262,7 @@ const jsonFiles = [
 ];
 
 function getCellSize(){
-  return parseInt(
-    getComputedStyle(document.documentElement)
-      .getPropertyValue("--cell-size")
-  );
+  return window.innerWidth <= 700 ? 28 : 40;
 }
 
 function getMode(){
@@ -362,6 +293,7 @@ function renderBoard(){
 
   for(let r = 0; r < rowCount; r++){
     for(let c = 0; c < colCount; c++){
+
       const cell = document.createElement("div");
       cell.className = "cell";
 
@@ -454,6 +386,26 @@ function insertWord(startRow, startCol){
   renderBoard();
 }
 
+function clearLetters(){
+  for(let r = 0; r < rowCount; r++){
+    for(let c = 0; c < colCount; c++){
+      if(boardData[r][c] !== "#"){
+        boardData[r][c] = "";
+      }
+    }
+  }
+
+  renderBoard();
+}
+
+function resetBoard(){
+  boardData = Array.from({length: rowCount}, () =>
+    Array.from({length: colCount}, () => "")
+  );
+
+  renderBoard();
+}
+
 function focusCell(r, c){
   if(r < 0 || r >= rowCount || c < 0 || c >= colCount) return;
   if(boardData[r][c] === "#") return;
@@ -466,24 +418,6 @@ function focusCell(r, c){
     input.focus();
     input.select();
   }
-}
-
-function clearLetters(){
-  for(let r = 0; r < rowCount; r++){
-    for(let c = 0; c < colCount; c++){
-      if(boardData[r][c] !== "#"){
-        boardData[r][c] = "";
-      }
-    }
-  }
-  renderBoard();
-}
-
-function resetBoard(){
-  boardData = Array.from({length: rowCount}, () =>
-    Array.from({length: colCount}, () => "")
-  );
-  renderBoard();
 }
 
 function getSavedBoards(){
@@ -512,6 +446,7 @@ function saveCurrentBoard(){
 
   saveBoards(boards);
   updateBoardList();
+
   alert("保存しました");
 }
 
@@ -581,6 +516,7 @@ async function loadCharacterNames(){
           });
         }
       });
+
     }catch(e){
       console.warn(file + " 読み込み失敗");
     }
@@ -597,7 +533,9 @@ function searchCharacters(){
   const results = characterNames.filter(item => {
     const name = item.name;
 
-    if(lengthValue && name.length !== Number(lengthValue)) return false;
+    if(lengthValue && name.length !== Number(lengthValue)){
+      return false;
+    }
 
     if(text){
       if(startsWith){
