@@ -240,6 +240,7 @@ input,button,select{
 <div class="saveArea">
   <input type="text" id="boardName" placeholder="盤面名">
   <button onclick="saveCurrentBoard()">保存</button>
+  <button onclick="copyBoard()">複製</button>
 
   <select id="savedBoards" onchange="loadBoard()">
     <option value="">保存済み盤面</option>
@@ -694,6 +695,44 @@ function saveBoardImage(){
   );
 
   renderBoard();
+
+}
+
+  function copyBoard(){
+
+  const currentName =
+    document.getElementById("boardName").value.trim();
+
+  if(!currentName){
+    alert("盤面名を入力してください");
+    return;
+  }
+
+  const boards = getSavedBoards();
+
+  let copyName = currentName + "_コピー";
+
+  let count = 2;
+
+  while(boards[copyName]){
+    copyName = currentName + "_コピー" + count;
+    count++;
+  }
+
+  boards[copyName] = {
+    rows: rowCount,
+    cols: colCount,
+    data: JSON.parse(JSON.stringify(boardData))
+  };
+
+  saveBoards(boards);
+
+  updateBoardList();
+
+  document.getElementById("boardName").value = copyName;
+  document.getElementById("savedBoards").value = copyName;
+
+  alert("複製しました");
 
 }
 
