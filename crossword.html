@@ -185,6 +185,14 @@ input,button,select{
     width:110px;
   }
 }
+
+  #playDataOutput{
+  width:100%;
+  height:120px;
+  font-size:12px;
+  box-sizing:border-box;
+  margin-top:6px;
+}
 </style>
 </head>
 
@@ -230,6 +238,7 @@ input,button,select{
   <button onclick="fillEmptyBlack()">空白→黒</button>
   <button onclick="undoBoard()">1つ戻る</button>
   <button onclick="saveBoardImage()">画像保存</button>
+  <button onclick="exportPlayData()">プレイ用データ出力</button>
 
   <div class="mode">
     <label><input type="radio" name="mode" value="letter" checked>文字入力</label>
@@ -249,6 +258,8 @@ input,button,select{
   <button onclick="deleteBoard()">削除</button>
 </div>
 
+  <textarea id="playDataOutput" placeholder="ここにプレイ用データが出ます"></textarea>
+  
 <div class="boardWrap">
   <div id="board"></div>
 </div>
@@ -734,6 +745,32 @@ function saveBoardImage(){
 
   alert("複製しました");
 
+}
+
+  function exportPlayData(){
+
+  const name =
+    document.getElementById("boardName").value.trim() || "puzzle001";
+
+  const puzzle = {
+    id: name,
+    rows: rowCount,
+    cols: colCount,
+    answer: boardData
+  };
+
+  const text =
+`const puzzle = ${JSON.stringify(puzzle, null, 2)};`;
+
+  const output = document.getElementById("playDataOutput");
+  output.value = text;
+  output.select();
+
+  navigator.clipboard.writeText(text).then(() => {
+    alert("プレイ用データをコピーしました");
+  }).catch(() => {
+    alert("プレイ用データを出力しました");
+  });
 }
 
 window.addEventListener("load", async () => {
