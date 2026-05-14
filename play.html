@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クロスワード プレイ</title>
+
+<style>
+:root{
+  --cell-size:22px;
+  --cell-font:14px;
+}
+
+body{
+  font-family:sans-serif;
+  background:#f5f6fa;
+  margin:0;
+  padding:4px;
+}
+
+h1{
+  text-align:center;
+  font-size:18px;
+  margin:4px 0;
+}
+
+.top{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:4px;
+  margin-bottom:4px;
+}
+
+input,button{
+  font-size:13px;
+  padding:3px 6px;
+}
+
+#playerName{
+  width:120px;
+}
+
+#message{
+  text-align:center;
+  font-weight:bold;
+  margin:4px 0;
+}
+
+.boardWrap{
+  width:100%;
+  overflow:auto;
+}
+
+#board{
+  display:grid;
+  width:max-content;
+  margin:6px auto;
+  border-left:1px solid #333;
+  border-top:1px solid #333;
+}
+
+.cell{
+  width:var(--cell-size);
+  height:var(--cell-size);
+  border-right:1px solid #333;
+  border-bottom:1px solid #333;
+  background:white;
+  box-sizing:border-box;
+}
+
+.cell.black{
+  background:#222;
+}
+
+.cell input{
+  width:100%;
+  height:100%;
+  border:none;
+  padding:0;
+  margin:0;
+  text-align:center;
+  font-size:var(--cell-font);
+  font-weight:bold;
+  background:transparent;
+  box-sizing:border-box;
+}
+
+.cell input:focus{
+  outline:2px solid #4CAF50;
+  position:relative;
+  z-index:1;
+}
+
+.correct{
+  background:#dfffe0;
+}
+
+.wrong{
+  background:#ffdede;
+}
+
+@media (min-width:900px){
+  :root{
+    --cell-size:32px;
+    --cell-font:20px;
+  }
+
+  h1{
+    font-size:28px;
+  }
+
+  input,button{
+    font-size:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<h1>クロスワード</h1>
+
+<div class="top">
+  <input type="text" id="playerName" placeholder="アカウント名">
+  <button onclick="loadPlayer()">開始/読込</button>
+  <button onclick="checkAnswer()">答え合わせ</button>
+  <button onclick="resetPlayer()">リセット</button>
+</div>
+
+<div id="message">アカウント名を入力してください</div>
+
+<div class="boardWrap">
+  <div id="board"></div>
+</div>
+
+<script>
+const puzzle = {
+  id: "puzzle001",
+  rows: 10,
+  cols: 10,
+
+  // # = 黒マス
+  // 文字 = 正解
+  // 空文字 = 白マスだが正解未設定
+  answer: [
+    ["", "", "", "", "", "", "", "", "", ""],
+    ["", "#", "#", "", "#", "", "", "", "", ""],
+    ["", "", "", "", "#", "", "#", "#", "", ""],
+    ["", "ネ", "コ", "", "", "", "", "", "", ""],
+    ["", "#", "", "#", "", "#", "", "#", "", ""],
+    ["", "", "", "", "", "", "", "", "", ""],
+    ["#", "#", "", "#", "", "", "", "#", "#", ""],
+    ["", "", "", "", "", "#", "", "", "", ""],
+    ["", "#", "", "#", "", "", "", "#", "", ""],
+    ["", "", "", "", "", "", "", "", "", ""]
+  ]
+};
+
+let playerData = [];
+
+function getSaveKey(){
+  const player = document.getElementById("playerName").value.trim();
+
+  if(!player){
+    return "";
+  }
+
+  return "crossword_play_" + puzzle.id + "_" + player;
+}
+
+function createEmptyPlayerData(){
+  return Array.from({length:puzzle.rows}, (_, r) =>
+    Array.from({length:puzzle.cols}, (_, c) =>
+      puzzle.answer[r][c] === "#" ? "#" : ""
+    )
+  );
+}
+
+function loadPlayer(){
+  const key = getSaveKey();
+
+  if(!key){
+    alert("アカウント名を入力してください");
+    return;
+  }
+
+  const saved = localStorage.getItem(key);
+
+  if(saved){
+    playerData = JSON.parse(saved);
+    document.getElementById("message").textContent = "保存データを読み込みました";
+  }else{
+    playerData = createEmptyPlayerData();
+    document.getElementById("message").textContent = "新しく開始しました";
+  }
+
+  renderBoard();
+}
+
+function savePlayer(){
+  const key = getSaveKey();
+
+  if(!key) return;
+
+  localStorage.setItem(key, JSON.stringify(playerData));
+}
+
+function renderBoard(){
+  const board = document.getElementById("board");
+
+  board.innerHTML = "";
+  board.style.gridTemplateColumns =
+    `repeat(${puzzle.cols}, var(--cell-size))`;
+
+  for(let r = 0; r < puzzle.rows; r++){
+    for(let c = 0; c < puzzle.cols; c++){
+
+      const cell = document.createElement("div");
+      cell.className = "cell";
+
+      if(puzzle.answer[r][c] === "#"){
+        cell.classList.add("black");
+        board.appendChild(cell);
+        continue;
+      }
+
+      const input = document.createElement("input");
+      input.maxLength = 1;
+      input.value = playerData[r][c] || "";
+
+      input.addEventListener("input", () => {
+        playerData[r][c] = input.value;
+        savePlayer();
+      });
+
+      input.addEventListener("click", e => {
+        e.stopPropagation();
+      });
+
+      input.addEventListener("keydown", e => {
+        let nr = r;
+        let nc = c;
+
+        if(e.key === "ArrowUp") nr--;
+        else if(e.key === "ArrowDown") nr++;
+        else if(e.key === "ArrowLeft") nc--;
+        else if(e.key === "ArrowRight") nc++;
+        else return;
+
+        e.preventDefault();
+        focusCell(nr, nc);
+      });
+
+      input.dataset.row = r;
+      input.dataset.col = c;
+
+      cell.appendChild(input);
+      board.appendChild(cell);
+    }
+  }
+}
+
+function focusCell(r, c){
+  if(r < 0 || r >= puzzle.rows || c < 0 || c >= puzzle.cols) return;
+  if(puzzle.answer[r][c] === "#") return;
+
+  const input = document.querySelector(
+    `input[data-row="${r}"][data-col="${c}"]`
+  );
+
+  if(input){
+    input.focus();
+    input.select();
+  }
+}
+
+function checkAnswer(){
+  if(playerData.length === 0){
+    alert("先に開始してください");
+    return;
+  }
+
+  let correct = 0;
+  let total = 0;
+
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.classList.remove("correct", "wrong");
+  });
+
+  for(let r = 0; r < puzzle.rows; r++){
+    for(let c = 0; c < puzzle.cols; c++){
+
+      const ans = puzzle.answer[r][c];
+
+      if(ans === "#" || ans === "") continue;
+
+      total++;
+
+      const input = document.querySelector(
+        `input[data-row="${r}"][data-col="${c}"]`
+      );
+
+      if(!input) continue;
+
+      if(playerData[r][c] === ans){
+        correct++;
+        input.parentElement.classList.add("correct");
+      }else{
+        input.parentElement.classList.add("wrong");
+      }
+    }
+  }
+
+  document.getElementById("message").textContent =
+    correct + " / " + total + " 正解";
+}
+
+function resetPlayer(){
+  const key = getSaveKey();
+
+  if(!key){
+    alert("アカウント名を入力してください");
+    return;
+  }
+
+  if(!confirm("このアカウントの入力内容をリセットしますか？")) return;
+
+  localStorage.removeItem(key);
+  playerData = createEmptyPlayerData();
+  renderBoard();
+
+  document.getElementById("message").textContent = "リセットしました";
+}
+</script>
+
+</body>
+</html>
