@@ -333,13 +333,23 @@ function renderBoard(){
 });
 
 input.addEventListener("click", (e) => {
+
+  if(getMode() === "black"){
+    e.preventDefault();
+    e.stopPropagation();
+
+    boardData[r][c] = "#";
+    renderBoard();
+    return;
+  }
+
   e.stopPropagation();
 
-  if(getMode() === "letter" && selectedWord){
+  if(selectedWord){
     insertWord(r, c);
   }
 });
-
+        
 input.addEventListener("keydown", (e) => {
   let nr = r;
   let nc = c;
