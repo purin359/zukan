@@ -334,10 +334,13 @@ function renderBoard(){
 
 input.addEventListener("click", (e) => {
   e.stopPropagation();
+
+  if(getMode() === "letter" && selectedWord){
+    insertWord(r, c);
+  }
 });
 
 input.addEventListener("keydown", (e) => {
-
   let nr = r;
   let nc = c;
 
@@ -348,9 +351,7 @@ input.addEventListener("keydown", (e) => {
   else return;
 
   e.preventDefault();
-
   focusCell(nr, nc);
-
 });
 
         input.addEventListener("keydown", (e) => {
