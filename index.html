@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>にゃんこ文字検索</title>
+<style>
+body{font-family:sans-serif;padding:10px;}
+.searchWrap{display:flex;gap:5px;margin-bottom:10px;}
+.searchBox{flex:1;padding:8px;font-size:16px;}
+button,select{font-size:15px;padding:8px;margin:3px;}
+#menu div{padding:5px 10px;cursor:pointer;}
+#menu div:hover{background:#eee;}
+.gradeHeader{background:#eee;padding:8px;cursor:pointer;margin-top:10px;}
+.grid{display:grid;grid-template-columns:repeat(20,1fr);gap:4px;margin-bottom:10px;}
+.char{border:1px solid #ccc;padding:10px;font-size:18px;display:flex;justify-content:center;align-items:center;}
+.char.ally{background:#dde8ff;color:blue;font-weight:bold;}
+.char.enemy{background:#ffdddd;color:red;font-weight:bold;}
+.char.both{background:#e6ccff;color:purple;font-weight:bold;}
+.hit{font-weight:bold;}
+.result{border-bottom:1px solid #ccc;padding:8px 0;}
+.result.ally{background:#dde8ff;}
+.result.enemy{background:#ffdddd;}
+.result.both{background:#e6ccff;color:purple;}
+#resultScreenInner{transform:scale(1.15);transform-origin:top left;width:86%;}
+#result{max-height:60vh;overflow-y:auto;border:1px solid #ccc;padding:5px;}
+</style>
+</head>
+
+<body>
+
+<div id="searchScreen">
+<h2 id="pageTitle">味方文字検索</h2>
+
+<select id="modeSelect" onchange="changeMode()">
+  <option value="ally">味方</option>
+  <option value="enemy">敵</option>
+  <option value="integrated">敵味方統合</option>
+</select>
+
+<div class="searchWrap">
+  <input type="text" id="searchInput" class="searchBox">
+  <button onclick="searchFromInput()">検索</button>
+</div>
+
+<div style="position:relative;margin-bottom:10px;">
+  <button onclick="toggleMenu()">･･･</button>
+  <div id="menu" style="display:none;position:absolute;background:white;border:1px solid #ccc;padding:5px;z-index:100;">
+    <div onclick="showAll()">全キャラ表示</div>
+    <div onclick="showSingleOnly()">1件のみ検索</div>
+    <div onclick="showRanking()">使用数ランキング</div>
+    <div onclick="showChecker()">新規文字チェッカー</div>
+  </div>
+</div>
+
+<div class="gradeHeader" data-base="常用漢字" onclick="toggle('gAll',this)">▼ 常用漢字</div>
+<div id="gAll">
+  <div class="gradeHeader" data-base="小学生で習う漢字" onclick="toggle('gElem',this)">▼ 小学生で習う漢字</div>
+  <div id="gElem">
+    <div class="gradeHeader" onclick="toggle('grid1',this)">▼ 1年生で習う漢字</div><div id="grid1" class="grid"></div>
+    <div class="gradeHeader" onclick="toggle('grid2',this)">▼ 2年生で習う漢字</div><div id="grid2" class="grid"></div>
+    <div class="gradeHeader" onclick="toggle('grid3',this)">▼ 3年生で習う漢字</div><div id="grid3" class="grid"></div>
+    <div class="gradeHeader" onclick="toggle('grid4',this)">▼ 4年生で習う漢字</div><div id="grid4" class="grid"></div>
+    <div class="gradeHeader" onclick="toggle('grid5',this)">▼ 5年生で習う漢字</div><div id="grid5" class="grid"></div>
+    <div class="gradeHeader" onclick="toggle('grid6',this)">▼ 6年生で習う漢字</div><div id="grid6" class="grid"></div>
+  </div>
+
+  <div class="gradeHeader" id="headerG7" onclick="toggle('g7',this)">▼ 中学生で習う漢字</div>
+  <div id="g7"><div id="grid7" class="grid"></div></div>
+</div>
+
+<div class="gradeHeader" id="headerExtra" data-base="常用漢字外" onclick="toggle('extraGrid',this)">
+▼ 常用漢字外 0種類
+</div>
+<div id="extraGrid" class="grid"></div>
+</div>
+
+<div id="checkerScreen" style="display:none;">
+  <button onclick="backFromChecker()">← 戻る</button>
+  <h2 id="checkerTitle">新規漢字チェッカー</h2>
+  <textarea id="checkerInput" style="width:100%;height:120px;"></textarea><br><br>
+  <button onclick="runChecker()">判定</button>
+  <button onclick="clearChecker()">全消し</button>
+  <div id="checkerResult" style="margin-top:10px;"></div>
+</div>
+
+<div id="resultScreen" style="display:none;">
+  <div id="resultScreenInner">
+    <button onclick="back()">← 戻る</button>
+    <h2 id="selectedText"></h2>
+    <div id="result"></div>
+  </div>
+</div>
+
+<script>
+let mode = "ally";
+let allyData = [];
+let enemyData = [];
+let data = [];
+let scrollY = 0;
+let lastMode = "home";
+let rankingScrollY = 0;
+let singleScrollY = 0;
+
+const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
+
+function splitChars(str){
+  return Array.from(segmenter.segment(str || ""), s => s.segment);
+}
+
+/* ここに今の chars1〜chars7 をそのまま貼る */
+const chars1 = `一二三四五六七八九十`.split("");
+const chars2 = `引羽雲園遠何科夏家歌`.split("");
+const chars3 = `悪安暗医委意育員院飲`.split("");
+const chars4 = `愛案以衣位茨印英栄媛`.split("");
+const chars5 = `圧囲移因永営衛易益液`.split("");
+const chars6 = `胃異遺域宇映延沿恩我`.split("");
+const chars7 = `亜哀挨曖握扱宛嵐依威`.split("");
+
+const allKanji = () => chars1.concat(chars2,chars3,chars4,chars5,chars6,chars7);
+
+async function loadAllData(){
+  const allyFiles = ["basic.json","ex.json","rare.json","superrare.json","ultrarare.json","legendrare.json"];
+
+  const allyLoaded = await Promise.all(
+    allyFiles.map(f => fetch(f).then(r=>r.json()).catch(()=>[]))
+  );
+
+  allyData = allyLoaded.flat();
+  enemyData = await fetch("enemy.json").then(r=>r.json()).catch(()=>[]);
+
+  applyMode();
+}
+
+function applyMode(){
+  mode = document.getElementById("modeSelect").value;
+
+  document.getElementById("pageTitle").innerText =
+    mode === "ally" ? "味方文字検索" :
+    mode === "enemy" ? "敵文字検索" :
+    "敵味方統合文字検索";
+
+  document.getElementById("checkerTitle").innerText =
+    mode === "ally" ? "味方 新規漢字チェッカー" :
+    mode === "enemy" ? "敵 新規漢字チェッカー" :
+    "敵味方統合 新規漢字チェッカー";
+
+  data =
+    mode === "ally" ? flattenAlly(allyData) :
+    mode === "enemy" ? flattenEnemy(enemyData) :
+    flattenAlly(allyData).concat(flattenEnemy(enemyData));
+
+  initGrids();
+}
+
+function changeMode(){
+  document.getElementById("searchInput").value = "";
+  applyMode();
+}
+
+function flattenAlly(list){
+  return list.flatMap(ch =>
+    (ch.forms || []).map(f => ({
+      name:f.name || "",
+      description:f.description || "",
+      type:"ally"
+    }))
+  ).filter(f => f.name || f.description);
+}
+
+function flattenEnemy(list){
+  return list.map(f => ({
+    name:f.name || "",
+    description:f.description || "",
+    type:"enemy"
+  })).filter(f => f.name || f.description);
+}
+
+function normalize(str){
+  return (str || "").toLowerCase().normalize("NFKC").replace(/\s+/g,"").replace(/　/g,"");
+}
+
+function highlight(text,keyword){
+  if(!keyword) return text || "";
+  return String(text || "").replaceAll(keyword, `<span class="hit">${keyword}</span>`);
+}
+
+function isUsedIn(list,c){
+  return list.some(f => f.name.includes(c) || f.description.includes(c));
+}
+
+function getCharClass(c){
+  const ally = isUsedIn(flattenAlly(allyData), c);
+  const enemy = isUsedIn(flattenEnemy(enemyData), c);
+
+  if(mode === "ally") return ally ? "ally" : "";
+  if(mode === "enemy") return enemy ? "enemy" : "";
+  if(ally && enemy) return "both";
+  if(ally) return "ally";
+  if(enemy) return "enemy";
+  return "";
+}
+
+function initGrids(){
+  createGrid(chars1,"grid1");
+  createGrid(chars2,"grid2");
+  createGrid(chars3,"grid3");
+  createGrid(chars4,"grid4");
+  createGrid(chars5,"grid5");
+  createGrid(chars6,"grid6");
+  createGrid(chars7,"grid7");
+  createExtraKanji();
+  updateHeaders();
+}
+
+function createGrid(chars,id){
+  const grid = document.getElementById(id);
+  grid.innerHTML = "";
+
+  chars.forEach(c=>{
+    const div = document.createElement("div");
+    div.className = "char";
+    const cls = getCharClass(c);
+    if(cls) div.classList.add(cls);
+    div.innerText = c;
+    div.onclick = ()=>{
+      document.getElementById("searchInput").value = c;
+      search(c);
+    };
+    grid.appendChild(div);
+  });
+}
+
+function updateHeaders(){
+  const map = [
+    ["grid1","1年生で習う漢字"],
+    ["grid2","2年生で習う漢字"],
+    ["grid3","3年生で習う漢字"],
+    ["grid4","4年生で習う漢字"],
+    ["grid5","5年生で習う漢字"],
+    ["grid6","6年生で習う漢字"],
+    ["grid7","中学生で習う漢字"]
+  ];
+
+  map.forEach(([id,name])=>{
+    const grid = document.getElementById(id);
+    const used = [...grid.children].filter(d => d.classList.contains("ally") || d.classList.contains("enemy") || d.classList.contains("both")).length;
+    const total = grid.children.length;
+    grid.previousElementSibling.innerText = `▼ ${name} (${used}/${total})`;
+  });
+}
+
+function createExtraKanji(){
+  const extraGrid = document.getElementById("extraGrid");
+  extraGrid.innerHTML = "";
+
+  const normal = allKanji();
+
+  const chars = data.flatMap(f =>
+    splitChars(f.name).concat(splitChars(f.description))
+  );
+
+  const extra = [...new Set(
+    chars.filter(c => !normal.includes(c) && /[\u4E00-\u9FFF]/.test(c))
+  )];
+
+  document.getElementById("headerExtra").innerText =
+    `▼ 常用漢字外 ${extra.length}種類`;
+
+  extra.forEach(c=>{
+    const div = document.createElement("div");
+    div.className = "char";
+    const cls = getCharClass(c);
+    if(cls) div.classList.add(cls);
+    div.innerText = c;
+    div.onclick = ()=>{
+      document.getElementById("searchInput").value = c;
+      search(c);
+    };
+    extraGrid.appendChild(div);
+  });
+}
+
+function searchFromInput(){
+  const v = document.getElementById("searchInput").value.trim();
+  if(v) search(v);
+}
+
+function search(keyword){
+  lastMode = "search";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const key = normalize(keyword);
+  let total = 0;
+
+  data.forEach(f=>{
+    if(normalize(f.name).includes(key) || normalize(f.description).includes(key)){
+      total++;
+
+      const div = document.createElement("div");
+      div.className = `result ${mode === "integrated" ? f.type : ""}`;
+
+      div.innerHTML = `
+        <strong>${highlight(f.name, keyword)}</strong><br>
+        ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
+      `;
+
+      resultDiv.appendChild(div);
+    }
+  });
+
+  document.getElementById("selectedText").innerText =
+    total ? `"${keyword}" の検索結果 ${total}件見つかりました` :
+    `"${keyword}" は見つかりませんでした`;
+}
+
+function showAll(){
+  lastMode = "all";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  data.forEach(f=>{
+    const div = document.createElement("div");
+    div.className = `result ${mode === "integrated" ? f.type : ""}`;
+    div.innerHTML = `<strong>${f.name}</strong><br>${f.description.replace(/\n/g,"<br>")}`;
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    `全キャラ一覧：${data.length}件`;
+}
+
+function showSingleOnly(){
+  lastMode = "single";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  let total = 0;
+
+  allKanji().forEach(c=>{
+    let count = 0;
+    let foundName = "";
+
+    data.forEach(f=>{
+      if(f.name.includes(c) || f.description.includes(c)){
+        count++;
+        foundName = f.name;
+      }
+    });
+
+    if(count === 1){
+      total++;
+      const div = document.createElement("div");
+      div.className = "result";
+      div.innerHTML = `<strong>${c}</strong> ： ${foundName}`;
+      div.onclick = ()=>{
+        singleScrollY = document.getElementById("result").scrollTop;
+        document.getElementById("searchInput").value = c;
+        search(c);
+      };
+      resultDiv.appendChild(div);
+    }
+  });
+
+  document.getElementById("selectedText").innerText =
+    `1件しかヒットしない文字一覧：${total}件`;
+}
+
+function showRanking(){
+  lastMode = "ranking";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const list = allKanji().map(c=>{
+    let count = 0;
+    data.forEach(f=>{
+      if(f.name.includes(c) || f.description.includes(c)) count++;
+    });
+    return {char:c,count};
+  }).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);
+
+  let rank = 0;
+  let prev = -1;
+
+  list.forEach((item,i)=>{
+    if(item.count !== prev){
+      rank = i + 1;
+      prev = item.count;
+    }
+
+    const div = document.createElement("div");
+    div.className = "result";
+    div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
+    div.onclick = ()=>{
+      rankingScrollY = document.getElementById("result").scrollTop;
+      document.getElementById("searchInput").value = item.char;
+      search(item.char);
+    };
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    "出現数ランキング";
+}
+
+function runChecker(){
+  const text = document.getElementById("checkerInput").value;
+  const resultDiv = document.getElementById("checkerResult");
+  resultDiv.innerHTML = "";
+
+  const unique = [...new Set(
+    splitChars(text).filter(c => /[\u4E00-\u9FFF]/.test(c))
+  )];
+
+  if(!unique.length){
+    resultDiv.innerText = "漢字が見つかりませんでした";
+    return;
+  }
+
+  const existing = [];
+  const newChars = [];
+
+  unique.forEach(c=>{
+    let count = 0;
+    data.forEach(f=>{
+      if(f.name.includes(c) || f.description.includes(c)) count++;
+    });
+
+    if(count) existing.push(`${c}(${count}回)`);
+    else newChars.push(c);
+  });
+
+  let html = "";
+  if(existing.length) html += `既存：${existing.join("、")}<br>`;
+  if(newChars.length) html += `<span style="color:red;">新規：${newChars.join("、")}</span>`;
+  resultDiv.innerHTML = html;
+}
+
+function clearChecker(){
+  document.getElementById("checkerInput").value = "";
+  document.getElementById("checkerResult").innerHTML = "";
+}
+
+function showChecker(){
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("searchScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "none";
+  document.getElementById("checkerScreen").style.display = "block";
+}
+
+function backFromChecker(){
+  document.getElementById("checkerScreen").style.display = "none";
+  document.getElementById("searchScreen").style.display = "block";
+}
+
+function openResult(){
+  scrollY = window.scrollY;
+  document.getElementById("searchScreen").style.display = "none";
+  document.getElementById("checkerScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "block";
+  document.getElementById("result").innerHTML = "";
+  window.scrollTo(0,0);
+}
+
+function back(){
+  document.getElementById("resultScreen").style.display = "none";
+  document.getElementById("searchScreen").style.display = "block";
+  window.scrollTo(0,scrollY);
+}
+
+function toggle(id,header){
+  const el = document.getElementById(id);
+  const open = el.style.display === "none";
+  el.style.display = open ? "grid" : "none";
+  header.innerHTML = header.innerHTML.replace(open ? "▶" : "▼", open ? "▼" : "▶");
+}
+
+function toggleMenu(){
+  const menu = document.getElementById("menu");
+  menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+
+document.addEventListener("click",e=>{
+  const menu = document.getElementById("menu");
+  if(!e.target.closest("#menu") && !e.target.closest("button")){
+    menu.style.display = "none";
+  }
+});
+
+window.addEventListener("load",()=>{
+  document.getElementById("searchInput").addEventListener("keydown",e=>{
+    if(e.isComposing || e.keyCode === 229) return;
+    if(e.key === "Enter") searchFromInput();
+  });
+
+  loadAllData();
+});
+</script>
+
+</body>
+</html>
