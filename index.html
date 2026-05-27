@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>にゃんこ文字検索１</title>
+<title>にゃんこ文字検索</title>
 <style>
 body{
   font-family:
@@ -527,10 +527,10 @@ function showAll(){
     `全キャラ一覧：${data.length}件`;
 }
 
-function showSingleOnly(){
+function showSingleOnly(addHistory = true){
   lastMode = "single";
-  openResult();
-
+  openResult(addHistory);
+  
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
@@ -565,9 +565,9 @@ function showSingleOnly(){
     `1件しかヒットしない文字一覧(常用漢字)：${total}件`;
 }
 
-function showRanking(){
+function showRanking(addHistory = true){
   lastMode = "ranking";
-  openResult();
+  openResult(addHistory);
 
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
@@ -671,7 +671,7 @@ function openResult(addHistory = true){
 function back(){
   if(lastMode === "search"){
     if(returnMode === "single"){
-      showSingleOnly();
+      showSingleOnly(false);
       setTimeout(()=>{
         document.getElementById("result").scrollTop = singleScrollY;
       },0);
@@ -679,7 +679,7 @@ function back(){
     }
 
     if(returnMode === "ranking"){
-      showRanking();
+      showRanking(false);
       setTimeout(()=>{
         document.getElementById("result").scrollTop = rankingScrollY;
       },0);
@@ -689,7 +689,7 @@ function back(){
 
   showSearchScreen();
 }
-
+  
 function showSearchScreen(){
   document.getElementById("resultScreen").style.display = "none";
   document.getElementById("checkerScreen").style.display = "none";
@@ -728,7 +728,7 @@ window.addEventListener("load",()=>{
 history.replaceState({screen:"search"}, "");
 
 window.addEventListener("popstate", () => {
-  showSearchScreen();
+  back();
 });
 </script>
 
