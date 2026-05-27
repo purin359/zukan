@@ -16,7 +16,7 @@ button,select{font-size:15px;padding:8px;margin:3px;}
 .char.ally{background:#dde8ff;color:blue;font-weight:bold;}
 .char.enemy{background:#ffdddd;color:red;font-weight:bold;}
 .char.both{background:#e6ccff;color:purple;font-weight:bold;}
-.hit{font-weight:bold;}
+.hit{color:blue;font-weight:bold;}
 .result{border-bottom:1px solid #ccc;padding:8px 0;}
 .result.ally{background:#dde8ff;}
 .result.enemy{background:#ffdddd;}
@@ -31,12 +31,6 @@ button,select{font-size:15px;padding:8px;margin:3px;}
 <div id="searchScreen">
 <h2 id="pageTitle">味方文字検索</h2>
 
-<select id="modeSelect" onchange="changeMode()">
-  <option value="ally">味方</option>
-  <option value="enemy">敵</option>
-  <option value="integrated">敵味方統合</option>
-</select>
-
 <div class="searchWrap">
   <input type="text" id="searchInput" class="searchBox">
   <button onclick="searchFromInput()">検索</button>
@@ -50,6 +44,12 @@ button,select{font-size:15px;padding:8px;margin:3px;}
     <div onclick="showRanking()">使用数ランキング</div>
     <div onclick="showChecker()">新規文字チェッカー</div>
   </div>
+
+  <select id="modeSelect" onchange="changeMode()">
+    <option value="ally">味方</option>
+    <option value="enemy">敵</option>
+    <option value="integrated">敵味方統合</option>
+  </select>
 </div>
 
 <div class="gradeHeader" data-base="常用漢字" onclick="toggle('gAll',this)">▼ 常用漢字</div>
