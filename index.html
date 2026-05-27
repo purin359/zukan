@@ -139,9 +139,9 @@ button,select{
   </select>
 </div>
 
-<div class="gradeHeader" data-base="常用漢字" onclick="toggle('gAll',this)">▼ 常用漢字</div>
+<div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll',this)">▼ 常用漢字</div>
 <div id="gAll">
-  <div class="gradeHeader" data-base="小学生で習う漢字" onclick="toggle('gElem',this)">▼ 小学生で習う漢字</div>
+  <div class="gradeHeader" id="headerGElem" data-base="小学生で習う漢字" onclick="toggle('gElem',this)">▼ 小学生で習う漢字</div>
   <div id="gElem">
     <div class="gradeHeader" onclick="toggle('grid1',this)">▼ 1年生で習う漢字</div><div id="grid1" class="grid"></div>
     <div class="gradeHeader" onclick="toggle('grid2',this)">▼ 2年生で習う漢字</div><div id="grid2" class="grid"></div>
@@ -269,9 +269,9 @@ function applyMode(){
   mode = document.getElementById("modeSelect").value;
 
   document.getElementById("pageTitle").innerText =
-    mode === "ally" ? "味方文字検索" :
-    mode === "enemy" ? "敵文字検索" :
-    "敵味方統合文字検索";
+    mode === "ally" ? "味方文字検索　Ver.15.4.0対応" :
+    mode === "enemy" ? "敵文字検索　Ver.15.4.0対応" :
+    "敵味方統合文字検索　Ver.15.4.0対応";
 
   document.getElementById("checkerTitle").innerText =
     mode === "ally" ? "味方 新規漢字チェッカー" :
@@ -386,40 +386,35 @@ function updateHeaders(){
     return {used,total};
   }
 
-  // 各学年
+  let elemUsed = 0;
+  let elemTotal = 0;
+  let g7Used = 0;
+  let g7Total = 0;
+
   map.forEach(([id,name])=>{
     const grid = document.getElementById(id);
     const {used,total} = countGrid(grid);
-    grid.previousElementSibling.innerText = `▼ ${name} (${used}/${total})`;
+
+    if(id === "grid7"){
+      g7Used = used;
+      g7Total = total;
+      document.getElementById("headerG7").innerText =
+        `▼ ${name} (${used}/${total})`;
+    }else{
+      elemUsed += used;
+      elemTotal += total;
+      grid.previousElementSibling.innerText =
+        `▼ ${name} (${used}/${total})`;
+    }
   });
 
-  // 小学生
-  let elemUsed = 0;
-  let elemTotal = 0;
+  document.getElementById("headerGElem").innerText =
+    `▼ 小学生で習う漢字 (${elemUsed}/${elemTotal})`;
 
-  ["grid1","grid2","grid3","grid4","grid5","grid6"].forEach(id=>{
-    const {used,total} = countGrid(document.getElementById(id));
-    elemUsed += used;
-    elemTotal += total;
-  });
-
-  const elemHeader = document.querySelector('[onclick="toggle(\'gElem\',this)"]');
-  elemHeader.innerText = `▼ 小学生で習う漢字 (${elemUsed}/${elemTotal})`;
-
-  // 中学生
-  const grid7 = document.getElementById("grid7");
-  const g7 = countGrid(grid7);
-  document.getElementById("headerG7").innerText =
-    `▼ 中学生で習う漢字 (${g7.used}/${g7.total})`;
-
-  // 常用漢字
-  const allUsed = elemUsed + g7.used;
-  const allTotal = elemTotal + g7.total;
-
-  const allHeader = document.querySelector('[onclick="toggle(\'gAll\',this)"]');
-  allHeader.innerText = `▼ 常用漢字 (${allUsed}/${allTotal})`;
+  document.getElementById("headerGAll").innerText =
+    `▼ 常用漢字 (${elemUsed + g7Used}/${elemTotal + g7Total})`;
 }
-
+  
 function createExtraKanji(){
   const extraGrid = document.getElementById("extraGrid");
   extraGrid.innerHTML = "";
