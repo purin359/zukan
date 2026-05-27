@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>にゃんこ文字検索</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <style>
 body{
   font-family:
@@ -19,8 +20,8 @@ body{
 .searchBox{
   flex:1;padding:8px;
   font-size:16px;
-
 }
+  
 button,select{
   font-size:15px;
   padding:8px;
@@ -656,6 +657,8 @@ function backFromChecker(){
 }
 
 function openResult(addHistory = true){
+  resetZoomForMobile();
+
   scrollY = window.scrollY;
   document.getElementById("searchScreen").style.display = "none";
   document.getElementById("checkerScreen").style.display = "none";
@@ -666,6 +669,23 @@ function openResult(addHistory = true){
   if(addHistory){
     history.pushState({screen:"result"}, "");
   }
+}
+
+function resetZoomForMobile(){
+  const viewport = document.querySelector('meta[name="viewport"]');
+  if(!viewport) return;
+
+  viewport.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  );
+
+  setTimeout(()=>{
+    viewport.setAttribute(
+      "content",
+      "width=device-width, initial-scale=1.0"
+    );
+  },100);
 }
 
 function back(){
