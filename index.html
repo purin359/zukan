@@ -4,25 +4,112 @@
 <meta charset="UTF-8">
 <title>にゃんこ文字検索</title>
 <style>
-body{font-family:sans-serif;padding:10px;}
-.searchWrap{display:flex;gap:5px;margin-bottom:10px;}
-.searchBox{flex:1;padding:8px;font-size:16px;}
-button,select{font-size:15px;padding:8px;margin:3px;}
-#menu div{padding:5px 10px;cursor:pointer;}
-#menu div:hover{background:#eee;}
-.gradeHeader{background:#eee;padding:8px;cursor:pointer;margin-top:10px;}
-.grid{display:grid;grid-template-columns:repeat(20,1fr);gap:4px;margin-bottom:10px;}
-.char{border:1px solid #ccc;padding:10px;font-size:18px;display:flex;justify-content:center;align-items:center;}
-.char.ally{background:#dde8ff;color:blue;font-weight:bold;}
-.char.enemy{background:#ffdddd;color:red;font-weight:bold;}
-.char.both{background:#e6ccff;color:purple;font-weight:bold;}
-.hit{color:blue;font-weight:bold;}
-.result{border-bottom:1px solid #ccc;padding:8px 0;}
-.result.ally{background:#dde8ff;}
-.result.enemy{background:#ffdddd;}
-.result.both{background:#e6ccff;color:purple;}
-#resultScreenInner{transform:scale(1.15);transform-origin:top left;width:86%;}
-#result{max-height:60vh;overflow-y:auto;border:1px solid #ccc;padding:5px;}
+body{
+  font-family:
+  sans-serif;
+  padding:10px;
+}
+  
+.searchWrap{
+  display:flex;
+  gap:5px;
+  margin-bottom:10px;
+}
+  
+.searchBox{
+  flex:1;padding:8px;
+  font-size:16px;
+
+}
+button,select{
+  font-size:15px;
+  padding:8px;
+  margin:3px;
+}
+  
+#menu div{
+  padding:5px 10px;
+  cursor:pointer;
+}
+  
+#menu div:hover{
+  background:#eee;
+}
+  
+.gradeHeader{
+  background:#eee;padding:8px;
+  cursor:pointer;
+  margin-top:10px;
+}
+  
+.grid{
+  display:grid;
+  grid-template-columns:repeat(20,1fr);
+  gap:4px;
+  margin-bottom:10px;
+}
+  
+.char{
+  border:1px solid #ccc;
+  padding:10px;font-size:18px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+  
+.char.ally{
+  background:#dde8ff;
+  color:blue;
+  font-weight:bold;
+}
+  
+.char.enemy{
+  background:#ffdddd;
+  color:red;
+  font-weight:bold;
+}
+  
+.char.both{
+  background:#e6ccff;
+  color:purple;
+  font-weight:bold;
+}
+  
+.hit{
+  color:blue;
+  font-weight:bold;
+}
+  
+.result{
+  border-bottom:1px solid #ccc;
+  padding:8px 0;
+}
+  
+.result.ally{
+  background:#dde8ff;
+}
+  
+.result.enemy{
+  background:#ffdddd;
+}
+  
+.result.both{
+  background:#e6ccff;
+  color:purple;
+}
+  
+#resultScreenInner{
+  transform:scale(1.15);
+  transform-origin:top left;
+  width:86%;
+}
+  
+#result{
+  max-height:60vh;
+  overflow-y:auto;
+  border:1px solid #ccc;
+  padding:5px;
+}
 </style>
 </head>
 
