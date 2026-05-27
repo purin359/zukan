@@ -179,7 +179,12 @@ button,select{
 </div>
 
 <script>
-let mode = "ally";
+const params = new URLSearchParams(location.search);
+let mode = params.get("mode") || "ally";
+
+if(!["ally","enemy","integrated"].includes(mode)){
+  mode = "ally";
+}
 let allyData = [];
 let enemyData = [];
 let data = [];
@@ -256,6 +261,7 @@ async function loadAllData(){
   allyData = allyLoaded.flat();
   enemyData = await fetch("enemy.json").then(r=>r.json()).catch(()=>[]);
 
+  document.getElementById("modeSelect").value = mode;
   applyMode();
 }
 
@@ -632,20 +638,6 @@ window.addEventListener("load",()=>{
   loadAllData();
 });
 
-const params = new URLSearchParams(location.search);
-const mode = params.get("mode") || "ally";
-
-if(mode === "ally"){
-  // 味方データ読み込み
-}
-
-if(mode === "enemy"){
-  // 敵データ読み込み
-}
-
-if(mode === "integrated"){
-  // 統合版読み込み
-}
 </script>
 
 </body>
