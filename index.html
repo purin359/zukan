@@ -631,6 +631,21 @@ window.addEventListener("load",()=>{
 
   loadAllData();
 });
+
+const params = new URLSearchParams(location.search);
+const mode = params.get("mode") || "ally";
+
+if(mode === "ally"){
+  // 味方データ読み込み
+}
+
+if(mode === "enemy"){
+  // 敵データ読み込み
+}
+
+if(mode === "integrated"){
+  // 統合版読み込み
+}
 </script>
 
 </body>
