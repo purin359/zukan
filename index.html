@@ -462,7 +462,7 @@ function search(keyword){
   let total = 0;
 
   data.forEach(f=>{
-    if(normalize(f.name).includes(key) || normalize(f.description).includes(key)){
+    if(hasExactText(f.name, keyword) || hasExactText(f.description, keyword)){
       total++;
 
       const div = document.createElement("div");
@@ -480,6 +480,31 @@ function search(keyword){
   document.getElementById("selectedText").innerText =
     total ? `"${keyword}" の検索結果 ${total}件見つかりました` :
     `"${keyword}" は見つかりませんでした`;
+}
+
+  function hasExactText(text, keyword){
+  text = String(text || "");
+  keyword = String(keyword || "");
+
+  if(!keyword) return false;
+
+  const textChars = splitChars(text);
+  const keyChars = splitChars(keyword);
+
+  for(let i = 0; i <= textChars.length - keyChars.length; i++){
+    let ok = true;
+
+    for(let j = 0; j < keyChars.length; j++){
+      if(textChars[i + j] !== keyChars[j]){
+        ok = false;
+        break;
+      }
+    }
+
+    if(ok) return true;
+  }
+
+  return false;
 }
 
 function showAll(){
