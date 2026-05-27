@@ -523,8 +523,6 @@ function showAll(){
 
   document.getElementById("selectedText").innerText =
     `全キャラ一覧：${data.length}件`;
-
-  history.pushState({screen:"checker"}, "");
 }
 
 function showSingleOnly(){
@@ -562,9 +560,7 @@ function showSingleOnly(){
   });
 
   document.getElementById("selectedText").innerText =
-    `1件しかヒットしない文字一覧：${total}件`;
-  
-  history.pushState({screen:"checker"}, "");
+    `1件しかヒットしない文字一覧(常用漢字)：${total}件`;
 }
 
 function showRanking(){
@@ -603,9 +599,7 @@ function showRanking(){
   });
 
   document.getElementById("selectedText").innerText =
-    "出現数ランキング";
-  
-  history.pushState({screen:"checker"}, "");
+    "出現数ランキング(常用漢字)";
 }
 
 function runChecker(){
@@ -715,8 +709,6 @@ window.addEventListener("load",()=>{
 
   loadAllData();
 });
-
-window.addEventListener("popstate", () => {
 
 history.replaceState({screen:"search"}, "");
 
