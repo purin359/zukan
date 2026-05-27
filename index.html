@@ -192,6 +192,7 @@ let scrollY = 0;
 let lastMode = "home";
 let rankingScrollY = 0;
 let singleScrollY = 0;
+let returnMode = "home";
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
 
@@ -358,7 +359,7 @@ function createGrid(chars,id){
     div.innerText = c;
     div.onclick = ()=>{
       document.getElementById("searchInput").value = c;
-      search(c);
+      search(c, "home");
     };
     grid.appendChild(div);
   });
@@ -440,7 +441,7 @@ function createExtraKanji(){
     div.innerText = c;
     div.onclick = ()=>{
       document.getElementById("searchInput").value = c;
-      search(c);
+      search(c, "home");
     };
     extraGrid.appendChild(div);
   });
@@ -448,10 +449,11 @@ function createExtraKanji(){
 
 function searchFromInput(){
   const v = document.getElementById("searchInput").value.trim();
-  if(v) search(v);
+  if(v) search(v, "home");
 }
 
-function search(keyword){
+function search(keyword, from = "home"){
+  returnMode = from;
   lastMode = "search";
   openResult();
 
@@ -553,7 +555,7 @@ function showSingleOnly(){
       div.onclick = ()=>{
         singleScrollY = document.getElementById("result").scrollTop;
         document.getElementById("searchInput").value = c;
-        search(c);
+        search(c, "single");
       };
       resultDiv.appendChild(div);
     }
@@ -593,7 +595,7 @@ function showRanking(){
     div.onclick = ()=>{
       rankingScrollY = document.getElementById("result").scrollTop;
       document.getElementById("searchInput").value = item.char;
-      search(item.char);
+      search(item.char, "ranking");
     };
     resultDiv.appendChild(div);
   });
@@ -667,9 +669,22 @@ function openResult(addHistory = true){
 }
 
 function back(){
-  if(history.state && history.state.screen === "result"){
-    history.back();
-    return;
+  if(lastMode === "search"){
+    if(returnMode === "single"){
+      showSingleOnly();
+      setTimeout(()=>{
+        document.getElementById("result").scrollTop = singleScrollY;
+      },0);
+      return;
+    }
+
+    if(returnMode === "ranking"){
+      showRanking();
+      setTimeout(()=>{
+        document.getElementById("result").scrollTop = rankingScrollY;
+      },0);
+      return;
+    }
   }
 
   showSearchScreen();
