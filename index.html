@@ -375,12 +375,49 @@ function updateHeaders(){
     ["grid7","中学生で習う漢字"]
   ];
 
+  function countGrid(grid){
+    const total = grid.children.length;
+    const used = [...grid.children].filter(d =>
+      d.classList.contains("ally") ||
+      d.classList.contains("enemy") ||
+      d.classList.contains("both")
+    ).length;
+
+    return {used,total};
+  }
+
+  // 各学年
   map.forEach(([id,name])=>{
     const grid = document.getElementById(id);
-    const used = [...grid.children].filter(d => d.classList.contains("ally") || d.classList.contains("enemy") || d.classList.contains("both")).length;
-    const total = grid.children.length;
+    const {used,total} = countGrid(grid);
     grid.previousElementSibling.innerText = `▼ ${name} (${used}/${total})`;
   });
+
+  // 小学生
+  let elemUsed = 0;
+  let elemTotal = 0;
+
+  ["grid1","grid2","grid3","grid4","grid5","grid6"].forEach(id=>{
+    const {used,total} = countGrid(document.getElementById(id));
+    elemUsed += used;
+    elemTotal += total;
+  });
+
+  const elemHeader = document.querySelector('[onclick="toggle(\'gElem\',this)"]');
+  elemHeader.innerText = `▼ 小学生で習う漢字 (${elemUsed}/${elemTotal})`;
+
+  // 中学生
+  const grid7 = document.getElementById("grid7");
+  const g7 = countGrid(grid7);
+  document.getElementById("headerG7").innerText =
+    `▼ 中学生で習う漢字 (${g7.used}/${g7.total})`;
+
+  // 常用漢字
+  const allUsed = elemUsed + g7.used;
+  const allTotal = elemTotal + g7.total;
+
+  const allHeader = document.querySelector('[onclick="toggle(\'gAll\',this)"]');
+  allHeader.innerText = `▼ 常用漢字 (${allUsed}/${allTotal})`;
 }
 
 function createExtraKanji(){
