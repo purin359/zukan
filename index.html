@@ -523,6 +523,8 @@ function showAll(){
 
   document.getElementById("selectedText").innerText =
     `全キャラ一覧：${data.length}件`;
+
+  history.pushState({screen:"checker"}, "");
 }
 
 function showSingleOnly(){
@@ -561,6 +563,8 @@ function showSingleOnly(){
 
   document.getElementById("selectedText").innerText =
     `1件しかヒットしない文字一覧：${total}件`;
+  
+  history.pushState({screen:"checker"}, "");
 }
 
 function showRanking(){
@@ -600,6 +604,8 @@ function showRanking(){
 
   document.getElementById("selectedText").innerText =
     "出現数ランキング";
+  
+  history.pushState({screen:"checker"}, "");
 }
 
 function runChecker(){
@@ -645,6 +651,7 @@ function showChecker(){
   document.getElementById("searchScreen").style.display = "none";
   document.getElementById("resultScreen").style.display = "none";
   document.getElementById("checkerScreen").style.display = "block";
+  history.pushState({screen:"checker"}, "");
 }
 
 function backFromChecker(){
@@ -652,21 +659,35 @@ function backFromChecker(){
   document.getElementById("searchScreen").style.display = "block";
 }
 
-function openResult(){
+function openResult(addHistory = true){
   scrollY = window.scrollY;
   document.getElementById("searchScreen").style.display = "none";
   document.getElementById("checkerScreen").style.display = "none";
   document.getElementById("resultScreen").style.display = "block";
   document.getElementById("result").innerHTML = "";
   window.scrollTo(0,0);
+
+  if(addHistory){
+    history.pushState({screen:"result"}, "");
+  }
 }
 
 function back(){
-  document.getElementById("resultScreen").style.display = "none";
-  document.getElementById("searchScreen").style.display = "block";
-  window.scrollTo(0,scrollY);
+  if(history.state && history.state.screen === "result"){
+    history.back();
+    return;
+  }
+
+  showSearchScreen();
 }
 
+function showSearchScreen(){
+  document.getElementById("resultScreen").style.display = "none";
+  document.getElementById("checkerScreen").style.display = "none";
+  document.getElementById("searchScreen").style.display = "block";
+  window.scrollTo(0, scrollY);
+}
+  
 function toggle(id,header){
   const el = document.getElementById(id);
   const open = el.style.display === "none";
@@ -695,6 +716,13 @@ window.addEventListener("load",()=>{
   loadAllData();
 });
 
+window.addEventListener("popstate", () => {
+
+history.replaceState({screen:"search"}, "");
+
+window.addEventListener("popstate", () => {
+  showSearchScreen();
+});
 </script>
 
 </body>
