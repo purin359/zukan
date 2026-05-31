@@ -504,7 +504,7 @@ function search(keyword, from = "home"){
 
   document.getElementById("selectedText").innerText =
     total ? `"${keyword}" の検索結果（${targetText}） ${total}件見つかりました` :
-    `"${keyword}" は見つかりませんでした`;
+    `"${keyword}" （${targetText}） は見つかりませんでした`;
 }
 
   function hasExactText(text, keyword){
