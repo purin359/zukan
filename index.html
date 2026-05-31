@@ -137,6 +137,12 @@ button,select{
     <option value="enemy">敵</option>
     <option value="integrated">敵味方統合</option>
   </select>
+
+  <select id="searchTarget">
+    <option value="both">キャラ名・説明文</option>
+    <option value="name">キャラ名のみ検索</option>
+    <option value="desc">説明文のみ検索</option>
+  </select>
 </div>
 
 <div class="gradeHeader" id="headerGAll" data-base="常用漢字" onclick="toggle('gAll',this)">▼ 常用漢字</div>
@@ -452,6 +458,18 @@ function searchFromInput(){
   if(v) search(v, "home");
 }
 
+  function isSearchHit(f, keyword){
+  const target = document.getElementById("searchTarget").value;
+
+  const nameHit = hasExactText(f.name, keyword);
+  const descHit = hasExactText(f.description, keyword);
+
+  if(target === "name") return nameHit;
+  if(target === "desc") return descHit;
+
+  return nameHit || descHit;
+}
+
 function search(keyword, from = "home"){
   returnMode = from;
   lastMode = "search";
@@ -464,7 +482,7 @@ function search(keyword, from = "home"){
   let total = 0;
 
   data.forEach(f=>{
-    if(hasExactText(f.name, keyword) || hasExactText(f.description, keyword)){
+    if(isSearchHit(f, keyword)){
       total++;
 
       const div = document.createElement("div");
@@ -479,8 +497,13 @@ function search(keyword, from = "home"){
     }
   });
 
+  const targetText =
+    document.getElementById("searchTarget").value === "name" ? "キャラ名のみ" :
+    document.getElementById("searchTarget").value === "desc" ? "説明文のみ" :
+    "キャラ名・説明文";
+
   document.getElementById("selectedText").innerText =
-    total ? `"${keyword}" の検索結果 ${total}件見つかりました` :
+    total ? `"${keyword}" の検索結果（${targetText}） ${total}件見つかりました` :
     `"${keyword}" は見つかりませんでした`;
 }
 
