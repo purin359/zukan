@@ -858,10 +858,9 @@ function runNameMaker(){
 
   results.sort((a,b)=>a.index - b.index);
 
-  // 入力文側の目印
   const markedText = chars.map((c,i)=>{
     if(markId[i] >= 0){
-      return `<span style="background:#dde8ff;color:blue;font-weight:bold;padding:2px;">${c}</span>`;
+      return c;
     }
     return `<span style="color:red;">${c}</span>`;
   }).join("");
@@ -880,12 +879,17 @@ function runNameMaker(){
     if(item.names.length === 0){
       div.innerHTML = `<strong style="color:red;">${item.text}</strong>　存在しません`;
     }else{
-      const show = item.names.slice(0,3).join("、");
+      const show = item.names.slice(0,3).map(name =>
+        name.replaceAll(
+          item.text,
+          `<strong>${item.text}</strong>`
+        )
+      ).join("、");
       const rest = item.names.length - 3;
       const listId = `nameList_${item.index}_${item.text}`;
 
       div.innerHTML = `
-        <strong style="background:#dde8ff;color:blue;padding:2px;">${item.text}</strong>
+        <strong>${item.text}</strong>
         　${show}
         ${
           rest > 0
@@ -893,7 +897,14 @@ function runNameMaker(){
             : ""
         }
         <div id="${listId}" style="display:none;margin-top:6px;padding-left:16px;">
-          ${item.names.map(n => `<div>${n}</div>`).join("")}
+          ${item.names.map(n =>
+            `<div>${
+              n.replaceAll(
+                item.text,
+                `<strong>${item.text}</strong>`
+              )
+            }</div>`
+          ).join("")}
         </div>
       `;
     }
