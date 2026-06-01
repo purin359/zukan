@@ -803,12 +803,6 @@ function clearNameMaker(){
   document.getElementById("nameMakerResult").innerHTML = "";
 }
 
-function findNamesByText(text){
-  return data
-    .filter(f => f.name && f.name.includes(text))
-    .map(f => f.name);
-}
-
 function runNameMaker(){
   const input = document.getElementById("nameMakerInput").value.trim();
   const resultDiv = document.getElementById("nameMakerResult");
@@ -820,107 +814,184 @@ function runNameMaker(){
   }
 
   const chars = splitChars(input);
-  const used = Array(chars.length).fill(false);
-  const markId = Array(chars.length).fill(-1);
-  const results = [];
 
-  // 長い連続一致を優先
-  for(let len = chars.length; len >= 1; len--){
-    for(let i = 0; i <= chars.length - len; i++){
-      if(used.slice(i, i + len).some(v => v)) continue;
+  // 全候補を作る
+  const candidates = [];
 
-      const part = chars.slice(i, i + len).join("");
-      const names = findNamesByText(part);
+  for(let start = 0; start < chars.length; start++){
+    for(let end = start + 1; end <= chars.length; end++){
+      const text = chars.slice(start, end).join("");
+      const names = findNamesByText(text);
 
       if(names.length > 0){
-        const id = results.length;
-
-        for(let j = i; j < i + len; j++){
-          used[j] = true;
-          markId[j] = id;
-        }
-
-        results.push({
-          id,
-          index: i,
-          text: part,
-          names
+        candidates.push({
+          start,
+          end,
+          text,
+          names,
+          len: end - start
         });
       }
     }
   }
 
-  chars.forEach((c,i)=>{
-    if(!used[i]){
-      results.push({
-        id: results.length,
-        index: i,
-        text: c,
-        names: []
+  const patterns = [];
+  const MAX_PATTERNS = 80;
+
+  function dfs(pos, parts, score){
+    if(patterns.length >= MAX_PATTERNS) return;
+
+    if(pos >= chars.length){
+      patterns.push({
+        parts:[...parts],
+        score
       });
+      return;
     }
+
+    // 現在位置から始まる候補
+    const nextCandidates = candidates
+      .filter(c => c.start === pos)
+      .sort((a,b) => b.len - a.len);
+
+    // 候補を使う
+    nextCandidates.forEach(c=>{
+      parts.push({
+        text:c.text,
+        names:c.names,
+        exists:true,
+        start:c.start,
+        end:c.end
+      });
+
+      dfs(
+        c.end,
+        parts,
+        score + c.len * c.len * 10
+      );
+
+      parts.pop();
+    });
+
+    // 見つからない1文字として進める
+    parts.push({
+      text:chars[pos],
+      names:[],
+      exists:false,
+      start:pos,
+      end:pos + 1
+    });
+
+    dfs(pos + 1, parts, score - 5);
+
+    parts.pop();
+  }
+
+  dfs(0, [], 0);
+
+  if(patterns.length === 0){
+    resultDiv.innerText = "候補が見つかりませんでした";
+    return;
+  }
+
+  // スコア順、同点なら存在しない文字が少ない順
+  patterns.sort((a,b)=>{
+    if(b.score !== a.score) return b.score - a.score;
+
+    const aMissing = a.parts.filter(p=>!p.exists).length;
+    const bMissing = b.parts.filter(p=>!p.exists).length;
+
+    return aMissing - bMissing;
   });
 
-  results.sort((a,b)=>a.index - b.index);
+  // 重複パターン除去
+  const unique = [];
+  const seen = new Set();
 
-  const markedText = chars.map((c,i)=>{
-    if(markId[i] >= 0){
-      return c;
-    }
-    return `<span style="color:red;">${c}</span>`;
-  }).join("");
+  patterns.forEach(p=>{
+    const key = p.parts.map(x=>x.text).join("|");
+    if(seen.has(key)) return;
 
-  const preview = document.createElement("div");
-  preview.style.marginBottom = "12px";
-  preview.style.fontSize = "20px";
-  preview.innerHTML = `入力：${markedText}`;
-  resultDiv.appendChild(preview);
-
-  results.forEach(item=>{
-    const div = document.createElement("div");
-    div.style.borderBottom = "1px solid #ccc";
-    div.style.padding = "6px 0";
-
-    if(item.names.length === 0){
-      div.innerHTML = `<strong style="color:red;">${item.text}</strong>　存在しません`;
-    }else{
-      const show = item.names.slice(0,3).map(name =>
-        name.replaceAll(
-          item.text,
-          `<strong>${item.text}</strong>`
-        )
-      ).join("、");
-      const rest = item.names.length - 3;
-      const listId = `nameList_${item.index}_${item.text}`;
-
-      div.innerHTML = `
-        <strong>${item.text}</strong>
-        　${show}
-        ${
-          rest > 0
-            ? `　<button onclick="toggleNameList('${listId}')">他${rest}件</button>`
-            : ""
-        }
-        <div id="${listId}" style="display:none;margin-top:6px;padding-left:16px;">
-          ${item.names.map(n =>
-            `<div>${
-              n.replaceAll(
-                item.text,
-                `<strong>${item.text}</strong>`
-              )
-            }</div>`
-          ).join("")}
-        </div>
-      `;
-    }
-
-    resultDiv.appendChild(div);
+    seen.add(key);
+    unique.push(p);
   });
+
+  const topPatterns = unique.slice(0,3);
+
+  const inputPreview = document.createElement("div");
+  inputPreview.style.marginBottom = "12px";
+  inputPreview.style.fontSize = "20px";
+  inputPreview.innerHTML = `入力：${input}`;
+  resultDiv.appendChild(inputPreview);
+
+  topPatterns.forEach((pattern, index)=>{
+    const box = document.createElement("div");
+    box.style.border = "1px solid #ccc";
+    box.style.padding = "8px";
+    box.style.marginBottom = "10px";
+
+    const title = document.createElement("div");
+    title.innerHTML = `<strong>パターン${index + 1}</strong>`;
+    title.style.marginBottom = "6px";
+    box.appendChild(title);
+
+    pattern.parts.forEach(part=>{
+      const div = document.createElement("div");
+      div.style.borderBottom = "1px solid #eee";
+      div.style.padding = "6px 0";
+
+      if(!part.exists){
+        div.innerHTML =
+          `<strong style="color:red;">${part.text}</strong>　存在しません`;
+      }else{
+        const show = part.names.slice(0,3).map(name =>
+          name.replaceAll(
+            part.text,
+            `<strong>${part.text}</strong>`
+          )
+        ).join("、");
+
+        const rest = part.names.length - 3;
+        const listId =
+          `nameList_${index}_${part.start}_${part.end}_${part.text}`;
+
+        div.innerHTML = `
+          <strong>${part.text}</strong>　${show}
+          ${
+            rest > 0
+              ? `　<button onclick="toggleNameList('${listId}')">他${rest}件</button>`
+              : ""
+          }
+          <div id="${listId}" style="display:none;margin-top:6px;padding-left:16px;">
+            ${part.names.map(n =>
+              `<div>${
+                n.replaceAll(
+                  part.text,
+                  `<strong>${part.text}</strong>`
+                )
+              }</div>`
+            ).join("")}
+          </div>
+        `;
+      }
+
+      box.appendChild(div);
+    });
+
+    resultDiv.appendChild(box);
+  });
+}
+
+function findNamesByText(text){
+  return data
+    .filter(f => f.name && f.name.includes(text))
+    .map(f => f.name);
 }
 
 function toggleNameList(id){
   const el = document.getElementById(id);
-  el.style.display = el.style.display === "none" ? "block" : "none";
+  el.style.display =
+    el.style.display === "none" ? "block" : "none";
 }
 </script>
 
