@@ -110,6 +110,14 @@ button,select{
   border:1px solid #ccc;
   padding:5px;
 }
+
+  #nameMakerResult button{
+  background:#eee;
+  color:#222;
+  border:1px solid #ccc;
+  border-radius:6px;
+  padding:3px 6px;
+}
 </style>
 </head>
 
@@ -808,50 +816,61 @@ function runNameMaker(){
 
   const chars = splitChars(input);
   const used = Array(chars.length).fill(false);
+  const markId = Array(chars.length).fill(-1);
   const results = [];
 
   // 長い連続一致を優先
   for(let len = chars.length; len >= 1; len--){
     for(let i = 0; i <= chars.length - len; i++){
-
-      let blocked = false;
-      for(let j = i; j < i + len; j++){
-        if(used[j]){
-          blocked = true;
-          break;
-        }
-      }
-      if(blocked) continue;
+      if(used.slice(i, i + len).some(v => v)) continue;
 
       const part = chars.slice(i, i + len).join("");
       const names = findNamesByText(part);
 
       if(names.length > 0){
+        const id = results.length;
+
         for(let j = i; j < i + len; j++){
           used[j] = true;
+          markId[j] = id;
         }
 
         results.push({
-          index:i,
-          text:part,
-          names:names
+          id,
+          index: i,
+          text: part,
+          names
         });
       }
     }
   }
 
-  // 見つからなかった1文字を追加
   chars.forEach((c,i)=>{
     if(!used[i]){
       results.push({
-        index:i,
-        text:c,
-        names:[]
+        id: results.length,
+        index: i,
+        text: c,
+        names: []
       });
     }
   });
 
   results.sort((a,b)=>a.index - b.index);
+
+  // 入力文側の目印
+  const markedText = chars.map((c,i)=>{
+    if(markId[i] >= 0){
+      return `<span style="background:#dde8ff;color:blue;font-weight:bold;padding:2px;">${c}</span>`;
+    }
+    return `<span style="color:red;">${c}</span>`;
+  }).join("");
+
+  const preview = document.createElement("div");
+  preview.style.marginBottom = "12px";
+  preview.style.fontSize = "20px";
+  preview.innerHTML = `入力：${markedText}`;
+  resultDiv.appendChild(preview);
 
   results.forEach(item=>{
     const div = document.createElement("div");
@@ -859,18 +878,33 @@ function runNameMaker(){
     div.style.padding = "6px 0";
 
     if(item.names.length === 0){
-      div.innerHTML = `<strong>${item.text}</strong>　存在しません`;
+      div.innerHTML = `<strong style="color:red;">${item.text}</strong>　存在しません`;
     }else{
       const show = item.names.slice(0,3).join("、");
       const rest = item.names.length - 3;
+      const listId = `nameList_${item.index}_${item.text}`;
 
-      div.innerHTML =
-        `<strong>${item.text}</strong>　${show}` +
-        (rest > 0 ? `　他${rest}件` : "");
+      div.innerHTML = `
+        <strong style="background:#dde8ff;color:blue;padding:2px;">${item.text}</strong>
+        　${show}
+        ${
+          rest > 0
+            ? `　<button onclick="toggleNameList('${listId}')">他${rest}件</button>`
+            : ""
+        }
+        <div id="${listId}" style="display:none;margin-top:6px;padding-left:16px;">
+          ${item.names.map(n => `<div>${n}</div>`).join("")}
+        </div>
+      `;
     }
 
     resultDiv.appendChild(div);
   });
+}
+
+function toggleNameList(id){
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === "none" ? "block" : "none";
 }
 </script>
 
