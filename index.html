@@ -130,6 +130,7 @@ button,select{
     <div onclick="showSingleOnly()">1件のみ検索</div>
     <div onclick="showRanking()">使用数ランキング</div>
     <div onclick="showChecker()">新規文字チェッカー</div>
+    <div onclick="showNameMaker()">名前作成</div>
   </div>
 
   <select id="modeSelect" onchange="changeMode()">
@@ -174,6 +175,20 @@ button,select{
   <button onclick="runChecker()">判定</button>
   <button onclick="clearChecker()">全消し</button>
   <div id="checkerResult" style="margin-top:10px;"></div>
+</div>
+
+  <div id="nameMakerScreen" style="display:none;">
+  <button onclick="backFromNameMaker()">← 戻る</button>
+
+  <h2>名前作成</h2>
+
+  <textarea id="nameMakerInput" style="width:100%;height:100px;"></textarea>
+  <br><br>
+
+  <button onclick="runNameMaker()">判定</button>
+  <button onclick="clearNameMaker()">全消し</button>
+
+  <div id="nameMakerResult" style="margin-top:10px;"></div>
 </div>
 
 <div id="resultScreen" style="display:none;">
@@ -717,6 +732,7 @@ function showSearchScreen(){
   document.getElementById("resultScreen").style.display = "none";
   document.getElementById("checkerScreen").style.display = "none";
   document.getElementById("searchScreen").style.display = "block";
+  document.getElementById("nameMakerScreen").style.display = "none";
   window.scrollTo(0, scrollY);
 }
   
@@ -753,6 +769,109 @@ history.replaceState({screen:"search"}, "");
 window.addEventListener("popstate", () => {
   back();
 });
+
+  function showNameMaker(){
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("searchScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "none";
+  document.getElementById("checkerScreen").style.display = "none";
+  document.getElementById("nameMakerScreen").style.display = "block";
+
+  history.pushState({screen:"nameMaker"}, "");
+}
+
+function backFromNameMaker(){
+  document.getElementById("nameMakerScreen").style.display = "none";
+  document.getElementById("searchScreen").style.display = "block";
+}
+
+function clearNameMaker(){
+  document.getElementById("nameMakerInput").value = "";
+  document.getElementById("nameMakerResult").innerHTML = "";
+}
+
+function findNamesByText(text){
+  return data
+    .filter(f => f.name && f.name.includes(text))
+    .map(f => f.name);
+}
+
+function runNameMaker(){
+  const input = document.getElementById("nameMakerInput").value.trim();
+  const resultDiv = document.getElementById("nameMakerResult");
+  resultDiv.innerHTML = "";
+
+  if(!input){
+    resultDiv.innerText = "文字を入力してください";
+    return;
+  }
+
+  const chars = splitChars(input);
+  const used = Array(chars.length).fill(false);
+  const results = [];
+
+  // 長い連続一致を優先
+  for(let len = chars.length; len >= 1; len--){
+    for(let i = 0; i <= chars.length - len; i++){
+
+      let blocked = false;
+      for(let j = i; j < i + len; j++){
+        if(used[j]){
+          blocked = true;
+          break;
+        }
+      }
+      if(blocked) continue;
+
+      const part = chars.slice(i, i + len).join("");
+      const names = findNamesByText(part);
+
+      if(names.length > 0){
+        for(let j = i; j < i + len; j++){
+          used[j] = true;
+        }
+
+        results.push({
+          index:i,
+          text:part,
+          names:names
+        });
+      }
+    }
+  }
+
+  // 見つからなかった1文字を追加
+  chars.forEach((c,i)=>{
+    if(!used[i]){
+      results.push({
+        index:i,
+        text:c,
+        names:[]
+      });
+    }
+  });
+
+  results.sort((a,b)=>a.index - b.index);
+
+  results.forEach(item=>{
+    const div = document.createElement("div");
+    div.style.borderBottom = "1px solid #ccc";
+    div.style.padding = "6px 0";
+
+    if(item.names.length === 0){
+      div.innerHTML = `<strong>${item.text}</strong>　存在しません`;
+    }else{
+      const show = item.names.slice(0,3).join("、");
+      const rest = item.names.length - 3;
+
+      div.innerHTML =
+        `<strong>${item.text}</strong>　${show}` +
+        (rest > 0 ? `　他${rest}件` : "");
+    }
+
+    resultDiv.appendChild(div);
+  });
+}
 </script>
 
 </body>
