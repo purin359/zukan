@@ -209,6 +209,7 @@ button,select{
 
 <script>
 const params = new URLSearchParams(location.search);
+const hash = location.hash.replace("#","");
 let mode = params.get("mode") || "ally";
 
 if(!["ally","enemy","integrated"].includes(mode)){
@@ -293,6 +294,10 @@ async function loadAllData(){
 
   document.getElementById("modeSelect").value = mode;
   applyMode();
+
+  if(hash === "namemaker"){
+    showNameMaker();
+  }
 }
 
 function applyMode(){
