@@ -485,8 +485,15 @@ function createExtraKanji(){
 
   const normal = allKanji();
 
-  const chars = data.flatMap(f =>
-    splitChars(f.name).concat(splitChars(f.description))
+  const targetList =
+    kanjiTarget === "stage"
+      ? flattenStages(stageData)
+      : kanjiTarget === "both"
+        ? getKanjiSearchData()
+        : data;
+
+  const chars = targetList.flatMap(f =>
+    splitChars(f.name).concat(splitChars(f.description || ""))
   );
 
   const extra = [...new Set(
@@ -499,13 +506,16 @@ function createExtraKanji(){
   extra.forEach(c=>{
     const div = document.createElement("div");
     div.className = "char";
+
     const cls = getCharClass(c);
     if(cls) div.classList.add(cls);
+
     div.innerText = c;
     div.onclick = ()=>{
       document.getElementById("searchInput").value = c;
       search(c, "home");
     };
+
     extraGrid.appendChild(div);
   });
 }
