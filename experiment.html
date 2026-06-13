@@ -591,13 +591,16 @@ function search(keyword, from = "home"){
 
       if(f.type === "stage"){
         div.innerHTML = `
-          <strong>${highlight(f.name, keyword)}</strong><br>
-          ${highlight(f.description, keyword)}
+          <strong>
+            ${highlight(f.chapterName, keyword)}
+            -
+            ${highlight(f.name, keyword)}
+          </strong>
         `;
-      }else if(f.type === "chapter"){
+      }
+      else if(f.type === "chapter"){
         div.innerHTML = `
-          <strong>${highlight(f.name, keyword)}</strong><br>
-          章名
+          <strong>${highlight(f.name, keyword)}</strong>
         `;
       }else{
         div.innerHTML = `
@@ -1108,20 +1111,22 @@ function flattenStages(list){
   return list.flatMap(ch => {
     const chapter = {
       name: ch.chapterName || "",
+      chapterName: ch.chapterName || "",
       description: "",
-      type: "stage"
+      type: "chapter"
     };
 
     const stages = (ch.stages || []).map(s => ({
       name: s.stageName || "",
-      description: ch.chapterName || "",
+      chapterName: ch.chapterName || "",
+      description: "",
       type: "stage"
     }));
 
     return [chapter].concat(stages);
   }).filter(x => x.name);
 }
-
+  
 function getKanjiSearchData(){
   const charList =
     mode === "ally" ? flattenAlly(allyData) :
