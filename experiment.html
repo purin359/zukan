@@ -1123,7 +1123,7 @@ function flattenStages(list){
       type: "stage"
     }));
 
-    return [chapter].concat(stages);
+    return [chapter, ...stages];
   }).filter(x => x.name);
 }
   
