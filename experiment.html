@@ -153,10 +153,10 @@ button,select{
     <option value="integrated">敵味方統合</option>
   </select>
 
-  <select id="searchType">
-    <option value="char">キャラ検索</option>
-    <option value="stage">ステージ検索</option>
-    <option value="both">キャラ＋ステージ検索</option>
+  <select id="kanjiTarget" onchange="changeKanjiTarget()">
+    <option value="char">キャラの漢字</option>
+    <option value="stage">ステージの漢字</option>
+    <option value="both">キャラ＋ステージの漢字</option>
   </select>
 
   <select id="searchTarget">
@@ -385,8 +385,6 @@ function getCharClass(c){
   if(!used) return "";
 
   if(kanjiTarget === "stage") return "stage";
-
-  if(kanjiTarget === "stage") return "both";
 
   if(mode === "ally") return "ally";
   if(mode === "enemy") return "enemy";
