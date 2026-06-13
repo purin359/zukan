@@ -597,8 +597,7 @@ function search(keyword, from = "home"){
             ${highlight(f.name, keyword)}
           </strong>
         `;
-      }
-      else if(f.type === "chapter"){
+      }else if(f.type === "chapter"){
         div.innerHTML = `
           <strong>${highlight(f.name, keyword)}</strong>
         `;
