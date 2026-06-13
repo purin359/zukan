@@ -118,6 +118,12 @@ button,select{
   border-radius:6px;
   padding:3px 6px;
 }
+
+  .char.stage{
+  background:#fff4cc;
+  color:#d4a000;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -378,6 +384,8 @@ function getCharClass(c){
 
   if(!used) return "";
 
+  if(kanjiTarget === "stage") return "stage";
+
   if(kanjiTarget === "stage") return "both";
 
   if(mode === "ally") return "ally";
@@ -444,9 +452,10 @@ function updateHeaders(){
     const used = [...grid.children].filter(d =>
       d.classList.contains("ally") ||
       d.classList.contains("enemy") ||
-      d.classList.contains("both")
+      d.classList.contains("both") ||
+      d.classList.contains("stage")
     ).length;
-
+    
     return {used,total};
   }
 
