@@ -147,16 +147,16 @@ button,select{
     <option value="integrated">敵味方統合</option>
   </select>
 
-  <select id="kanjiTarget" onchange="changeKanjiTarget()">
-    <option value="char">キャラ名</option>
-    <option value="stage">ステージ名・章名</option>
-    <option value="both">キャラ名＋ステージ名</option>
+  <select id="searchType">
+    <option value="char">キャラ検索</option>
+    <option value="stage">ステージ検索</option>
+    <option value="both">キャラ＋ステージ検索</option>
   </select>
 
   <select id="searchTarget">
     <option value="both">キャラ名・説明文</option>
-    <option value="name">キャラ名のみ検索</option>
-    <option value="desc">説明文のみ検索</option>
+    <option value="name">キャラ名のみ</option>
+    <option value="desc">説明文のみ</option>
   </select>
 </div>
 
@@ -526,7 +526,14 @@ function searchFromInput(){
 }
 
   function isSearchHit(f, keyword){
+  const searchType = document.getElementById("searchType").value;
   const target = document.getElementById("searchTarget").value;
+
+  // ステージ検索時は name=ステージ名/章名、description=章名
+  if(searchType === "stage"){
+    return hasExactText(f.name, keyword) ||
+           hasExactText(f.description, keyword);
+  }
 
   const nameHit = hasExactText(f.name, keyword);
   const descHit = hasExactText(f.description, keyword);
@@ -535,6 +542,26 @@ function searchFromInput(){
   if(target === "desc") return descHit;
 
   return nameHit || descHit;
+}
+
+  function getStageSearchData(){
+  return flattenStages(stageData).map(s => ({
+    name: s.name || "",
+    description: s.chapterName || "",
+    type: s.type || "stage"
+  }));
+}
+
+function getSearchData(){
+  const searchType = document.getElementById("searchType").value;
+
+  const charList = data;
+  const stageList = getStageSearchData();
+
+  if(searchType === "char") return charList;
+  if(searchType === "stage") return stageList;
+
+  return charList.concat(stageList);
 }
 
 function search(keyword, from = "home"){
@@ -548,18 +575,30 @@ function search(keyword, from = "home"){
   const key = normalize(keyword);
   let total = 0;
 
-  data.forEach(f=>{
+  getSearchData().forEach(f=>{
     if(isSearchHit(f, keyword)){
       total++;
 
       const div = document.createElement("div");
       div.className = `result ${mode === "integrated" ? f.type : ""}`;
 
-      div.innerHTML = `
-        <strong>${highlight(f.name, keyword)}</strong><br>
-        ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
-      `;
-
+      if(f.type === "stage"){
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          ${highlight(f.description, keyword)}
+        `;
+      }else if(f.type === "chapter"){
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          章名
+        `;
+      }else{
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
+        `;
+      }
+      
       resultDiv.appendChild(div);
     }
   });
