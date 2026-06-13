@@ -147,6 +147,12 @@ button,select{
     <option value="integrated">敵味方統合</option>
   </select>
 
+  <select id="kanjiTarget" onchange="changeKanjiTarget()">
+    <option value="char">キャラ名</option>
+    <option value="stage">ステージ名・章名</option>
+    <option value="both">キャラ名＋ステージ名</option>
+  </select>
+
   <select id="searchTarget">
     <option value="both">キャラ名・説明文</option>
     <option value="name">キャラ名のみ検索</option>
@@ -223,6 +229,8 @@ let lastMode = "home";
 let rankingScrollY = 0;
 let singleScrollY = 0;
 let returnMode = "home";
+let stageData = [];
+let kanjiTarget = "char";
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
 
@@ -291,6 +299,9 @@ async function loadAllData(){
 
   allyData = allyLoaded.flat();
   enemyData = await fetch("enemy.json").then(r=>r.json()).catch(()=>[]);
+  stageData = await fetch("stages.json")
+  .then(r=>r.json())
+  .catch(()=>[]);
 
   document.getElementById("modeSelect").value = mode;
   applyMode();
@@ -358,15 +369,33 @@ function isUsedIn(list,c){
 }
 
 function getCharClass(c){
-  const ally = isUsedIn(flattenAlly(allyData), c);
-  const enemy = isUsedIn(flattenEnemy(enemyData), c);
+  const list = getKanjiSearchData();
 
-  if(mode === "ally") return ally ? "ally" : "";
-  if(mode === "enemy") return enemy ? "enemy" : "";
+  const used = list.some(f =>
+    (f.name || "").includes(c) ||
+    (f.description || "").includes(c)
+  );
+
+  if(!used) return "";
+
+  if(kanjiTarget === "stage") return "both";
+
+  if(mode === "ally") return "ally";
+  if(mode === "enemy") return "enemy";
+
+  const ally = flattenAlly(allyData).some(f =>
+    f.name.includes(c) || f.description.includes(c)
+  );
+
+  const enemy = flattenEnemy(enemyData).some(f =>
+    f.name.includes(c) || f.description.includes(c)
+  );
+
   if(ally && enemy) return "both";
   if(ally) return "ally";
   if(enemy) return "enemy";
-  return "";
+
+  return "both";
 }
 
 function initGrids(){
@@ -992,6 +1021,44 @@ function toggleNameList(id){
   const el = document.getElementById(id);
   el.style.display =
     el.style.display === "none" ? "block" : "none";
+}
+
+  // ステージ
+  function changeKanjiTarget(){
+  kanjiTarget = document.getElementById("kanjiTarget").value;
+  initGrids();
+}
+
+function flattenStages(list){
+  return list.flatMap(ch => {
+    const chapter = {
+      name: ch.chapterName || "",
+      description: "",
+      type: "stage"
+    };
+
+    const stages = (ch.stages || []).map(s => ({
+      name: s.stageName || "",
+      description: ch.chapterName || "",
+      type: "stage"
+    }));
+
+    return [chapter].concat(stages);
+  }).filter(x => x.name);
+}
+
+function getKanjiSearchData(){
+  const charList =
+    mode === "ally" ? flattenAlly(allyData) :
+    mode === "enemy" ? flattenEnemy(enemyData) :
+    flattenAlly(allyData).concat(flattenEnemy(enemyData));
+
+  const stageList = flattenStages(stageData);
+
+  if(kanjiTarget === "char") return charList;
+  if(kanjiTarget === "stage") return stageList;
+
+  return charList.concat(stageList);
 }
 </script>
 
