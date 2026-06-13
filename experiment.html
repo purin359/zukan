@@ -533,7 +533,7 @@ function searchFromInput(){
 }
 
   function isSearchHit(f, keyword){
-  const searchType = document.getElementById("searchType").value;
+  const searchType = kanjiTarget;
   const target = document.getElementById("searchTarget").value;
 
   // ステージ検索時は name=ステージ名/章名、description=章名
@@ -560,7 +560,7 @@ function searchFromInput(){
 }
 
 function getSearchData(){
-  const searchType = document.getElementById("searchType").value;
+  const searchType = kanjiTarget;
 
   const charList = data;
   const stageList = getStageSearchData();
@@ -610,8 +610,7 @@ function search(keyword, from = "home"){
     }
   });
 
-  const searchType =
-    document.getElementById("searchType").value;
+  const searchType = kanjiTarget;
 
   let targetText;
 
@@ -1098,6 +1097,10 @@ function toggleNameList(id){
   // ステージ
   function changeKanjiTarget(){
   kanjiTarget = document.getElementById("kanjiTarget").value;
+
+  document.getElementById("searchTarget").style.display =
+    kanjiTarget === "stage" ? "none" : "";
+
   initGrids();
 }
 
