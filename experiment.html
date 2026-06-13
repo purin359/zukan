@@ -603,15 +603,31 @@ function search(keyword, from = "home"){
     }
   });
 
-  const targetText =
-    document.getElementById("searchTarget").value === "name" ? "キャラ名のみ" :
-    document.getElementById("searchTarget").value === "desc" ? "説明文のみ" :
-    "キャラ名・説明文";
+  const searchType =
+    document.getElementById("searchType").value;
+
+  let targetText;
+
+  if(searchType === "stage"){
+    targetText = "";
+  }else{
+    targetText =
+      document.getElementById("searchTarget").value === "name"
+        ? "キャラ名のみ"
+        : document.getElementById("searchTarget").value === "desc"
+        ? "説明文のみ"
+        : "キャラ名・説明文";
+  }
 
   document.getElementById("selectedText").innerText =
-    total ? `"${keyword}" の検索結果（${targetText}） ${total}件見つかりました` :
-    `"${keyword}" （${targetText}） は見つかりませんでした`;
-}
+    total
+      ? searchType === "stage"
+        ? `"${keyword}" の検索結果 ${total}件見つかりました`
+        : `"${keyword}" の検索結果（${targetText}） ${total}件見つかりました`
+      : searchType === "stage"
+        ? `"${keyword}" は見つかりませんでした`
+        : `"${keyword}" （${targetText}） は見つかりませんでした`;
+  }
 
   function hasExactText(text, keyword){
   text = String(text || "");
