@@ -418,7 +418,7 @@ function getCharClass(c){
   );
 
   const other = flatOther.some(f =>
-    f.name.includes(c) || f.description.includes(c)
+    f.name.includes(c)
   );
 
   if(kanjiTarget === "char"){
@@ -1450,9 +1450,9 @@ function getKanjiSearchData(){
   function flattenOther(list){
   return list.map(x => ({
     name: x.漢字 || "",
-    description: `${x.場所 || ""} ${x.用法 || ""}`,
+    description: "",
     type: "other"
-  })).filter(x => x.name || x.description);
+  })).filter(x => x.name);
 }
 </script>
 
