@@ -536,11 +536,26 @@ function searchFromInput(){
   const searchType = kanjiTarget;
   const target = document.getElementById("searchTarget").value;
 
-  // ステージ検索時は name=ステージ名/章名、description=章名
   if(searchType === "stage"){
-    return hasExactText(f.name, keyword) ||
-           hasExactText(f.description, keyword);
+    if(f.type === "chapter"){
+      return hasExactText(f.name, keyword);
+    }
+
+    if(f.type === "stage"){
+      return hasExactText(f.name, keyword);
+    }
+
+    return false;
   }
+
+  const nameHit = hasExactText(f.name, keyword);
+  const descHit = hasExactText(f.description, keyword);
+
+  if(target === "name") return nameHit;
+  if(target === "desc") return descHit;
+
+  return nameHit || descHit;
+}
 
   const nameHit = hasExactText(f.name, keyword);
   const descHit = hasExactText(f.description, keyword);
@@ -559,16 +574,8 @@ function searchFromInput(){
   }));
 }
 
-function getSearchData(){
-  const searchType = kanjiTarget;
-
-  const charList = data;
-  const stageList = getStageSearchData();
-
-  if(searchType === "char") return charList;
-  if(searchType === "stage") return stageList;
-
-  return charList.concat(stageList);
+function getStageSearchData(){
+  return flattenStages(stageData);
 }
 
 function search(keyword, from = "home"){
