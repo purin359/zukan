@@ -557,25 +557,18 @@ function searchFromInput(){
   return nameHit || descHit;
 }
 
-  const nameHit = hasExactText(f.name, keyword);
-  const descHit = hasExactText(f.description, keyword);
-
-  if(target === "name") return nameHit;
-  if(target === "desc") return descHit;
-
-  return nameHit || descHit;
-}
-
-  function getStageSearchData(){
-  return flattenStages(stageData).map(s => ({
-    name: s.name || "",
-    description: s.chapterName || "",
-    type: s.type || "stage"
-  }));
-}
-
 function getStageSearchData(){
   return flattenStages(stageData);
+}
+
+function getSearchData(){
+  const charList = data;
+  const stageList = getStageSearchData();
+
+  if(kanjiTarget === "char") return charList;
+  if(kanjiTarget === "stage") return stageList;
+
+  return charList.concat(stageList);
 }
 
 function search(keyword, from = "home"){
