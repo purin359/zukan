@@ -1142,17 +1142,23 @@ function toggleNameList(id){
   const modeSelect = document.getElementById("modeSelect");
   const searchTarget = document.getElementById("searchTarget");
 
-  if(kanjiTarget === "stage" || kanjiTarget === "both"){
-    modeSelect.style.display = "none";
-  }else{
-    modeSelect.style.display = "";
-  }
+  if(kanjiTarget === "both"){
 
-  if(kanjiTarget === "stage"){
-    searchTarget.style.display = "none";
-  }else{
-    searchTarget.style.display = "";
-  }
+  mode = "integrated";
+
+  document.getElementById("modeSelect").value =
+    "integrated";
+
+  modeSelect.style.display = "none";
+
+}else if(kanjiTarget === "stage"){
+
+  modeSelect.style.display = "none";
+
+}else{
+
+  modeSelect.style.display = "";
+}
 
   updateMenu();
   initGrids();
@@ -1185,6 +1191,11 @@ function flattenStages(list){
 }
   
 function getKanjiSearchData(){
+  
+  if(kanjiTarget === "both"){
+  return flatAlly.concat(flatEnemy).concat(flatStage);
+}
+  
   const charList =
     mode === "ally" ? flatAlly :
     mode === "enemy" ? flatEnemy :
