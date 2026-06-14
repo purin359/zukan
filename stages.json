@@ -16498,7 +16498,7 @@
     "stages": [
       {
         "stageId": 0,
-        "stageName": "原始の古渦超極ムズ"
+        "stageName": "原始の古渦　超極ムズ"
       }
     ]
   },
@@ -21291,7 +21291,7 @@
   {
     "mapId": "A071",
     "type": "ねこなつ",
-    "chapterName": "ねこのなつやすみサバイバル",
+    "chapterName": "ねこのなつやすみ　サバイバル",
     "stages": [
       {
         "stageId": 0,
@@ -26008,7 +26008,7 @@
   {
     "mapId": "C208",
     "type": "エヴァンゲリオン",
-    "chapterName": "最終決戦エヴァ第１３号機",
+    "chapterName": "最終決戦　エヴァ第１３号機",
     "stages": [
       {
         "stageId": 0,
@@ -28180,7 +28180,7 @@
   {
     "mapId": "CA013",
     "type": "マンボウ",
-    "chapterName": "ハマンボ崎あゆみ強襲！",
+    "chapterName": "ハマンボ崎あゆみ　強襲！",
     "stages": [
       {
         "stageId": 0,
@@ -31994,7 +31994,7 @@
   {
     "mapId": "SR004",
     "type": "コロシアム",
-    "chapterName": "異次元コロシアム[特売セール激レア]",
+    "chapterName": "異次元コロシアム[特売セール　激レア]",
     "stages": [
       {
         "stageId": 0,
@@ -32075,7 +32075,7 @@
   {
     "mapId": "SR007",
     "type": "コロシアム",
-    "chapterName": "異次元コロシアム[超特売セールEX]",
+    "chapterName": "異次元コロシアム[超特売セール　EX]",
     "stages": [
       {
         "stageId": 0,
@@ -34069,454 +34069,402 @@
     "stages": [
       {
         "stageId": 0,
-        "stageName": "L-000"
+        "stageName": "1層"
       },
       {
         "stageId": 1,
-        "stageName": "L-001"
+        "stageName": "2層"
       },
       {
         "stageId": 2,
-        "stageName": "L-002"
+        "stageName": "3層"
       },
       {
         "stageId": 3,
-        "stageName": "L-003"
+        "stageName": "4層"
       },
       {
         "stageId": 4,
-        "stageName": "L-004"
+        "stageName": "5層"
       },
       {
         "stageId": 5,
-        "stageName": "L-005"
+        "stageName": "6層"
       },
       {
         "stageId": 6,
-        "stageName": "L-006"
+        "stageName": "7層"
       },
       {
         "stageId": 7,
-        "stageName": "L-007"
+        "stageName": "8層"
       },
       {
         "stageId": 8,
-        "stageName": "L-008"
+        "stageName": "9層"
       },
       {
         "stageId": 9,
-        "stageName": "L-009"
+        "stageName": "10層"
       },
       {
         "stageId": 10,
-        "stageName": "L-010"
+        "stageName": "11層"
       },
       {
         "stageId": 11,
-        "stageName": "L-011"
+        "stageName": "12層"
       },
       {
         "stageId": 12,
-        "stageName": "L-012"
+        "stageName": "13層"
       },
       {
         "stageId": 13,
-        "stageName": "L-013"
+        "stageName": "14層"
       },
       {
         "stageId": 14,
-        "stageName": "L-014"
+        "stageName": "15層"
       },
       {
         "stageId": 15,
-        "stageName": "L-015"
+        "stageName": "16層"
       },
       {
         "stageId": 16,
-        "stageName": "L-016"
+        "stageName": "17層"
       },
       {
         "stageId": 17,
-        "stageName": "L-017"
+        "stageName": "18層"
       },
       {
         "stageId": 18,
-        "stageName": "L-018"
+        "stageName": "19層"
       },
       {
         "stageId": 19,
-        "stageName": "L-019"
+        "stageName": "20層"
       },
       {
         "stageId": 20,
-        "stageName": "L-020"
+        "stageName": "21層"
       },
       {
         "stageId": 21,
-        "stageName": "L-021"
+        "stageName": "22層"
       },
       {
         "stageId": 22,
-        "stageName": "L-022"
+        "stageName": "23層"
       },
       {
         "stageId": 23,
-        "stageName": "L-023"
+        "stageName": "24層"
       },
       {
         "stageId": 24,
-        "stageName": "L-024"
+        "stageName": "25層"
       },
       {
         "stageId": 25,
-        "stageName": "L-025"
+        "stageName": "26層"
       },
       {
         "stageId": 26,
-        "stageName": "L-026"
+        "stageName": "27層"
       },
       {
         "stageId": 27,
-        "stageName": "L-027"
+        "stageName": "28層"
       },
       {
         "stageId": 28,
-        "stageName": "L-028"
+        "stageName": "29層"
       },
       {
         "stageId": 29,
-        "stageName": "L-029"
+        "stageName": "30層"
       },
       {
         "stageId": 30,
-        "stageName": "L-030"
+        "stageName": "31層"
       },
       {
         "stageId": 31,
-        "stageName": "L-031"
+        "stageName": "32層"
       },
       {
         "stageId": 32,
-        "stageName": "L-032"
+        "stageName": "33層"
       },
       {
         "stageId": 33,
-        "stageName": "L-033"
+        "stageName": "34層"
       },
       {
         "stageId": 34,
-        "stageName": "L-034"
+        "stageName": "35層"
       },
       {
         "stageId": 35,
-        "stageName": "L-035"
+        "stageName": "36層"
       },
       {
         "stageId": 36,
-        "stageName": "L-036"
+        "stageName": "37層"
       },
       {
         "stageId": 37,
-        "stageName": "L-037"
+        "stageName": "38層"
       },
       {
         "stageId": 38,
-        "stageName": "L-038"
+        "stageName": "39層"
       },
       {
         "stageId": 39,
-        "stageName": "L-039"
+        "stageName": "40層"
       },
       {
         "stageId": 40,
-        "stageName": "L-040"
+        "stageName": "41層"
       },
       {
         "stageId": 41,
-        "stageName": "L-041"
+        "stageName": "42層"
       },
       {
         "stageId": 42,
-        "stageName": "L-042"
+        "stageName": "43層"
       },
       {
         "stageId": 43,
-        "stageName": "L-043"
+        "stageName": "44層"
       },
       {
         "stageId": 44,
-        "stageName": "L-044"
+        "stageName": "45層"
       },
       {
         "stageId": 45,
-        "stageName": "L-045"
+        "stageName": "46層"
       },
       {
         "stageId": 46,
-        "stageName": "L-046"
+        "stageName": "47層"
       },
       {
         "stageId": 47,
-        "stageName": "L-047"
+        "stageName": "48層"
       },
       {
         "stageId": 48,
-        "stageName": "L-048"
+        "stageName": "49層"
       },
       {
         "stageId": 49,
-        "stageName": "L-049"
+        "stageName": "50層"
       },
       {
         "stageId": 50,
-        "stageName": "L-050"
+        "stageName": "51層"
       },
       {
         "stageId": 51,
-        "stageName": "L-051"
+        "stageName": "52層"
       },
       {
         "stageId": 52,
-        "stageName": "L-052"
+        "stageName": "53層"
       },
       {
         "stageId": 53,
-        "stageName": "L-053"
+        "stageName": "54層"
       },
       {
         "stageId": 54,
-        "stageName": "L-054"
+        "stageName": "55層"
       },
       {
         "stageId": 55,
-        "stageName": "L-055"
+        "stageName": "56層"
       },
       {
         "stageId": 56,
-        "stageName": "L-056"
+        "stageName": "57層"
       },
       {
         "stageId": 57,
-        "stageName": "L-057"
+        "stageName": "58層"
       },
       {
         "stageId": 58,
-        "stageName": "L-058"
+        "stageName": "59層"
       },
       {
         "stageId": 59,
-        "stageName": "L-059"
+        "stageName": "60層"
       },
       {
         "stageId": 60,
-        "stageName": "L-060"
+        "stageName": "61層"
       },
       {
         "stageId": 61,
-        "stageName": "L-061"
+        "stageName": "62層"
       },
       {
         "stageId": 62,
-        "stageName": "L-062"
+        "stageName": "63層"
       },
       {
         "stageId": 63,
-        "stageName": "L-063"
+        "stageName": "64層"
       },
       {
         "stageId": 64,
-        "stageName": "L-064"
+        "stageName": "65層"
       },
       {
         "stageId": 65,
-        "stageName": "L-065"
+        "stageName": "66層"
       },
       {
         "stageId": 66,
-        "stageName": "L-066"
+        "stageName": "67層"
       },
       {
         "stageId": 67,
-        "stageName": "L-067"
+        "stageName": "68層"
       },
       {
         "stageId": 68,
-        "stageName": "L-068"
+        "stageName": "69層"
       },
       {
         "stageId": 69,
-        "stageName": "L-069"
+        "stageName": "70層"
       },
       {
         "stageId": 70,
-        "stageName": "L-070"
+        "stageName": "71層"
       },
       {
         "stageId": 71,
-        "stageName": "L-071"
+        "stageName": "72層"
       },
       {
         "stageId": 72,
-        "stageName": "L-072"
+        "stageName": "73層"
       },
       {
         "stageId": 73,
-        "stageName": "L-073"
+        "stageName": "74層"
       },
       {
         "stageId": 74,
-        "stageName": "L-074"
+        "stageName": "75層"
       },
       {
         "stageId": 75,
-        "stageName": "L-075"
+        "stageName": "76層"
       },
       {
         "stageId": 76,
-        "stageName": "L-076"
+        "stageName": "77層"
       },
       {
         "stageId": 77,
-        "stageName": "L-077"
+        "stageName": "78層"
       },
       {
         "stageId": 78,
-        "stageName": "L-078"
+        "stageName": "79層"
       },
       {
         "stageId": 79,
-        "stageName": "L-079"
+        "stageName": "80層"
       },
       {
         "stageId": 80,
-        "stageName": "L-080"
+        "stageName": "81層"
       },
       {
         "stageId": 81,
-        "stageName": "L-081"
+        "stageName": "82層"
       },
       {
         "stageId": 82,
-        "stageName": "L-082"
+        "stageName": "83層"
       },
       {
         "stageId": 83,
-        "stageName": "L-083"
+        "stageName": "84層"
       },
       {
         "stageId": 84,
-        "stageName": "L-084"
+        "stageName": "85層"
       },
       {
         "stageId": 85,
-        "stageName": "L-085"
+        "stageName": "86層"
       },
       {
         "stageId": 86,
-        "stageName": "L-086"
+        "stageName": "87層"
       },
       {
         "stageId": 87,
-        "stageName": "L-087"
+        "stageName": "88層"
       },
       {
         "stageId": 88,
-        "stageName": "L-088"
+        "stageName": "89層"
       },
       {
         "stageId": 89,
-        "stageName": "L-089"
+        "stageName": "90層"
       },
       {
         "stageId": 90,
-        "stageName": "L-090"
+        "stageName": "91層"
       },
       {
         "stageId": 91,
-        "stageName": "L-091"
+        "stageName": "92層"
       },
       {
         "stageId": 92,
-        "stageName": "L-092"
+        "stageName": "93層"
       },
       {
         "stageId": 93,
-        "stageName": "L-093"
+        "stageName": "94層"
       },
       {
         "stageId": 94,
-        "stageName": "L-094"
+        "stageName": "95層"
       },
       {
         "stageId": 95,
-        "stageName": "L-095"
+        "stageName": "96層"
       },
       {
         "stageId": 96,
-        "stageName": "L-096"
+        "stageName": "97層"
       },
       {
         "stageId": 97,
-        "stageName": "L-097"
+        "stageName": "98層"
       },
       {
         "stageId": 98,
-        "stageName": "L-098"
+        "stageName": "99層"
       },
       {
         "stageId": 99,
-        "stageName": "L-099"
-      },
-      {
-        "stageId": 100,
-        "stageName": "L-100"
-      },
-      {
-        "stageId": 101,
-        "stageName": "L-101"
-      },
-      {
-        "stageId": 102,
-        "stageName": "L-102"
-      },
-      {
-        "stageId": 103,
-        "stageName": "L-103"
-      },
-      {
-        "stageId": 104,
-        "stageName": "L-104"
-      },
-      {
-        "stageId": 105,
-        "stageName": "L-105"
-      },
-      {
-        "stageId": 106,
-        "stageName": "L-106"
-      },
-      {
-        "stageId": 107,
-        "stageName": "L-107"
-      },
-      {
-        "stageId": 108,
-        "stageName": "L-108"
-      },
-      {
-        "stageId": 109,
-        "stageName": "L-109"
-      },
-      {
-        "stageId": 110,
-        "stageName": "L-110"
-      },
-      {
-        "stageId": 111,
-        "stageName": "L-111"
-      },
-      {
-        "stageId": 112,
         "stageName": "最深部 100層"
       }
     ]
@@ -34529,6 +34477,205 @@
       {
         "stageId": 0,
         "stageName": "ハイスコアに挑戦！"
+      }
+    ]
+  },
+  {
+    "mapId": 16000,
+    "type": "レジェクエ",
+    "chapterName": "レジェンドクエスト",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "LEVEL1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "LEVEL2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "LEVEL3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "LEVEL4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "LEVEL5"
+      },
+      {
+        "stageId": 5,
+        "stageName": "LEVEL6"
+      },
+      {
+        "stageId": 6,
+        "stageName": "LEVEL7"
+      },
+      {
+        "stageId": 7,
+        "stageName": "LEVEL8"
+      },
+      {
+        "stageId": 8,
+        "stageName": "LEVEL9"
+      },
+      {
+        "stageId": 9,
+        "stageName": "LEVEL10"
+      },
+      {
+        "stageId": 10,
+        "stageName": "LEVEL11"
+      },
+      {
+        "stageId": 11,
+        "stageName": "LEVEL12"
+      },
+      {
+        "stageId": 12,
+        "stageName": "LEVEL13"
+      },
+      {
+        "stageId": 13,
+        "stageName": "LEVEL14"
+      },
+      {
+        "stageId": 14,
+        "stageName": "LEVEL15"
+      },
+      {
+        "stageId": 15,
+        "stageName": "LEVEL16"
+      },
+      {
+        "stageId": 16,
+        "stageName": "LEVEL17"
+      },
+      {
+        "stageId": 17,
+        "stageName": "LEVEL18"
+      },
+      {
+        "stageId": 18,
+        "stageName": "LEVEL19"
+      },
+      {
+        "stageId": 19,
+        "stageName": "LEVEL20"
+      },
+      {
+        "stageId": 20,
+        "stageName": "LEVEL21"
+      },
+      {
+        "stageId": 21,
+        "stageName": "LEVEL22"
+      },
+      {
+        "stageId": 22,
+        "stageName": "LEVEL23"
+      },
+      {
+        "stageId": 23,
+        "stageName": "LEVEL24"
+      },
+      {
+        "stageId": 24,
+        "stageName": "LEVEL25"
+      },
+      {
+        "stageId": 25,
+        "stageName": "LEVEL26"
+      },
+      {
+        "stageId": 26,
+        "stageName": "LEVEL27"
+      },
+      {
+        "stageId": 27,
+        "stageName": "LEVEL28"
+      },
+      {
+        "stageId": 28,
+        "stageName": "LEVEL29"
+      },
+      {
+        "stageId": 29,
+        "stageName": "LEVEL30"
+      },
+      {
+        "stageId": 30,
+        "stageName": "LEVEL31"
+      },
+      {
+        "stageId": 31,
+        "stageName": "LEVEL32"
+      },
+      {
+        "stageId": 32,
+        "stageName": "LEVEL33"
+      },
+      {
+        "stageId": 33,
+        "stageName": "LEVEL34"
+      },
+      {
+        "stageId": 34,
+        "stageName": "LEVEL35"
+      },
+      {
+        "stageId": 35,
+        "stageName": "LEVEL36"
+      },
+      {
+        "stageId": 36,
+        "stageName": "LEVEL37"
+      },
+      {
+        "stageId": 37,
+        "stageName": "LEVEL38"
+      },
+      {
+        "stageId": 38,
+        "stageName": "LEVEL39"
+      },
+      {
+        "stageId": 39,
+        "stageName": "LEVEL40"
+      },
+      {
+        "stageId": 40,
+        "stageName": "LEVEL41"
+      },
+      {
+        "stageId": 41,
+        "stageName": "LEVEL42"
+      },
+      {
+        "stageId": 42,
+        "stageName": "LEVEL43"
+      },
+      {
+        "stageId": 43,
+        "stageName": "LEVEL44"
+      },
+      {
+        "stageId": 44,
+        "stageName": "LEVEL45"
+      },
+      {
+        "stageId": 45,
+        "stageName": "LEVEL46"
+      },
+      {
+        "stageId": 46,
+        "stageName": "LEVEL47"
+      },
+      {
+        "stageId": 47,
+        "stageName": "LEVEL FINAL"
       }
     ]
   }
