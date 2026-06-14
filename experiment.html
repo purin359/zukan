@@ -1212,24 +1212,86 @@ function getKanjiSearchData(){
   lastMode = "allStage";
   openResult();
 
+  renderStageList();
+
+  document.getElementById("selectedText").innerText =
+    "ステージ一覧";
+}
+
+  function renderStageList(){
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
-  flatStage.forEach(f=>{
-    const div = document.createElement("div");
-    div.className = "result";
+  const filterBox = document.createElement("div");
+  filterBox.style.marginBottom = "10px";
 
-    if(f.type === "chapter"){
-      div.innerHTML = `<strong>${f.name}</strong>`;
-    }else{
-      div.innerHTML = `<strong>${f.chapterName} - ${f.name}</strong>`;
-    }
+  filterBox.innerHTML = `
+    <input id="stageMapFilter" placeholder="マップIDで絞り込み"
+      style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
 
-    resultDiv.appendChild(div);
+    <input id="stageChapterFilter" placeholder="章名で絞り込み"
+      style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
+
+    <input id="stageNameFilter" placeholder="ステージ名で絞り込み"
+      style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
+  `;
+
+  resultDiv.appendChild(filterBox);
+
+  const listDiv = document.createElement("div");
+  resultDiv.appendChild(listDiv);
+
+  function draw(){
+    const mapKey = document.getElementById("stageMapFilter").value.trim();
+    const chapterKey = document.getElementById("stageChapterFilter").value.trim();
+    const stageKey = document.getElementById("stageNameFilter").value.trim();
+
+    listDiv.innerHTML = "";
+
+    let total = 0;
+
+    stageData.forEach(ch=>{
+      const mapId = String(ch.mapId ?? "");
+      const chapterName = ch.chapterName || "";
+
+      if(mapKey && !mapId.includes(mapKey)) return;
+      if(chapterKey && !chapterName.includes(chapterKey)) return;
+
+      const stages = (ch.stages || []).filter(s=>{
+        const stageName = s.stageName || "";
+        return !stageKey || stageName.includes(stageKey);
+      });
+
+      if(stages.length === 0) return;
+
+      const chapterDiv = document.createElement("div");
+      chapterDiv.className = "result";
+      chapterDiv.innerHTML =
+        `<strong>${mapId}　${chapterName}</strong>`;
+      listDiv.appendChild(chapterDiv);
+
+      stages.forEach(s=>{
+        total++;
+
+        const div = document.createElement("div");
+        div.className = "result";
+        div.style.paddingLeft = "16px";
+        div.innerHTML =
+          `${chapterName} - ${s.stageName}`;
+
+        listDiv.appendChild(div);
+      });
+    });
+
+    document.getElementById("selectedText").innerText =
+      `ステージ一覧：${total}件`;
+  }
+
+  ["stageMapFilter","stageChapterFilter","stageNameFilter"].forEach(id=>{
+    filterBox.querySelector(`#${id}`).addEventListener("input", draw);
   });
 
-  document.getElementById("selectedText").innerText =
-    `ステージ一覧：${flatStage.length}件`;
+  draw();
 }
 
   function showSingleStageOnly(addHistory = true){
