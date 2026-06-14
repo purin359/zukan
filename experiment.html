@@ -124,6 +124,24 @@ button,select{
   color:#d4a000;
   font-weight:bold;
 }
+
+  .char.allyStage{
+  background:linear-gradient(135deg,#dde8ff 50%,#fff4cc 50%);
+  color:#1a4cff;
+  font-weight:bold;
+}
+
+.char.enemyStage{
+  background:linear-gradient(135deg,#ffdddd 50%,#fff4cc 50%);
+  color:#c40000;
+  font-weight:bold;
+}
+
+.char.allType{
+  background:linear-gradient(135deg,#dde8ff 0 33%,#ffdddd 33% 66%,#fff4cc 66%);
+  color:#6a1b9a;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -375,20 +393,6 @@ function isUsedIn(list,c){
 }
 
 function getCharClass(c){
-  const list = getKanjiSearchData();
-
-  const used = list.some(f =>
-    (f.name || "").includes(c) ||
-    (f.description || "").includes(c)
-  );
-
-  if(!used) return "";
-
-  if(kanjiTarget === "stage") return "stage";
-
-  if(mode === "ally") return "ally";
-  if(mode === "enemy") return "enemy";
-
   const ally = flattenAlly(allyData).some(f =>
     f.name.includes(c) || f.description.includes(c)
   );
@@ -397,13 +401,36 @@ function getCharClass(c){
     f.name.includes(c) || f.description.includes(c)
   );
 
+  const stage = flattenStages(stageData).some(f =>
+    f.name.includes(c) || f.description.includes(c)
+  );
+
+  if(kanjiTarget === "char"){
+    if(mode === "ally") return ally ? "ally" : "";
+    if(mode === "enemy") return enemy ? "enemy" : "";
+
+    if(ally && enemy) return "both";
+    if(ally) return "ally";
+    if(enemy) return "enemy";
+    return "";
+  }
+
+  if(kanjiTarget === "stage"){
+    return stage ? "stage" : "";
+  }
+
+  // キャラ＋ステージ
+  if(ally && enemy && stage) return "allType";
   if(ally && enemy) return "both";
+  if(ally && stage) return "allyStage";
+  if(enemy && stage) return "enemyStage";
   if(ally) return "ally";
   if(enemy) return "enemy";
+  if(stage) return "stage";
 
-  return "both";
+  return "";
 }
-
+  
 function initGrids(){
   createGrid(chars1,"grid1");
   createGrid(chars2,"grid2");
@@ -451,7 +478,10 @@ function updateHeaders(){
       d.classList.contains("ally") ||
       d.classList.contains("enemy") ||
       d.classList.contains("both") ||
-      d.classList.contains("stage")
+      d.classList.contains("stage")　||
+      d.classList.contains("allyStage") ||
+      d.classList.contains("enemyStage") ||
+      d.classList.contains("allType")
     ).length;
     
     return {used,total};
