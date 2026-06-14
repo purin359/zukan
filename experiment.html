@@ -659,7 +659,7 @@ function search(keyword, from = "home"){
       else if(f.type === "other"){
         div.innerHTML = `
           <strong>${highlight(f.name, keyword)}</strong><br>
-          ${highlight(f.description, keyword)}
+          場所：${f.place}：用法：${f.usage}
         `;
       }
       else{
@@ -1450,6 +1450,8 @@ function getKanjiSearchData(){
   function flattenOther(list){
   return list.map(x => ({
     name: x.漢字 || "",
+    place: x.場所 || "",
+    usage: x.用法 || "",
     description: "",
     type: "other"
   })).filter(x => x.name);
