@@ -527,11 +527,11 @@ function createExtraKanji(){
   const normal = allKanji();
 
   const targetList =
-    kanjiTarget === "stage"
-      ? flattenStages(stageData)
-      : kanjiTarget === "both"
-        ? getKanjiSearchData()
-        : data;
+  kanjiTarget === "stage"
+    ? flatStage
+    : kanjiTarget === "both"
+      ? getKanjiSearchData()
+      : data;
 
   const chars = targetList.flatMap(f =>
     splitChars(f.name).concat(splitChars(f.description || ""))
@@ -1253,28 +1253,46 @@ function getKanjiSearchData(){
 
     let total = 0;
 
-    stageData.forEach(ch=>{
-      const mapId = String(ch.mapId ?? "");
-      const chapterName = ch.chapterName || "";
+    const chapters = {};
+
+    flatStage.forEach(f=>{
+      const mapId = String(f.mapId ?? "");
+      const chapterName = f.chapterName || "";
 
       if(mapKey && !mapId.includes(mapKey)){
         return;
       }
 
+      const key = `${mapId}_${chapterName}`;
+
+      if(!chapters[key]){
+        chapters[key] = {
+          mapId,
+          chapterName,
+          stages: []
+        };
+      }
+
+      if(f.type === "stage"){
+        chapters[key].stages.push(f.name);
+      }
+    });
+
+    Object.values(chapters).forEach(ch=>{
       const chapterDiv = document.createElement("div");
       chapterDiv.className = "result";
       chapterDiv.innerHTML =
-        `<strong>${mapId}　${chapterName}</strong>`;
+        `<strong>${ch.mapId}　${ch.chapterName}</strong>`;
       listDiv.appendChild(chapterDiv);
 
-      (ch.stages || []).forEach(s=>{
+      ch.stages.forEach(stageName=>{
         total++;
 
         const div = document.createElement("div");
         div.className = "result";
         div.style.paddingLeft = "16px";
         div.innerHTML =
-          `${chapterName} - ${s.stageName}`;
+          `${ch.chapterName} - ${stageName}`;
 
         listDiv.appendChild(div);
       });
