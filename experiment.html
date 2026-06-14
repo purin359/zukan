@@ -499,7 +499,8 @@ function updateHeaders(){
       d.classList.contains("stage")　||
       d.classList.contains("allyStage") ||
       d.classList.contains("enemyStage") ||
-      d.classList.contains("allType")
+      d.classList.contains("allType")　||
+      d.classList.contains("other")
     ).length;
     
     return {used,total};
@@ -649,19 +650,22 @@ function search(keyword, from = "home"){
             ${highlight(f.name, keyword)}
           </strong>
         `;
-      }else if(f.type === "chapter"){
+      }
+      else if(f.type === "chapter"){
         div.innerHTML = `
           <strong>${highlight(f.name, keyword)}</strong>
         `;
-      }else{
-        div.innerHTML = `
-          <strong>${highlight(f.name, keyword)}</strong><br>
-          ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
-        `;
-      }else if(f.type === "other"){
+      }
+      else if(f.type === "other"){
         div.innerHTML = `
           <strong>${highlight(f.name, keyword)}</strong><br>
           ${highlight(f.description, keyword)}
+        `;
+      }
+      else{
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
         `;
       }
       
