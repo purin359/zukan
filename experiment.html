@@ -1134,11 +1134,15 @@ function toggleNameList(id){
   const modeSelect = document.getElementById("modeSelect");
   const searchTarget = document.getElementById("searchTarget");
 
-  if(kanjiTarget === "stage"){
+  if(kanjiTarget === "stage" || kanjiTarget === "both"){
     modeSelect.style.display = "none";
-    searchTarget.style.display = "none";
   }else{
     modeSelect.style.display = "";
+  }
+
+  if(kanjiTarget === "stage"){
+    searchTarget.style.display = "none";
+  }else{
     searchTarget.style.display = "";
   }
 
