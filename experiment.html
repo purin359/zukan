@@ -1146,6 +1146,7 @@ function toggleNameList(id){
     searchTarget.style.display = "";
   }
 
+  updateMenu();
   initGrids();
 }
 
@@ -1179,6 +1180,27 @@ function getKanjiSearchData(){
   if(kanjiTarget === "stage") return flatStage;
 
   return charList.concat(flatStage);
+}
+
+  function updateMenu(){
+  const menu = document.getElementById("menu");
+
+  if(kanjiTarget === "stage"){
+    menu.innerHTML = `
+      <div onclick="showAllStages()">ステージ一覧</div>
+      <div onclick="showSingleStageSearch()">1件のみ検索</div>
+      <div onclick="showStageRanking()">使用率ランキング</div>
+      <div onclick="showNewStageChecker()">新規文字チェッカー</div>
+    `;
+  }else{
+    menu.innerHTML = `
+      <div onclick="showAllCharacters()">全キャラ表示</div>
+      <div onclick="showSingleSearch()">1件のみ検索</div>
+      <div onclick="showRanking()">使用数ランキング</div>
+      <div onclick="showNewCharChecker()">新規文字チェッカー</div>
+      <div onclick="showNameMaker()">名前作成</div>
+    `;
+  }
 }
 </script>
 
