@@ -807,8 +807,13 @@ function runChecker(){
 
   unique.forEach(c=>{
     let count = 0;
-    data.forEach(f=>{
-      if(f.name.includes(c) || f.description.includes(c)) count++;
+    const targetList =
+      kanjiTarget === "stage"
+        ? flatStage
+        : data;
+
+    targetList.forEach(f=>{
+      if(f.name.includes(c) || (f.description || "").includes(c)) count++;
     });
 
     if(count) existing.push(`${c}(${count}回)`);
@@ -1188,19 +1193,139 @@ function getKanjiSearchData(){
   if(kanjiTarget === "stage"){
     menu.innerHTML = `
       <div onclick="showAllStages()">ステージ一覧</div>
-      <div onclick="showSingleStageSearch()">1件のみ検索</div>
+      <div onclick="showSingleStageOnly()">1件のみ検索</div>
       <div onclick="showStageRanking()">使用率ランキング</div>
-      <div onclick="showNewStageChecker()">新規文字チェッカー</div>
+      <div onclick="showStageChecker()">新規文字チェッカー</div>
     `;
   }else{
     menu.innerHTML = `
-      <div onclick="showAllCharacters()">全キャラ表示</div>
-      <div onclick="showSingleSearch()">1件のみ検索</div>
+      <div onclick="showAll()">全キャラ表示</div>
+      <div onclick="showSingleOnly()">1件のみ検索</div>
       <div onclick="showRanking()">使用数ランキング</div>
-      <div onclick="showNewCharChecker()">新規文字チェッカー</div>
+      <div onclick="showChecker()">新規文字チェッカー</div>
       <div onclick="showNameMaker()">名前作成</div>
     `;
   }
+}
+
+  function showAllStages(){
+  lastMode = "allStage";
+  openResult();
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  flatStage.forEach(f=>{
+    const div = document.createElement("div");
+    div.className = "result";
+
+    if(f.type === "chapter"){
+      div.innerHTML = `<strong>${f.name}</strong>`;
+    }else{
+      div.innerHTML = `<strong>${f.chapterName} - ${f.name}</strong>`;
+    }
+
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    `ステージ一覧：${flatStage.length}件`;
+}
+
+  function showSingleStageOnly(addHistory = true){
+  lastMode = "singleStage";
+  openResult(addHistory);
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  let total = 0;
+
+  allKanji().forEach(c=>{
+    let count = 0;
+    let found = "";
+
+    flatStage.forEach(f=>{
+      if(f.name.includes(c)){
+        count++;
+
+        found =
+          f.type === "chapter"
+            ? f.name
+            : `${f.chapterName} - ${f.name}`;
+      }
+    });
+
+    if(count === 1){
+      total++;
+
+      const div = document.createElement("div");
+      div.className = "result";
+      div.innerHTML = `<strong>${c}</strong> ： ${found}`;
+
+      div.onclick = ()=>{
+        singleScrollY = document.getElementById("result").scrollTop;
+        document.getElementById("searchInput").value = c;
+        search(c, "single");
+      };
+
+      resultDiv.appendChild(div);
+    }
+  });
+
+  document.getElementById("selectedText").innerText =
+    `1件しかヒットしない文字一覧(ステージ)：${total}件`;
+}
+
+  function showStageRanking(addHistory = true){
+  lastMode = "stageRanking";
+  openResult(addHistory);
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const list = allKanji().map(c=>{
+    let count = 0;
+
+    flatStage.forEach(f=>{
+      if(f.name.includes(c)) count++;
+    });
+
+    return {char:c,count};
+  })
+  .filter(x=>x.count>0)
+  .sort((a,b)=>b.count-a.count);
+
+  let rank = 0;
+  let prev = -1;
+
+  list.forEach((item,i)=>{
+    if(item.count !== prev){
+      rank = i + 1;
+      prev = item.count;
+    }
+
+    const div = document.createElement("div");
+    div.className = "result";
+    div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
+
+    div.onclick = ()=>{
+      rankingScrollY = document.getElementById("result").scrollTop;
+      document.getElementById("searchInput").value = item.char;
+      search(item.char, "ranking");
+    };
+
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    "使用率ランキング(ステージ)";
+}
+
+  function showStageChecker(){
+  showChecker();
+  document.getElementById("checkerTitle").innerText =
+    "ステージ 新規文字チェッカー";
 }
 </script>
 
