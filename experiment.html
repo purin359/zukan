@@ -335,7 +335,7 @@ function applyMode(){
     mode === "enemy" ? flattenEnemy(enemyData) :
     flattenAlly(allyData).concat(flattenEnemy(enemyData));
 
-  initGrids();
+  changeKanjiTarget();
 }
 
 function changeMode(){
@@ -1100,8 +1100,16 @@ function toggleNameList(id){
   function changeKanjiTarget(){
   kanjiTarget = document.getElementById("kanjiTarget").value;
 
-  document.getElementById("searchTarget").style.display =
-    kanjiTarget === "stage" ? "none" : "";
+  const modeSelect = document.getElementById("modeSelect");
+  const searchTarget = document.getElementById("searchTarget");
+
+  if(kanjiTarget === "stage"){
+    modeSelect.style.display = "none";
+    searchTarget.style.display = "none";
+  }else{
+    modeSelect.style.display = "";
+    searchTarget.style.display = "";
+  }
 
   initGrids();
 }
