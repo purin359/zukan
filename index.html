@@ -70,8 +70,12 @@ button,select{
 }
   
 .char.both{
-  background:#e6ccff;
-  color:purple;
+  background:linear-gradient(
+    135deg,
+    #dde8ff 50%,
+    #ffdddd 50%
+  );
+  color:#6a1b9a;
   font-weight:bold;
 }
   
@@ -118,6 +122,36 @@ button,select{
   border-radius:6px;
   padding:3px 6px;
 }
+
+  .char.stage{
+  background:#fff4cc;
+  color:#d4a000;
+  font-weight:bold;
+}
+
+  .char.allyStage{
+  background:linear-gradient(135deg,#dde8ff 50%,#fff4cc 50%);
+  color:#1a4cff;
+  font-weight:bold;
+}
+
+.char.enemyStage{
+  background:linear-gradient(135deg,#ffdddd 50%,#fff4cc 50%);
+  color:#c40000;
+  font-weight:bold;
+}
+
+.char.allType{
+  background:linear-gradient(135deg,#dde8ff 0 33%,#ffdddd 33% 66%,#fff4cc 66%);
+  color:#6a1b9a;
+  font-weight:bold;
+}
+
+  .char.other{
+  background:#ddf5dd;
+  color:green;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -147,10 +181,16 @@ button,select{
     <option value="integrated">敵味方統合</option>
   </select>
 
+  <select id="kanjiTarget" onchange="changeKanjiTarget()">
+    <option value="char">キャラの漢字</option>
+    <option value="stage">ステージの漢字</option>
+    <option value="both">全て</option>
+  </select>
+
   <select id="searchTarget">
     <option value="both">キャラ名・説明文</option>
-    <option value="name">キャラ名のみ検索</option>
-    <option value="desc">説明文のみ検索</option>
+    <option value="name">キャラ名のみ</option>
+    <option value="desc">説明文のみ</option>
   </select>
 </div>
 
@@ -223,6 +263,13 @@ let lastMode = "home";
 let rankingScrollY = 0;
 let singleScrollY = 0;
 let returnMode = "home";
+let stageData = [];
+let kanjiTarget = "char";
+let flatAlly = [];
+let flatEnemy = [];
+let flatStage = [];
+let otherData = [];
+let flatOther = [];
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
 
@@ -291,6 +338,8 @@ async function loadAllData(){
 
   allyData = allyLoaded.flat();
   enemyData = await fetch("enemy.json").then(r=>r.json()).catch(()=>[]);
+  stageData = await fetch("stages.json").then(r=>r.json()).catch(()=>[]);
+  otherData = await fetch("kanji_other.json").then(r=>r.json()).catch(()=>[]);
 
   document.getElementById("modeSelect").value = mode;
   applyMode();
@@ -303,22 +352,20 @@ async function loadAllData(){
 function applyMode(){
   mode = document.getElementById("modeSelect").value;
 
-  document.getElementById("pageTitle").innerText =
-    mode === "ally" ? "味方文字検索　Ver.15.4.0対応" :
-    mode === "enemy" ? "敵文字検索　Ver.15.4.0対応" :
-    "敵味方統合文字検索　Ver.15.4.0対応";
-
-  document.getElementById("checkerTitle").innerText =
-    mode === "ally" ? "味方 新規漢字チェッカー" :
-    mode === "enemy" ? "敵 新規漢字チェッカー" :
-    "敵味方統合 新規漢字チェッカー";
+  flatAlly = flattenAlly(allyData);
+  flatEnemy = flattenEnemy(enemyData);
+  flatStage = flattenStages(stageData).filter(f =>
+  f.typeName !== "不明" &&
+  f.typeName !== "海外限定"
+);
+  flatOther = flattenOther(otherData);
 
   data =
-    mode === "ally" ? flattenAlly(allyData) :
-    mode === "enemy" ? flattenEnemy(enemyData) :
-    flattenAlly(allyData).concat(flattenEnemy(enemyData));
+    mode === "ally" ? flatAlly :
+    mode === "enemy" ? flatEnemy :
+    flatAlly.concat(flatEnemy);
 
-  initGrids();
+  changeKanjiTarget();
 }
 
 function changeMode(){
@@ -358,17 +405,50 @@ function isUsedIn(list,c){
 }
 
 function getCharClass(c){
-  const ally = isUsedIn(flattenAlly(allyData), c);
-  const enemy = isUsedIn(flattenEnemy(enemyData), c);
+  const ally = flatAlly.some(f =>
+    f.name.includes(c) || f.description.includes(c)
+  );
 
-  if(mode === "ally") return ally ? "ally" : "";
-  if(mode === "enemy") return enemy ? "enemy" : "";
+  const enemy = flatEnemy.some(f =>
+    f.name.includes(c) || f.description.includes(c)
+  );
+
+  const stage = flatStage.some(f =>
+    f.name.includes(c) || f.description.includes(c)
+  );
+
+  const other = flatOther.some(f =>
+    f.name.includes(c)
+  );
+
+  if(kanjiTarget === "char"){
+    if(mode === "ally") return ally ? "ally" : "";
+    if(mode === "enemy") return enemy ? "enemy" : "";
+
+    if(ally && enemy) return "both";
+    if(ally) return "ally";
+    if(enemy) return "enemy";
+    return "";
+  }
+
+  if(kanjiTarget === "stage"){
+    return stage ? "stage" : "";
+  }
+
+  // 全て
+  if(other) return "other";
+
+  if(ally && enemy && stage) return "allType";
   if(ally && enemy) return "both";
+  if(ally && stage) return "allyStage";
+  if(enemy && stage) return "enemyStage";
   if(ally) return "ally";
   if(enemy) return "enemy";
+  if(stage) return "stage";
+
   return "";
 }
-
+  
 function initGrids(){
   createGrid(chars1,"grid1");
   createGrid(chars2,"grid2");
@@ -415,9 +495,14 @@ function updateHeaders(){
     const used = [...grid.children].filter(d =>
       d.classList.contains("ally") ||
       d.classList.contains("enemy") ||
-      d.classList.contains("both")
+      d.classList.contains("both") ||
+      d.classList.contains("stage")　||
+      d.classList.contains("allyStage") ||
+      d.classList.contains("enemyStage") ||
+      d.classList.contains("allType")　||
+      d.classList.contains("other")
     ).length;
-
+    
     return {used,total};
   }
 
@@ -456,8 +541,15 @@ function createExtraKanji(){
 
   const normal = allKanji();
 
-  const chars = data.flatMap(f =>
-    splitChars(f.name).concat(splitChars(f.description))
+  const targetList =
+  kanjiTarget === "stage"
+    ? flatStage
+    : kanjiTarget === "both"
+      ? getKanjiSearchData()
+      : data;
+
+  const chars = targetList.flatMap(f =>
+    splitChars(f.name).concat(splitChars(f.description || ""))
   );
 
   const extra = [...new Set(
@@ -470,13 +562,16 @@ function createExtraKanji(){
   extra.forEach(c=>{
     const div = document.createElement("div");
     div.className = "char";
+
     const cls = getCharClass(c);
     if(cls) div.classList.add(cls);
+
     div.innerText = c;
     div.onclick = ()=>{
       document.getElementById("searchInput").value = c;
       search(c, "home");
     };
+
     extraGrid.appendChild(div);
   });
 }
@@ -487,7 +582,20 @@ function searchFromInput(){
 }
 
   function isSearchHit(f, keyword){
+  const searchType = kanjiTarget;
   const target = document.getElementById("searchTarget").value;
+
+  if(searchType === "stage"){
+    if(f.type === "chapter"){
+      return hasExactText(f.name, keyword);
+    }
+
+    if(f.type === "stage"){
+      return hasExactText(f.name, keyword);
+    }
+
+    return false;
+  }
 
   const nameHit = hasExactText(f.name, keyword);
   const descHit = hasExactText(f.description, keyword);
@@ -496,6 +604,24 @@ function searchFromInput(){
   if(target === "desc") return descHit;
 
   return nameHit || descHit;
+}
+
+function getStageSearchData(){
+  return flatStage;
+}
+
+function getSearchData(){
+  if(kanjiTarget === "both"){
+    return flatAlly
+      .concat(flatEnemy)
+      .concat(flatStage)
+      .concat(flatOther);
+  }
+
+  if(kanjiTarget === "char") return data;
+  if(kanjiTarget === "stage") return flatStage;
+
+  return data;
 }
 
 function search(keyword, from = "home"){
@@ -509,31 +635,68 @@ function search(keyword, from = "home"){
   const key = normalize(keyword);
   let total = 0;
 
-  data.forEach(f=>{
+  getSearchData().forEach(f=>{
     if(isSearchHit(f, keyword)){
       total++;
 
       const div = document.createElement("div");
       div.className = `result ${mode === "integrated" ? f.type : ""}`;
 
-      div.innerHTML = `
-        <strong>${highlight(f.name, keyword)}</strong><br>
-        ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
-      `;
-
+      if(f.type === "stage"){
+        div.innerHTML = `
+          <strong>
+            ${highlight(f.chapterName, keyword)}
+            -
+            ${highlight(f.name, keyword)}
+          </strong>
+        `;
+      }
+      else if(f.type === "chapter"){
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong>
+        `;
+      }
+      else if(f.type === "other"){
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          場所：${f.place}　　　用法：${f.usage}
+        `;
+      }
+      else{
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
+        `;
+      }
+      
       resultDiv.appendChild(div);
     }
   });
 
-  const targetText =
-    document.getElementById("searchTarget").value === "name" ? "キャラ名のみ" :
-    document.getElementById("searchTarget").value === "desc" ? "説明文のみ" :
-    "キャラ名・説明文";
+  const searchType = kanjiTarget;
+
+  let targetText;
+
+  if(searchType === "stage"){
+    targetText = "";
+  }else{
+    targetText =
+      document.getElementById("searchTarget").value === "name"
+        ? "キャラ名のみ"
+        : document.getElementById("searchTarget").value === "desc"
+        ? "説明文のみ"
+        : "キャラ名・説明文";
+  }
 
   document.getElementById("selectedText").innerText =
-    total ? `"${keyword}" の検索結果（${targetText}） ${total}件見つかりました` :
-    `"${keyword}" （${targetText}） は見つかりませんでした`;
-}
+    total
+      ? searchType === "stage"
+        ? `"${keyword}" の検索結果 ${total}件見つかりました`
+        : `"${keyword}" の検索結果（${targetText}） ${total}件見つかりました`
+      : searchType === "stage"
+        ? `"${keyword}" は見つかりませんでした`
+        : `"${keyword}" （${targetText}） は見つかりませんでした`;
+  }
 
   function hasExactText(text, keyword){
   text = String(text || "");
@@ -674,8 +837,13 @@ function runChecker(){
 
   unique.forEach(c=>{
     let count = 0;
-    data.forEach(f=>{
-      if(f.name.includes(c) || f.description.includes(c)) count++;
+    const targetList =
+      kanjiTarget === "stage"
+        ? flatStage
+        : data;
+
+    targetList.forEach(f=>{
+      if(f.name.includes(c) || (f.description || "").includes(c)) count++;
     });
 
     if(count) existing.push(`${c}(${count}回)`);
@@ -992,6 +1160,301 @@ function toggleNameList(id){
   const el = document.getElementById(id);
   el.style.display =
     el.style.display === "none" ? "block" : "none";
+}
+
+  // ステージ
+  function changeKanjiTarget(){
+  kanjiTarget = document.getElementById("kanjiTarget").value;
+
+  const modeSelect = document.getElementById("modeSelect");
+  const searchTarget = document.getElementById("searchTarget");
+
+  if(kanjiTarget === "both"){
+
+  mode = "integrated";
+
+  document.getElementById("modeSelect").value =
+    "integrated";
+
+  data = flatAlly.concat(flatEnemy);
+
+  modeSelect.style.display = "none";
+}else if(kanjiTarget === "stage"){
+
+  modeSelect.style.display = "none";
+
+}else{
+
+  modeSelect.style.display = "";
+}
+
+  updateMenu();
+  initGrids();
+}
+
+function flattenStages(list){
+  return list.flatMap(ch => {
+    const typeName = ch.type || "";
+
+    const chapter = {
+      name: ch.chapterName || "",
+      chapterName: ch.chapterName || "",
+      description: "",
+      type: "chapter",
+      typeName: typeName,
+      mapId: ch.mapId ?? ""
+    };
+
+    const stages = (ch.stages || []).map(s => ({
+      name: s.stageName || "",
+      chapterName: ch.chapterName || "",
+      description: "",
+      type: "stage",
+      typeName: typeName,
+      mapId: ch.mapId ?? ""
+    }));
+
+    return [chapter, ...stages];
+  }).filter(x => x.name);
+}
+  
+function getKanjiSearchData(){
+  if(kanjiTarget === "both"){
+    return flatAlly
+      .concat(flatEnemy)
+      .concat(flatStage)
+      .concat(flatOther);
+  }
+
+  const charList =
+    mode === "ally" ? flatAlly :
+    mode === "enemy" ? flatEnemy :
+    flatAlly.concat(flatEnemy);
+
+  if(kanjiTarget === "char") return charList;
+  if(kanjiTarget === "stage") return flatStage;
+
+  return charList;
+}
+
+  function updateMenu(){
+  const menu = document.getElementById("menu");
+
+  if(kanjiTarget === "stage"){
+    menu.innerHTML = `
+      <div onclick="showAllStages()">ステージ一覧</div>
+      <div onclick="showSingleStageOnly()">1件のみ検索</div>
+      <div onclick="showStageRanking()">使用率ランキング</div>
+      <div onclick="showStageChecker()">新規文字チェッカー</div>
+    `;
+  }else{
+    menu.innerHTML = `
+      <div onclick="showAll()">全キャラ表示</div>
+      <div onclick="showSingleOnly()">1件のみ検索</div>
+      <div onclick="showRanking()">使用数ランキング</div>
+      <div onclick="showChecker()">新規文字チェッカー</div>
+      <div onclick="showNameMaker()">名前作成</div>
+    `;
+  }
+}
+
+  function showAllStages(){
+  lastMode = "allStage";
+  openResult();
+
+  renderStageList();
+
+  document.getElementById("selectedText").innerText =
+    "ステージ一覧";
+}
+
+  function renderStageList(){
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const filterBox = document.createElement("div");
+  filterBox.style.marginBottom = "10px";
+
+  filterBox.innerHTML = `
+    <input id="stageMapFilter"
+      placeholder="マップIDで絞り込み"
+      style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
+  `;
+
+  resultDiv.appendChild(filterBox);
+
+  const listDiv = document.createElement("div");
+  resultDiv.appendChild(listDiv);
+
+  function draw(){
+    const mapKey =
+      document.getElementById("stageMapFilter").value.trim();
+
+    listDiv.innerHTML = "";
+
+    let total = 0;
+
+    const chapters = {};
+
+    flatStage.forEach(f=>{
+      const mapId = String(f.mapId ?? "");
+      const chapterName = f.chapterName || "";
+
+      if(mapKey && !mapId.includes(mapKey)){
+        return;
+      }
+
+      const key = `${mapId}_${chapterName}`;
+
+      if(!chapters[key]){
+        chapters[key] = {
+          mapId,
+          chapterName,
+          stages: []
+        };
+      }
+
+      if(f.type === "stage"){
+        chapters[key].stages.push(f.name);
+      }
+    });
+
+    Object.values(chapters).forEach(ch=>{
+      const chapterDiv = document.createElement("div");
+      chapterDiv.className = "result";
+      chapterDiv.innerHTML =
+        `<strong>${ch.mapId}　${ch.chapterName}</strong>`;
+      listDiv.appendChild(chapterDiv);
+
+      ch.stages.forEach(stageName=>{
+        total++;
+
+        const div = document.createElement("div");
+        div.className = "result";
+        div.style.paddingLeft = "16px";
+        div.innerHTML =
+          `${ch.chapterName} - ${stageName}`;
+
+        listDiv.appendChild(div);
+      });
+    });
+
+    document.getElementById("selectedText").innerText =
+      `ステージ一覧：${total}件`;
+  }
+
+  document
+    .getElementById("stageMapFilter")
+    .addEventListener("input", draw);
+
+  draw();
+}
+  
+  function showSingleStageOnly(addHistory = true){
+  lastMode = "singleStage";
+  openResult(addHistory);
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  let total = 0;
+
+  allKanji().forEach(c=>{
+    let count = 0;
+    let found = "";
+
+    flatStage.forEach(f=>{
+      if(f.name.includes(c)){
+        count++;
+
+        found =
+          f.type === "chapter"
+            ? f.name
+            : `${f.chapterName} - ${f.name}`;
+      }
+    });
+
+    if(count === 1){
+      total++;
+
+      const div = document.createElement("div");
+      div.className = "result";
+      div.innerHTML = `<strong>${c}</strong> ： ${found}`;
+
+      div.onclick = ()=>{
+        singleScrollY = document.getElementById("result").scrollTop;
+        document.getElementById("searchInput").value = c;
+        search(c, "single");
+      };
+
+      resultDiv.appendChild(div);
+    }
+  });
+
+  document.getElementById("selectedText").innerText =
+    `1件しかヒットしない文字一覧(ステージ)：${total}件`;
+}
+
+  function showStageRanking(addHistory = true){
+  lastMode = "stageRanking";
+  openResult(addHistory);
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const list = allKanji().map(c=>{
+    let count = 0;
+
+    flatStage.forEach(f=>{
+      if(f.name.includes(c)) count++;
+    });
+
+    return {char:c,count};
+  })
+  .filter(x=>x.count>0)
+  .sort((a,b)=>b.count-a.count);
+
+  let rank = 0;
+  let prev = -1;
+
+  list.forEach((item,i)=>{
+    if(item.count !== prev){
+      rank = i + 1;
+      prev = item.count;
+    }
+
+    const div = document.createElement("div");
+    div.className = "result";
+    div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
+
+    div.onclick = ()=>{
+      rankingScrollY = document.getElementById("result").scrollTop;
+      document.getElementById("searchInput").value = item.char;
+      search(item.char, "ranking");
+    };
+
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    "使用率ランキング(ステージ)";
+}
+
+  function showStageChecker(){
+  showChecker();
+  document.getElementById("checkerTitle").innerText =
+    "ステージ 新規文字チェッカー";
+}
+
+  // その他
+  function flattenOther(list){
+  return list.map(x => ({
+    name: x.漢字 || "",
+    place: x.場所 || "",
+    usage: x.用法 || "",
+    description: "",
+    type: "other"
+  })).filter(x => x.name);
 }
 </script>
 
