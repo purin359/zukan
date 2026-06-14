@@ -146,6 +146,12 @@ button,select{
   color:#6a1b9a;
   font-weight:bold;
 }
+
+  .char.other{
+  background:#ddf5dd;
+  color:green;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -178,7 +184,7 @@ button,select{
   <select id="kanjiTarget" onchange="changeKanjiTarget()">
     <option value="char">キャラの漢字</option>
     <option value="stage">ステージの漢字</option>
-    <option value="both">キャラ＋ステージの漢字</option>
+    <option value="both">全て</option>
   </select>
 
   <select id="searchTarget">
@@ -262,6 +268,8 @@ let kanjiTarget = "char";
 let flatAlly = [];
 let flatEnemy = [];
 let flatStage = [];
+let otherData = [];
+let flatOther = [];
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
 
@@ -330,9 +338,8 @@ async function loadAllData(){
 
   allyData = allyLoaded.flat();
   enemyData = await fetch("enemy.json").then(r=>r.json()).catch(()=>[]);
-  stageData = await fetch("stages.json")
-  .then(r=>r.json())
-  .catch(()=>[]);
+  stageData = await fetch("stages.json").then(r=>r.json()).catch(()=>[]);
+  otherData = await fetch("kanji_other.json").then(r=>r.json()).catch(()=>[]);
 
   document.getElementById("modeSelect").value = mode;
   applyMode();
@@ -351,6 +358,7 @@ function applyMode(){
   f.typeName !== "不明" &&
   f.typeName !== "海外限定"
 );
+  flatOther = flattenOther(otherData);
 
   data =
     mode === "ally" ? flatAlly :
@@ -409,6 +417,10 @@ function getCharClass(c){
     f.name.includes(c) || f.description.includes(c)
   );
 
+  const other = flatOther.some(f =>
+    f.name.includes(c) || f.description.includes(c)
+  );
+
   if(kanjiTarget === "char"){
     if(mode === "ally") return ally ? "ally" : "";
     if(mode === "enemy") return enemy ? "enemy" : "";
@@ -423,7 +435,9 @@ function getCharClass(c){
     return stage ? "stage" : "";
   }
 
-  // キャラ＋ステージ
+  // 全て
+  if(other) return "other";
+
   if(ally && enemy && stage) return "allType";
   if(ally && enemy) return "both";
   if(ally && stage) return "allyStage";
@@ -596,21 +610,17 @@ function getStageSearchData(){
 }
 
 function getSearchData(){
-
-  let charList;
-
   if(kanjiTarget === "both"){
-    charList = flatAlly.concat(flatEnemy);
-  }else{
-    charList = data;
+    return flatAlly
+      .concat(flatEnemy)
+      .concat(flatStage)
+      .concat(flatOther);
   }
 
-  const stageList = getStageSearchData();
+  if(kanjiTarget === "char") return data;
+  if(kanjiTarget === "stage") return flatStage;
 
-  if(kanjiTarget === "char") return charList;
-  if(kanjiTarget === "stage") return stageList;
-
-  return charList.concat(stageList);
+  return data;
 }
 
 function search(keyword, from = "home"){
@@ -647,6 +657,11 @@ function search(keyword, from = "home"){
         div.innerHTML = `
           <strong>${highlight(f.name, keyword)}</strong><br>
           ${highlight(f.description, keyword).replace(/\n/g,"<br>")}
+        `;
+      }else if(f.type === "other"){
+        div.innerHTML = `
+          <strong>${highlight(f.name, keyword)}</strong><br>
+          ${highlight(f.description, keyword)}
         `;
       }
       
@@ -1200,11 +1215,13 @@ function flattenStages(list){
 }
   
 function getKanjiSearchData(){
-  
   if(kanjiTarget === "both"){
-  return flatAlly.concat(flatEnemy).concat(flatStage);
-}
-  
+    return flatAlly
+      .concat(flatEnemy)
+      .concat(flatStage)
+      .concat(flatOther);
+  }
+
   const charList =
     mode === "ally" ? flatAlly :
     mode === "enemy" ? flatEnemy :
@@ -1213,7 +1230,7 @@ function getKanjiSearchData(){
   if(kanjiTarget === "char") return charList;
   if(kanjiTarget === "stage") return flatStage;
 
-  return charList.concat(flatStage);
+  return charList;
 }
 
   function updateMenu(){
@@ -1423,6 +1440,15 @@ function getKanjiSearchData(){
   showChecker();
   document.getElementById("checkerTitle").innerText =
     "ステージ 新規文字チェッカー";
+}
+
+  // その他
+  function flattenOther(list){
+  return list.map(x => ({
+    name: x.漢字 || "",
+    description: `${x.場所 || ""} ${x.用法 || ""}`,
+    type: "other"
+  })).filter(x => x.name || x.description);
 }
 </script>
 
