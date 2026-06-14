@@ -596,7 +596,15 @@ function getStageSearchData(){
 }
 
 function getSearchData(){
-  const charList = data;
+
+  let charList;
+
+  if(kanjiTarget === "both"){
+    charList = flatAlly.concat(flatEnemy);
+  }else{
+    charList = data;
+  }
+
   const stageList = getStageSearchData();
 
   if(kanjiTarget === "char") return charList;
@@ -1149,8 +1157,9 @@ function toggleNameList(id){
   document.getElementById("modeSelect").value =
     "integrated";
 
-  modeSelect.style.display = "none";
+  data = flatAlly.concat(flatEnemy);
 
+  modeSelect.style.display = "none";
 }else if(kanjiTarget === "stage"){
 
   modeSelect.style.display = "none";
