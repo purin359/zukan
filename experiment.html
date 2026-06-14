@@ -259,6 +259,9 @@ let singleScrollY = 0;
 let returnMode = "home";
 let stageData = [];
 let kanjiTarget = "char";
+let flatAlly = [];
+let flatEnemy = [];
+let flatStage = [];
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
 
@@ -342,20 +345,14 @@ async function loadAllData(){
 function applyMode(){
   mode = document.getElementById("modeSelect").value;
 
-  document.getElementById("pageTitle").innerText =
-    mode === "ally" ? "味方文字検索　Ver.15.4.0対応" :
-    mode === "enemy" ? "敵文字検索　Ver.15.4.0対応" :
-    "敵味方統合文字検索　Ver.15.4.0対応";
-
-  document.getElementById("checkerTitle").innerText =
-    mode === "ally" ? "味方 新規漢字チェッカー" :
-    mode === "enemy" ? "敵 新規漢字チェッカー" :
-    "敵味方統合 新規漢字チェッカー";
+  flatAlly = flattenAlly(allyData);
+  flatEnemy = flattenEnemy(enemyData);
+  flatStage = flattenStages(stageData);
 
   data =
-    mode === "ally" ? flattenAlly(allyData) :
-    mode === "enemy" ? flattenEnemy(enemyData) :
-    flattenAlly(allyData).concat(flattenEnemy(enemyData));
+    mode === "ally" ? flatAlly :
+    mode === "enemy" ? flatEnemy :
+    flatAlly.concat(flatEnemy);
 
   changeKanjiTarget();
 }
@@ -397,15 +394,15 @@ function isUsedIn(list,c){
 }
 
 function getCharClass(c){
-  const ally = flattenAlly(allyData).some(f =>
+  const ally = flatAlly.some(f =>
     f.name.includes(c) || f.description.includes(c)
   );
 
-  const enemy = flattenEnemy(enemyData).some(f =>
+  const enemy = flatEnemy.some(f =>
     f.name.includes(c) || f.description.includes(c)
   );
 
-  const stage = flattenStages(stageData).some(f =>
+  const stage = flatStage.some(f =>
     f.name.includes(c) || f.description.includes(c)
   );
 
@@ -592,7 +589,7 @@ function searchFromInput(){
 }
 
 function getStageSearchData(){
-  return flattenStages(stageData);
+  return flatStage;
 }
 
 function getSearchData(){
@@ -1170,16 +1167,14 @@ function flattenStages(list){
   
 function getKanjiSearchData(){
   const charList =
-    mode === "ally" ? flattenAlly(allyData) :
-    mode === "enemy" ? flattenEnemy(enemyData) :
-    flattenAlly(allyData).concat(flattenEnemy(enemyData));
-
-  const stageList = flattenStages(stageData);
+    mode === "ally" ? flatAlly :
+    mode === "enemy" ? flatEnemy :
+    flatAlly.concat(flatEnemy);
 
   if(kanjiTarget === "char") return charList;
-  if(kanjiTarget === "stage") return stageList;
+  if(kanjiTarget === "stage") return flatStage;
 
-  return charList.concat(stageList);
+  return charList.concat(flatStage);
 }
 </script>
 
