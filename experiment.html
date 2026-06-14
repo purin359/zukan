@@ -347,7 +347,10 @@ function applyMode(){
 
   flatAlly = flattenAlly(allyData);
   flatEnemy = flattenEnemy(enemyData);
-  flatStage = flattenStages(stageData);
+  flatStage = flattenStages(stageData).filter(f =>
+  f.typeName !== "不明" &&
+  f.typeName !== "海外限定"
+);
 
   data =
     mode === "ally" ? flatAlly :
@@ -1157,18 +1160,24 @@ function toggleNameList(id){
 
 function flattenStages(list){
   return list.flatMap(ch => {
+    const typeName = ch.type || "";
+
     const chapter = {
       name: ch.chapterName || "",
       chapterName: ch.chapterName || "",
       description: "",
-      type: "chapter"
+      type: "chapter",
+      typeName: typeName,
+      mapId: ch.mapId ?? ""
     };
 
     const stages = (ch.stages || []).map(s => ({
       name: s.stageName || "",
       chapterName: ch.chapterName || "",
       description: "",
-      type: "stage"
+      type: "stage",
+      typeName: typeName,
+      mapId: ch.mapId ?? ""
     }));
 
     return [chapter, ...stages];
