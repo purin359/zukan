@@ -1229,10 +1229,14 @@ function getKanjiSearchData(){
     <input id="stageMapFilter" placeholder="マップIDで絞り込み"
       style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
 
-    <input id="stageChapterFilter" placeholder="章名で絞り込み"
+    <select id="stageFilterType"
       style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
+      <option value="all">章名＋ステージ名</option>
+      <option value="chapter">章名のみ</option>
+      <option value="stage">ステージ名のみ</option>
+    </select>
 
-    <input id="stageNameFilter" placeholder="ステージ名で絞り込み"
+    <input id="stageFilter" placeholder="検索"
       style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
   `;
 
@@ -1243,8 +1247,8 @@ function getKanjiSearchData(){
 
   function draw(){
     const mapKey = document.getElementById("stageMapFilter").value.trim();
-    const chapterKey = document.getElementById("stageChapterFilter").value.trim();
-    const stageKey = document.getElementById("stageNameFilter").value.trim();
+    const type = document.getElementById("stageFilterType").value;
+    const keyword = document.getElementById("stageFilter").value.trim();
 
     listDiv.innerHTML = "";
 
@@ -1255,11 +1259,25 @@ function getKanjiSearchData(){
       const chapterName = ch.chapterName || "";
 
       if(mapKey && !mapId.includes(mapKey)) return;
-      if(chapterKey && !chapterName.includes(chapterKey)) return;
+
+      const chapterHit =
+        !keyword || chapterName.includes(keyword);
 
       const stages = (ch.stages || []).filter(s=>{
         const stageName = s.stageName || "";
-        return !stageKey || stageName.includes(stageKey);
+
+        const stageHit =
+          !keyword || stageName.includes(keyword);
+
+        if(type === "chapter"){
+          return chapterHit;
+        }
+
+        if(type === "stage"){
+          return stageHit;
+        }
+
+        return chapterHit || stageHit;
       });
 
       if(stages.length === 0) return;
@@ -1287,13 +1305,14 @@ function getKanjiSearchData(){
       `ステージ一覧：${total}件`;
   }
 
-  ["stageMapFilter","stageChapterFilter","stageNameFilter"].forEach(id=>{
+  ["stageMapFilter","stageFilterType","stageFilter"].forEach(id=>{
     filterBox.querySelector(`#${id}`).addEventListener("input", draw);
+    filterBox.querySelector(`#${id}`).addEventListener("change", draw);
   });
 
   draw();
 }
-
+  
   function showSingleStageOnly(addHistory = true){
   lastMode = "singleStage";
   openResult(addHistory);
