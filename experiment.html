@@ -1247,7 +1247,13 @@ function getKanjiSearchData(){
       <div onclick="showStageRanking()">使用率ランキング</div>
       <div onclick="showStageChecker()">新規文字チェッカー</div>
     `;
-  }else{
+  }
+  else if(kanjiTarget === "both"){
+    menu.innerHTML = `
+      <div onclick="showUsageTable()">使用回数表</div>
+    `;
+  }
+  else{
     menu.innerHTML = `
       <div onclick="showAll()">全キャラ表示</div>
       <div onclick="showSingleOnly()">1件のみ検索</div>
@@ -1257,7 +1263,7 @@ function getKanjiSearchData(){
     `;
   }
 }
-
+  
   function showAllStages(){
   lastMode = "allStage";
   openResult();
@@ -1455,6 +1461,77 @@ function getKanjiSearchData(){
     description: "",
     type: "other"
   })).filter(x => x.name);
+}
+
+  function showUsageTable(){
+  openResult();
+
+  const resultDiv =
+    document.getElementById("result");
+
+  resultDiv.innerHTML = "";
+
+  const table = document.createElement("table");
+
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+
+  table.innerHTML = `
+    <tr>
+      <th>漢字</th>
+      <th>味方</th>
+      <th>敵</th>
+      <th>ステージ</th>
+      <th>その他</th>
+    </tr>
+  `;
+
+  allKanji().forEach(c=>{
+
+    const ally =
+      flatAlly.filter(x =>
+        x.name.includes(c)
+      ).length;
+
+    const enemy =
+      flatEnemy.filter(x =>
+        x.name.includes(c)
+      ).length;
+
+    const stage =
+      flatStage.filter(x =>
+        x.name.includes(c)
+      ).length;
+
+    const other =
+      flatOther.filter(x =>
+        x.name.includes(c)
+      ).length;
+
+    if(
+      ally===0 &&
+      enemy===0 &&
+      stage===0 &&
+      other===0
+    ) return;
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${c}</td>
+      <td>${ally || "-"}</td>
+      <td>${enemy || "-"}</td>
+      <td>${stage || "-"}</td>
+      <td>${other || "-"}</td>
+    `;
+
+    table.appendChild(tr);
+  });
+
+  resultDiv.appendChild(table);
+
+  document.getElementById("selectedText").innerText =
+    "使用回数表";
 }
 </script>
 
