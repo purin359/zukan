@@ -1526,9 +1526,20 @@ function getGradeKanji(type){
   if(type === "g4") return chars4;
   if(type === "g5") return chars5;
   if(type === "g6") return chars6;
-  if(type === "elem") return chars1.concat(chars2,chars3,chars4,chars5,chars6);
-  if(type === "junior") return chars7;
-  return allKanji();
+
+  if(type === "elem"){
+    return chars1.concat(chars2,chars3,chars4,chars5,chars6);
+  }
+
+  if(type === "junior"){
+    return chars7;
+  }
+
+  if(type === "extra"){
+    return getExtraKanjiList();
+  }
+
+  return allKanji().concat(getExtraKanjiList());
 }
 
 function countInList(list, c, withDesc = true){
@@ -1558,6 +1569,7 @@ function showUsageTable(){
       <option value="g5">5年生</option>
       <option value="g6">6年生</option>
       <option value="junior">中学生</option>
+      <option value="extra">常用漢字外</option>
     </select>
 
     <select id="usageSortKey">
@@ -1808,6 +1820,25 @@ function showUsageTable(){
   });
 
   usageCountMap = map;
+}
+
+  function getExtraKanjiList(){
+  const normal = new Set(allKanji());
+
+  const targetList =
+    flatAlly
+      .concat(flatEnemy)
+      .concat(flatStage)
+      .concat(flatOther);
+
+  return [...new Set(
+    targetList.flatMap(f =>
+      splitChars(f.name)
+    ).filter(c =>
+      /[\u4E00-\u9FFF]/.test(c) &&
+      !normal.has(c)
+    )
+  )].sort((a,b)=>a.localeCompare(b,"ja"));
 }
 </script>
 
