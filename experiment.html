@@ -1539,13 +1539,6 @@ function getKanjiSearchData(){
         x.name.includes(c)
       ).length;
 
-    if(
-      ally===0 &&
-      enemy===0 &&
-      stage===0 &&
-      other===0
-    ) return;
-
     const tr = document.createElement("tr");
 
     const isUnused =
