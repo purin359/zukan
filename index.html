@@ -290,6 +290,13 @@ let mode = params.get("mode") || "ally";
 if(!["ally","enemy","integrated"].includes(mode)){
   mode = "ally";
 }
+
+let initialTarget = params.get("target") || "char";
+
+if(!["char","stage","both"].includes(initialTarget)){
+  initialTarget = "char";
+}
+  
 let allyData = [];
 let enemyData = [];
 let data = [];
