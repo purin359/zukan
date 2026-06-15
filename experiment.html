@@ -307,6 +307,7 @@ let otherData = [];
 let flatOther = [];
 let usageTableScrollY = 0;
 let usageCountMap = null;
+let returningToUsageTable = false;
 
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
@@ -1556,13 +1557,20 @@ function countInList(list, c, withDesc = true){
   ).length;
 }
 
-function showUsageTable(fromBack = false){
+function showUsageTable(fromDetail = false){
 
-  if(!fromBack){
+  if(fromDetail){
+    returningToUsageTable = true;
+  }else{
     lastMode = "usageTable";
   }
 
   openResult();
+
+  if(fromDetail){
+    lastMode = "usageTable";
+    returningToUsageTable = false;
+  }
 
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
