@@ -1539,6 +1539,7 @@ function getGradeKanji(type){
     return getExtraKanjiList();
   }
 
+  // 全て：常用漢字2136字 + 使用されている常用外
   return allKanji().concat(getExtraKanjiList());
 }
 
@@ -1697,8 +1698,15 @@ function showUsageTable(){
     tableWrap.innerHTML = "";
     tableWrap.appendChild(table);
 
-    document.getElementById("selectedText").innerText =
-      `使用回数表：${rows.length}字`;
+    if(usageGradeFilter === "all"){
+      const extraCount = getExtraKanjiList().length;
+
+      document.getElementById("selectedText").innerText =
+        `使用回数表：2136＋${extraCount}字`;
+    }else{
+      document.getElementById("selectedText").innerText =
+        `使用回数表：${rows.length}字`;
+    }
   }
 
   ["usageGradeFilter","usageSortKey","usageSortDir"].forEach(id=>{
