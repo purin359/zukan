@@ -1496,7 +1496,8 @@ function getKanjiSearchData(){
   })).filter(x => x.name);
 }
 
-  let usageSortKey = "total";
+// 使用回数表
+let usageSortKey = "none";
 let usageSortDir = "desc";
 let usageGradeFilter = "all";
 
@@ -1542,6 +1543,7 @@ function showUsageTable(){
     </select>
 
     <select id="usageSortKey">
+      <option value="none">ソートなし</option>
       <option value="total">合計順</option>
       <option value="ally">味方順</option>
       <option value="enemy">敵順</option>
@@ -1564,6 +1566,9 @@ function showUsageTable(){
     usageSortKey = document.getElementById("usageSortKey").value;
     usageSortDir = document.getElementById("usageSortDir").value;
 
+    document.getElementById("usageSortDir").style.display =
+      usageSortKey === "none" ? "none" : "";
+
     const rows = getGradeKanji(usageGradeFilter).map(c=>{
       const ally = countInList(flatAlly, c, true);
       const enemy = countInList(flatEnemy, c, true);
@@ -1574,16 +1579,18 @@ function showUsageTable(){
       return {c, ally, enemy, stage, other, total};
     });
 
-    rows.sort((a,b)=>{
-      const diff =
-        usageSortDir === "asc"
-          ? a[usageSortKey] - b[usageSortKey]
-          : b[usageSortKey] - a[usageSortKey];
+    if(usageSortKey !== "none"){
+      rows.sort((a,b)=>{
+        const diff =
+          usageSortDir === "asc"
+            ? a[usageSortKey] - b[usageSortKey]
+            : b[usageSortKey] - a[usageSortKey];
 
-      if(diff !== 0) return diff;
+        if(diff !== 0) return diff;
 
-      return a.c.localeCompare(b.c, "ja");
-    });
+        return a.c.localeCompare(b.c, "ja");
+      });
+    }
 
     const table = document.createElement("table");
 
@@ -1600,7 +1607,6 @@ function showUsageTable(){
 
     rows.forEach(r=>{
       const isUnused = r.total === 0;
-
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
