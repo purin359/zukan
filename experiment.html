@@ -183,6 +183,10 @@ button,select{
   .unusedKanji{
   background:#fff3a0;
 }
+
+  .usedCell{
+  background:#e8f4ff;
+}
 </style>
 </head>
 
@@ -1632,15 +1636,43 @@ function showUsageTable(){
 
     rows.forEach(r=>{
       const isUnused = r.total === 0;
+
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
-        <td class="kanjiCell ${isUnused ? "unusedKanji" : ""}">${r.c}</td>
-        <td onclick="showUsageDetail('${r.c}','ally')">${r.ally}</td>
-        <td onclick="showUsageDetail('${r.c}','enemy')">${r.enemy}</td>
-        <td onclick="showUsageDetail('${r.c}','stage')">${r.stage}</td>
-        <td onclick="showUsageDetail('${r.c}','other')">${r.other > 0 ? "○" : "-"}</td>
-        <td onclick="showUsageDetail('${r.c}','total')">${r.total}</td>
+        <td class="kanjiCell ${isUnused ? "unusedKanji" : ""}">
+          ${r.c}
+        </td>
+
+        <td
+          class="${r.ally > 0 ? "usedCell" : ""}"
+          onclick="showUsageDetail('${r.c}','ally')">
+          ${r.ally}
+        </td>
+
+        <td
+          class="${r.enemy > 0 ? "usedCell" : ""}"
+          onclick="showUsageDetail('${r.c}','enemy')">
+          ${r.enemy}
+        </td>
+
+        <td
+          class="${r.stage > 0 ? "usedCell" : ""}"
+          onclick="showUsageDetail('${r.c}','stage')">
+          ${r.stage}
+        </td>
+
+        <td
+          class="${r.other > 0 ? "usedCell" : ""}"
+          onclick="showUsageDetail('${r.c}','other')">
+          ${r.other > 0 ? "○" : "-"}
+        </td>
+
+        <td
+          class="${r.total > 0 ? "usedCell" : ""}"
+          onclick="showUsageDetail('${r.c}','total')">
+          ${r.total}
+        </td>
       `;
 
       table.appendChild(tr);
