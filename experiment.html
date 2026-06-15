@@ -300,7 +300,9 @@ let flatAlly = [];
 let flatEnemy = [];
 let flatStage = [];
 let otherData = [];
-let flatOther = [];
+let flatOther = ];
+let usageTableScrollY = 0;
+
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
 
@@ -919,6 +921,16 @@ function openResult(addHistory = true){
 }
 
 function back(){
+  if(lastMode === "usageDetail"){
+    showUsageTable();
+
+    setTimeout(()=>{
+      document.getElementById("result").scrollTop = usageTableScrollY;
+    },0);
+
+    return;
+  }
+  
   if(lastMode === "search"){
     if(returnMode === "single"){
       showSingleOnly(false);
@@ -1636,6 +1648,9 @@ function showUsageTable(){
 }
 
   function showUsageDetail(c, type){
+    usageTableScrollY = document.getElementById("result").scrollTop;
+    lastMode = "usageDetail";
+
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
