@@ -928,12 +928,18 @@ function openResult(addHistory = true){
 
 function back(){
   if(lastMode === "usageDetail"){
-    showUsageTable();
+    showUsageTable(true);
 
     setTimeout(()=>{
-      document.getElementById("result").scrollTop = usageTableScrollY;
+      document.getElementById("result").scrollTop =
+        usageTableScrollY;
     },0);
 
+    return;
+  }
+
+  if(lastMode === "usageTable"){
+    showSearchScreen();
     return;
   }
   
@@ -1550,7 +1556,12 @@ function countInList(list, c, withDesc = true){
   ).length;
 }
 
-function showUsageTable(){
+function showUsageTable(fromBack = false){
+
+  if(!fromBack){
+    lastMode = "usageTable";
+  }
+
   openResult();
 
   const resultDiv = document.getElementById("result");
