@@ -1784,7 +1784,9 @@ function showUsageTable(){
   function buildUsageCountMap(){
   const map = {};
 
-  allKanji().forEach(c=>{
+  const targetKanji = allKanji().concat(getExtraKanjiList());
+
+  targetKanji.forEach(c=>{
     map[c] = {
       ally: 0,
       enemy: 0,
@@ -1793,7 +1795,7 @@ function showUsageTable(){
     };
   });
 
-  allKanji().forEach(c=>{
+  targetKanji.forEach(c=>{
     flatAlly.forEach(x=>{
       if((x.name || "").includes(c) || (x.description || "").includes(c)){
         map[c].ally++;
