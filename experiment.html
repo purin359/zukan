@@ -1277,6 +1277,7 @@ function getKanjiSearchData(){
       <div onclick="showSingleStageOnly()">1件のみ検索</div>
       <div onclick="showStageRanking()">使用率ランキング</div>
       <div onclick="showStageChecker()">新規文字チェッカー</div>
+      <div onclick="showUsageTable()">使用回数表</div>
     `;
   }
   else if(kanjiTarget === "both"){
@@ -1290,6 +1291,7 @@ function getKanjiSearchData(){
       <div onclick="showSingleOnly()">1件のみ検索</div>
       <div onclick="showRanking()">使用数ランキング</div>
       <div onclick="showChecker()">新規文字チェッカー</div>
+      <div onclick="showUsageTable()">使用回数表</div>
       <div onclick="showNameMaker()">名前作成</div>
     `;
   }
@@ -1521,12 +1523,14 @@ function getKanjiSearchData(){
 
     const ally =
       flatAlly.filter(x =>
-        x.name.includes(c)
+        x.name.includes(c) ||
+        x.description.includes(c)
       ).length;
 
     const enemy =
       flatEnemy.filter(x =>
-        x.name.includes(c)
+        x.name.includes(c) ||
+        x.description.includes(c)
       ).length;
 
     const stage =
@@ -1538,7 +1542,7 @@ function getKanjiSearchData(){
       flatOther.filter(x =>
         x.name.includes(c)
       ).length;
-
+    
     const tr = document.createElement("tr");
 
     const isUnused =
