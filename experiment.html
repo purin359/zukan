@@ -1496,78 +1496,207 @@ function getKanjiSearchData(){
   })).filter(x => x.name);
 }
 
-  function showUsageTable(){
+  let usageSortKey = "total";
+let usageSortDir = "desc";
+let usageGradeFilter = "all";
+
+function getGradeKanji(type){
+  if(type === "g1") return chars1;
+  if(type === "g2") return chars2;
+  if(type === "g3") return chars3;
+  if(type === "g4") return chars4;
+  if(type === "g5") return chars5;
+  if(type === "g6") return chars6;
+  if(type === "elem") return chars1.concat(chars2,chars3,chars4,chars5,chars6);
+  if(type === "junior") return chars7;
+  return allKanji();
+}
+
+function countInList(list, c, withDesc = true){
+  return list.filter(x =>
+    (x.name || "").includes(c) ||
+    (withDesc && (x.description || "").includes(c))
+  ).length;
+}
+
+function showUsageTable(){
   openResult();
 
-  const resultDiv =
-    document.getElementById("result");
-
+  const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
-  const table = document.createElement("table");
+  const control = document.createElement("div");
+  control.style.marginBottom = "8px";
 
-  table.style.width = "100%";
-  table.style.borderCollapse = "collapse";
+  control.innerHTML = `
+    <select id="usageGradeFilter">
+      <option value="all">全て</option>
+      <option value="elem">小学生</option>
+      <option value="g1">1年生</option>
+      <option value="g2">2年生</option>
+      <option value="g3">3年生</option>
+      <option value="g4">4年生</option>
+      <option value="g5">5年生</option>
+      <option value="g6">6年生</option>
+      <option value="junior">中学生</option>
+    </select>
 
-  table.innerHTML = `
-    <tr>
-      <th>漢字</th>
-      <th>味方</th>
-      <th>敵</th>
-      <th>ステージ</th>
-      <th>その他</th>
-    </tr>
+    <select id="usageSortKey">
+      <option value="total">合計順</option>
+      <option value="ally">味方順</option>
+      <option value="enemy">敵順</option>
+      <option value="stage">ステージ順</option>
+    </select>
+
+    <select id="usageSortDir">
+      <option value="desc">多い順</option>
+      <option value="asc">少ない順</option>
+    </select>
   `;
 
-  allKanji().forEach(c=>{
+  resultDiv.appendChild(control);
 
-    const ally =
-      flatAlly.filter(x =>
-        x.name.includes(c) ||
-        x.description.includes(c)
-      ).length;
+  const tableWrap = document.createElement("div");
+  resultDiv.appendChild(tableWrap);
 
-    const enemy =
-      flatEnemy.filter(x =>
-        x.name.includes(c) ||
-        x.description.includes(c)
-      ).length;
+  function draw(){
+    usageGradeFilter = document.getElementById("usageGradeFilter").value;
+    usageSortKey = document.getElementById("usageSortKey").value;
+    usageSortDir = document.getElementById("usageSortDir").value;
 
-    const stage =
-      flatStage.filter(x =>
-        x.name.includes(c)
-      ).length;
+    const rows = getGradeKanji(usageGradeFilter).map(c=>{
+      const ally = countInList(flatAlly, c, true);
+      const enemy = countInList(flatEnemy, c, true);
+      const stage = countInList(flatStage, c, false);
+      const other = countInList(flatOther, c, false);
+      const total = ally + enemy + stage + other;
 
-    const other =
-      flatOther.filter(x =>
-        x.name.includes(c)
-      ).length;
-    
-    const tr = document.createElement("tr");
+      return {c, ally, enemy, stage, other, total};
+    });
 
-    const isUnused =
-      ally === 0 &&
-      enemy === 0 &&
-      stage === 0 &&
-      other === 0;
+    rows.sort((a,b)=>{
+      const diff =
+        usageSortDir === "asc"
+          ? a[usageSortKey] - b[usageSortKey]
+          : b[usageSortKey] - a[usageSortKey];
 
-    tr.innerHTML = `
-      <td class="kanjiCell ${isUnused ? "unusedKanji" : ""}">
-        ${c}
-      </td>
-      <td>${ally}</td>
-      <td>${enemy}</td>
-      <td>${stage}</td>
-      <td>${other > 0 ? "○" : "-"}</td>
+      if(diff !== 0) return diff;
+
+      return a.c.localeCompare(b.c, "ja");
+    });
+
+    const table = document.createElement("table");
+
+    table.innerHTML = `
+      <tr>
+        <th>漢字</th>
+        <th>味方</th>
+        <th>敵</th>
+        <th>ステージ</th>
+        <th>その他</th>
+        <th>合計</th>
+      </tr>
     `;
 
-    table.appendChild(tr);
+    rows.forEach(r=>{
+      const isUnused = r.total === 0;
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td class="kanjiCell ${isUnused ? "unusedKanji" : ""}">${r.c}</td>
+        <td onclick="showUsageDetail('${r.c}','ally')">${r.ally}</td>
+        <td onclick="showUsageDetail('${r.c}','enemy')">${r.enemy}</td>
+        <td onclick="showUsageDetail('${r.c}','stage')">${r.stage}</td>
+        <td onclick="showUsageDetail('${r.c}','other')">${r.other > 0 ? "○" : "-"}</td>
+        <td onclick="showUsageDetail('${r.c}','total')">${r.total}</td>
+      `;
+
+      table.appendChild(tr);
+    });
+
+    tableWrap.innerHTML = "";
+    tableWrap.appendChild(table);
+
+    document.getElementById("selectedText").innerText =
+      `使用回数表：${rows.length}字`;
+  }
+
+  ["usageGradeFilter","usageSortKey","usageSortDir"].forEach(id=>{
+    control.querySelector(`#${id}`).addEventListener("change", draw);
   });
 
-  resultDiv.appendChild(table);
+  draw();
+}
+
+  function showUsageDetail(c, type){
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  let list = [];
+
+  if(type === "ally" || type === "total"){
+    list = list.concat(
+      flatAlly
+        .filter(x => x.name.includes(c) || x.description.includes(c))
+        .map(x => ({
+          type:"味方",
+          text:x.name,
+          desc:x.description
+        }))
+    );
+  }
+
+  if(type === "enemy" || type === "total"){
+    list = list.concat(
+      flatEnemy
+        .filter(x => x.name.includes(c) || x.description.includes(c))
+        .map(x => ({
+          type:"敵",
+          text:x.name,
+          desc:x.description
+        }))
+    );
+  }
+
+  if(type === "stage" || type === "total"){
+    list = list.concat(
+      flatStage
+        .filter(x => x.name.includes(c))
+        .map(x => ({
+          type:"ステージ",
+          text:x.type === "chapter"
+            ? x.name
+            : `${x.chapterName} - ${x.name}`,
+          desc:""
+        }))
+    );
+  }
+
+  if(type === "other" || type === "total"){
+    list = list.concat(
+      flatOther
+        .filter(x => x.name.includes(c))
+        .map(x => ({
+          type:"その他",
+          text:`場所：${x.place}`,
+          desc:`用法：${x.usage}`
+        }))
+    );
+  }
+
+  list.forEach(item=>{
+    const div = document.createElement("div");
+    div.className = "result";
+    div.innerHTML = `
+      <strong>[${item.type}] ${highlight(item.text, c)}</strong><br>
+      ${highlight(item.desc || "", c).replace(/\n/g,"<br>")}
+    `;
+    resultDiv.appendChild(div);
+  });
 
   document.getElementById("selectedText").innerText =
-    "使用回数表";
+    `「${c}」の使用一覧：${list.length}件`;
 }
 </script>
 
