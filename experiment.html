@@ -302,6 +302,7 @@ let flatStage = [];
 let otherData = [];
 let flatOther = [];
 let usageTableScrollY = 0;
+let usageCountMap = null;
 
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
@@ -399,6 +400,7 @@ function applyMode(){
     flatAlly.concat(flatEnemy);
 
   changeKanjiTarget();
+  usageCountMap = null;
 }
 
 function changeMode(){
@@ -1581,11 +1583,22 @@ function showUsageTable(){
     document.getElementById("usageSortDir").style.display =
       usageSortKey === "none" ? "none" : "";
 
+    if(!usageCountMap){
+      buildUsageCountMap();
+    }
+
     const rows = getGradeKanji(usageGradeFilter).map(c=>{
-      const ally = countInList(flatAlly, c, true);
-      const enemy = countInList(flatEnemy, c, true);
-      const stage = countInList(flatStage, c, false);
-      const other = countInList(flatOther, c, false);
+      const count = usageCountMap[c] || {
+        ally: 0,
+        enemy: 0,
+        stage: 0,
+        other: 0
+      };
+
+      const ally = count.ally;
+      const enemy = count.enemy;
+      const stage = count.stage;
+      const other = count.other;
       const total = ally + enemy + stage + other;
 
       return {c, ally, enemy, stage, other, total};
@@ -1718,6 +1731,47 @@ function showUsageTable(){
 
   document.getElementById("selectedText").innerText =
     `「${c}」の使用一覧：${list.length}件`;
+}
+
+  function buildUsageCountMap(){
+  const map = {};
+
+  allKanji().forEach(c=>{
+    map[c] = {
+      ally: 0,
+      enemy: 0,
+      stage: 0,
+      other: 0
+    };
+  });
+
+  allKanji().forEach(c=>{
+    flatAlly.forEach(x=>{
+      if((x.name || "").includes(c) || (x.description || "").includes(c)){
+        map[c].ally++;
+      }
+    });
+
+    flatEnemy.forEach(x=>{
+      if((x.name || "").includes(c) || (x.description || "").includes(c)){
+        map[c].enemy++;
+      }
+    });
+
+    flatStage.forEach(x=>{
+      if((x.name || "").includes(c)){
+        map[c].stage++;
+      }
+    });
+
+    flatOther.forEach(x=>{
+      if((x.name || "").includes(c)){
+        map[c].other++;
+      }
+    });
+  });
+
+  usageCountMap = map;
 }
 </script>
 
