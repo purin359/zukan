@@ -179,6 +179,10 @@ button,select{
   font-size:20px;
   cursor:pointer;
 }
+
+  .unusedKanji{
+  background:#fff3a0;
+}
 </style>
 </head>
 
@@ -1544,8 +1548,16 @@ function getKanjiSearchData(){
 
     const tr = document.createElement("tr");
 
+    const isUnused =
+      ally === 0 &&
+      enemy === 0 &&
+      stage === 0 &&
+      other === 0;
+
     tr.innerHTML = `
-      <td class="kanjiCell">${c}</td>
+      <td class="kanjiCell ${isUnused ? "unusedKanji" : ""}">
+        ${c}
+      </td>
       <td>${ally}</td>
       <td>${enemy}</td>
       <td>${stage}</td>
