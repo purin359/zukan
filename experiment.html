@@ -1576,6 +1576,10 @@ function showUsageTable(){
 
   resultDiv.appendChild(control);
 
+  document.getElementById("usageGradeFilter").value = usageGradeFilter;
+  document.getElementById("usageSortKey").value = usageSortKey;
+  document.getElementById("usageSortDir").value = usageSortDir;
+
   const tableWrap = document.createElement("div");
   resultDiv.appendChild(tableWrap);
 
