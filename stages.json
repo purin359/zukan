@@ -7885,6 +7885,68 @@
     ]
   },
   {
+    "mapId": "ND032",
+    "type": "レジェンド０",
+    "chapterName": "ン・トーベ地方",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "バラバラバラン草原"
+      },
+      {
+        "stageId": 1,
+        "stageName": "忘れられた橋"
+      },
+      {
+        "stageId": 2,
+        "stageName": "高密度おにぎり山脈"
+      },
+      {
+        "stageId": 3,
+        "stageName": "謎の汁湖"
+      },
+      {
+        "stageId": 4,
+        "stageName": "醤油さし魚群"
+      },
+      {
+        "stageId": 5,
+        "stageName": "夕飯の終着点"
+      }
+    ]
+  },
+  {
+    "mapId": "ND033",
+    "type": "レジェンド０",
+    "chapterName": "おしゃれクレイジー",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "全身たわしスーツ"
+      },
+      {
+        "stageId": 1,
+        "stageName": "ダンベルイヤリング"
+      },
+      {
+        "stageId": 2,
+        "stageName": "異様な肩パッド"
+      },
+      {
+        "stageId": 3,
+        "stageName": "食べられるシャツ"
+      },
+      {
+        "stageId": 4,
+        "stageName": "避雷針ハット"
+      },
+      {
+        "stageId": 5,
+        "stageName": "刃物のような襟"
+      }
+    ]
+  },
+  {
     "mapId": "S000",
     "type": "曜日ステージ",
     "chapterName": "月曜ステージ",
@@ -14156,7 +14218,7 @@
   },
   {
     "mapId": "S344",
-    "type": "ねこなつ",
+    "type": "廃止ステージ",
     "chapterName": "夏の終わり、宿題",
     "stages": [
       {
@@ -16013,6 +16075,59 @@
       {
         "stageId": 4,
         "stageName": "にゃんこレンジャーよ、永遠に"
+      }
+    ]
+  },
+  {
+    "mapId": "S433",
+    "type": "絶降臨ステージ",
+    "chapterName": "絶・ブルーインパクト",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "リバーピッグプラネテス 超極ムズ"
+      },
+      {
+        "stageId": 1,
+        "stageName": "河豚座流星群 超極ムズ"
+      }
+    ]
+  },
+  {
+    "mapId": "S434",
+    "type": "ねこなつ",
+    "chapterName": "ワンチャンス遊技場",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "運試し"
+      },
+      {
+        "stageId": 1,
+        "stageName": "一攫千金"
+      },
+      {
+        "stageId": 2,
+        "stageName": "オールイン"
+      }
+    ]
+  },
+  {
+    "mapId": "S435",
+    "type": "ねこなつ",
+    "chapterName": "夏の終わり、宿題",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "8/29 観察日記とドリルとプリント"
+      },
+      {
+        "stageId": 1,
+        "stageName": "8/30 読書感想文と自由研究と絵日記"
+      },
+      {
+        "stageId": 2,
+        "stageName": "8/31 逃走"
       }
     ]
   },
@@ -21906,6 +22021,53 @@
     ]
   },
   {
+    "mapId": "A081",
+    "type": "ねこなつ",
+    "chapterName": "億万長者オークション",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "大富豪の暇つぶし"
+      },
+      {
+        "stageId": 1,
+        "stageName": "ディザイア刺激物"
+      },
+      {
+        "stageId": 2,
+        "stageName": "一歩も退かぬ競い合い"
+      },
+      {
+        "stageId": 3,
+        "stageName": "ハンマーの連打音"
+      },
+      {
+        "stageId": 4,
+        "stageName": "尽きぬ欲望"
+      },
+      {
+        "stageId": 5,
+        "stageName": "享楽の殿堂"
+      },
+      {
+        "stageId": 6,
+        "stageName": "桁間違え入札"
+      },
+      {
+        "stageId": 7,
+        "stageName": "珠玉の珍品"
+      },
+      {
+        "stageId": 8,
+        "stageName": "運命の予算オーバー"
+      },
+      {
+        "stageId": 9,
+        "stageName": "見たことない請求額"
+      }
+    ]
+  },
+  {
     "mapId": "C000",
     "type": "ふるさと自衛隊",
     "chapterName": "ふるさと自衛隊",
@@ -22682,11 +22844,11 @@
     "stages": [
       {
         "stageId": 0,
-        "stageName": "ハコの魔女 超激ムズ"
+        "stageName": "ハコの魔女 上級"
       },
       {
         "stageId": 1,
-        "stageName": "ハコの魔女 上級"
+        "stageName": "ハコの魔女 超激ムズ"
       }
     ]
   },
@@ -27047,6 +27209,88 @@
     ]
   },
   {
+    "mapId": "C271",
+    "type": "パックマン",
+    "chapterName": "パックマン登場！",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "迷路に並んだクッキー"
+      },
+      {
+        "stageId": 1,
+        "stageName": "クッキーを食べ尽くせ！"
+      },
+      {
+        "stageId": 2,
+        "stageName": "ゴーストにつかまるな"
+      },
+      {
+        "stageId": 3,
+        "stageName": "フルーツで高得点"
+      },
+      {
+        "stageId": 4,
+        "stageName": "形勢逆転！パワークッキー"
+      },
+      {
+        "stageId": 5,
+        "stageName": "イジケゴーストを追いかけろ"
+      },
+      {
+        "stageId": 6,
+        "stageName": "目指せ256面"
+      }
+    ]
+  },
+  {
+    "mapId": "C272",
+    "type": "パックマン",
+    "chapterName": "パックマンとネコ",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "進み始めたら止まらない"
+      },
+      {
+        "stageId": 1,
+        "stageName": "ワープトンネルの向こう側"
+      },
+      {
+        "stageId": 2,
+        "stageName": "ゴーストをやっつけろ"
+      },
+      {
+        "stageId": 3,
+        "stageName": "直線移動の美学"
+      },
+      {
+        "stageId": 4,
+        "stageName": "パワークッキーはどこへ"
+      },
+      {
+        "stageId": 5,
+        "stageName": "エンドレス拾い食い"
+      },
+      {
+        "stageId": 6,
+        "stageName": "逃げるよりも立ち向かえ"
+      },
+      {
+        "stageId": 7,
+        "stageName": "ハイスコアへの招待状"
+      },
+      {
+        "stageId": 8,
+        "stageName": "クッキーかネコカンか"
+      },
+      {
+        "stageId": 9,
+        "stageName": "もう食べられない"
+      }
+    ]
+  },
+  {
     "mapId": "CA000",
     "type": "消滅都市",
     "chapterName": "メシエ 強襲！",
@@ -29028,6 +29272,53 @@
       {
         "stageId": 9,
         "stageName": "妄想心音 Lv.MAX"
+      }
+    ]
+  },
+  {
+    "mapId": "CA027",
+    "type": "パックマン",
+    "chapterName": "強襲！巨大パックマン",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "ROUND 1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "ROUND 2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "ROUND 3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "ROUND 4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "ROUND 5"
+      },
+      {
+        "stageId": 5,
+        "stageName": "ROUND 6"
+      },
+      {
+        "stageId": 6,
+        "stageName": "ROUND 7"
+      },
+      {
+        "stageId": 7,
+        "stageName": "ROUND 8"
+      },
+      {
+        "stageId": 8,
+        "stageName": "ROUND 9"
+      },
+      {
+        "stageId": 9,
+        "stageName": "ROUND 10"
       }
     ]
   },
@@ -32532,6 +32823,60 @@
     ]
   },
   {
+    "mapId": "SR024",
+    "type": "コロシアム",
+    "chapterName": "異次元コロシアム[ワンコイン]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "Round 1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "Round 2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "Round 3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "Round 4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "Round 5"
+      }
+    ]
+  },
+  {
+    "mapId": "SR025",
+    "type": "コロシアム",
+    "chapterName": "異次元コロシアム[生産スピード統一]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "Round 1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "Round 2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "Round 3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "Round 4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "Round 5"
+      }
+    ]
+  },
+  {
     "mapId": "G000",
     "type": "にゃんこ道検定",
     "chapterName": "にゃんこ道検定 一段",
@@ -34063,408 +34408,471 @@
     ]
   },
   {
+    "mapId": "E081",
+    "type": "パックマン",
+    "chapterName": "パックマン登場！",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "ボーナスステージ"
+      }
+    ]
+  },
+  {
     "mapId": "L000",
     "type": "グランドアビス",
     "chapterName": "地底迷宮グランドアビス",
     "stages": [
       {
         "stageId": 0,
-        "stageName": "1層"
+        "stageName": "L-000"
       },
       {
         "stageId": 1,
-        "stageName": "2層"
+        "stageName": "L-001"
       },
       {
         "stageId": 2,
-        "stageName": "3層"
+        "stageName": "L-002"
       },
       {
         "stageId": 3,
-        "stageName": "4層"
+        "stageName": "L-003"
       },
       {
         "stageId": 4,
-        "stageName": "5層"
+        "stageName": "L-004"
       },
       {
         "stageId": 5,
-        "stageName": "6層"
+        "stageName": "L-005"
       },
       {
         "stageId": 6,
-        "stageName": "7層"
+        "stageName": "L-006"
       },
       {
         "stageId": 7,
-        "stageName": "8層"
+        "stageName": "L-007"
       },
       {
         "stageId": 8,
-        "stageName": "9層"
+        "stageName": "L-008"
       },
       {
         "stageId": 9,
-        "stageName": "10層"
+        "stageName": "L-009"
       },
       {
         "stageId": 10,
-        "stageName": "11層"
+        "stageName": "L-010"
       },
       {
         "stageId": 11,
-        "stageName": "12層"
+        "stageName": "L-011"
       },
       {
         "stageId": 12,
-        "stageName": "13層"
+        "stageName": "L-012"
       },
       {
         "stageId": 13,
-        "stageName": "14層"
+        "stageName": "L-013"
       },
       {
         "stageId": 14,
-        "stageName": "15層"
+        "stageName": "L-014"
       },
       {
         "stageId": 15,
-        "stageName": "16層"
+        "stageName": "L-015"
       },
       {
         "stageId": 16,
-        "stageName": "17層"
+        "stageName": "L-016"
       },
       {
         "stageId": 17,
-        "stageName": "18層"
+        "stageName": "L-017"
       },
       {
         "stageId": 18,
-        "stageName": "19層"
+        "stageName": "L-018"
       },
       {
         "stageId": 19,
-        "stageName": "20層"
+        "stageName": "L-019"
       },
       {
         "stageId": 20,
-        "stageName": "21層"
+        "stageName": "L-020"
       },
       {
         "stageId": 21,
-        "stageName": "22層"
+        "stageName": "L-021"
       },
       {
         "stageId": 22,
-        "stageName": "23層"
+        "stageName": "L-022"
       },
       {
         "stageId": 23,
-        "stageName": "24層"
+        "stageName": "L-023"
       },
       {
         "stageId": 24,
-        "stageName": "25層"
+        "stageName": "L-024"
       },
       {
         "stageId": 25,
-        "stageName": "26層"
+        "stageName": "L-025"
       },
       {
         "stageId": 26,
-        "stageName": "27層"
+        "stageName": "L-026"
       },
       {
         "stageId": 27,
-        "stageName": "28層"
+        "stageName": "L-027"
       },
       {
         "stageId": 28,
-        "stageName": "29層"
+        "stageName": "L-028"
       },
       {
         "stageId": 29,
-        "stageName": "30層"
+        "stageName": "L-029"
       },
       {
         "stageId": 30,
-        "stageName": "31層"
+        "stageName": "L-030"
       },
       {
         "stageId": 31,
-        "stageName": "32層"
+        "stageName": "L-031"
       },
       {
         "stageId": 32,
-        "stageName": "33層"
+        "stageName": "L-032"
       },
       {
         "stageId": 33,
-        "stageName": "34層"
+        "stageName": "L-033"
       },
       {
         "stageId": 34,
-        "stageName": "35層"
+        "stageName": "L-034"
       },
       {
         "stageId": 35,
-        "stageName": "36層"
+        "stageName": "L-035"
       },
       {
         "stageId": 36,
-        "stageName": "37層"
+        "stageName": "L-036"
       },
       {
         "stageId": 37,
-        "stageName": "38層"
+        "stageName": "L-037"
       },
       {
         "stageId": 38,
-        "stageName": "39層"
+        "stageName": "L-038"
       },
       {
         "stageId": 39,
-        "stageName": "40層"
+        "stageName": "L-039"
       },
       {
         "stageId": 40,
-        "stageName": "41層"
+        "stageName": "L-040"
       },
       {
         "stageId": 41,
-        "stageName": "42層"
+        "stageName": "L-041"
       },
       {
         "stageId": 42,
-        "stageName": "43層"
+        "stageName": "L-042"
       },
       {
         "stageId": 43,
-        "stageName": "44層"
+        "stageName": "L-043"
       },
       {
         "stageId": 44,
-        "stageName": "45層"
+        "stageName": "L-044"
       },
       {
         "stageId": 45,
-        "stageName": "46層"
+        "stageName": "L-045"
       },
       {
         "stageId": 46,
-        "stageName": "47層"
+        "stageName": "L-046"
       },
       {
         "stageId": 47,
-        "stageName": "48層"
+        "stageName": "L-047"
       },
       {
         "stageId": 48,
-        "stageName": "49層"
+        "stageName": "L-048"
       },
       {
         "stageId": 49,
-        "stageName": "50層"
+        "stageName": "L-049"
       },
       {
         "stageId": 50,
-        "stageName": "51層"
+        "stageName": "L-050"
       },
       {
         "stageId": 51,
-        "stageName": "52層"
+        "stageName": "L-051"
       },
       {
         "stageId": 52,
-        "stageName": "53層"
+        "stageName": "L-052"
       },
       {
         "stageId": 53,
-        "stageName": "54層"
+        "stageName": "L-053"
       },
       {
         "stageId": 54,
-        "stageName": "55層"
+        "stageName": "L-054"
       },
       {
         "stageId": 55,
-        "stageName": "56層"
+        "stageName": "L-055"
       },
       {
         "stageId": 56,
-        "stageName": "57層"
+        "stageName": "L-056"
       },
       {
         "stageId": 57,
-        "stageName": "58層"
+        "stageName": "L-057"
       },
       {
         "stageId": 58,
-        "stageName": "59層"
+        "stageName": "L-058"
       },
       {
         "stageId": 59,
-        "stageName": "60層"
+        "stageName": "L-059"
       },
       {
         "stageId": 60,
-        "stageName": "61層"
+        "stageName": "L-060"
       },
       {
         "stageId": 61,
-        "stageName": "62層"
+        "stageName": "L-061"
       },
       {
         "stageId": 62,
-        "stageName": "63層"
+        "stageName": "L-062"
       },
       {
         "stageId": 63,
-        "stageName": "64層"
+        "stageName": "L-063"
       },
       {
         "stageId": 64,
-        "stageName": "65層"
+        "stageName": "L-064"
       },
       {
         "stageId": 65,
-        "stageName": "66層"
+        "stageName": "L-065"
       },
       {
         "stageId": 66,
-        "stageName": "67層"
+        "stageName": "L-066"
       },
       {
         "stageId": 67,
-        "stageName": "68層"
+        "stageName": "L-067"
       },
       {
         "stageId": 68,
-        "stageName": "69層"
+        "stageName": "L-068"
       },
       {
         "stageId": 69,
-        "stageName": "70層"
+        "stageName": "L-069"
       },
       {
         "stageId": 70,
-        "stageName": "71層"
+        "stageName": "L-070"
       },
       {
         "stageId": 71,
-        "stageName": "72層"
+        "stageName": "L-071"
       },
       {
         "stageId": 72,
-        "stageName": "73層"
+        "stageName": "L-072"
       },
       {
         "stageId": 73,
-        "stageName": "74層"
+        "stageName": "L-073"
       },
       {
         "stageId": 74,
-        "stageName": "75層"
+        "stageName": "L-074"
       },
       {
         "stageId": 75,
-        "stageName": "76層"
+        "stageName": "L-075"
       },
       {
         "stageId": 76,
-        "stageName": "77層"
+        "stageName": "L-076"
       },
       {
         "stageId": 77,
-        "stageName": "78層"
+        "stageName": "L-077"
       },
       {
         "stageId": 78,
-        "stageName": "79層"
+        "stageName": "L-078"
       },
       {
         "stageId": 79,
-        "stageName": "80層"
+        "stageName": "L-079"
       },
       {
         "stageId": 80,
-        "stageName": "81層"
+        "stageName": "L-080"
       },
       {
         "stageId": 81,
-        "stageName": "82層"
+        "stageName": "L-081"
       },
       {
         "stageId": 82,
-        "stageName": "83層"
+        "stageName": "L-082"
       },
       {
         "stageId": 83,
-        "stageName": "84層"
+        "stageName": "L-083"
       },
       {
         "stageId": 84,
-        "stageName": "85層"
+        "stageName": "L-084"
       },
       {
         "stageId": 85,
-        "stageName": "86層"
+        "stageName": "L-085"
       },
       {
         "stageId": 86,
-        "stageName": "87層"
+        "stageName": "L-086"
       },
       {
         "stageId": 87,
-        "stageName": "88層"
+        "stageName": "L-087"
       },
       {
         "stageId": 88,
-        "stageName": "89層"
+        "stageName": "L-088"
       },
       {
         "stageId": 89,
-        "stageName": "90層"
+        "stageName": "L-089"
       },
       {
         "stageId": 90,
-        "stageName": "91層"
+        "stageName": "L-090"
       },
       {
         "stageId": 91,
-        "stageName": "92層"
+        "stageName": "L-091"
       },
       {
         "stageId": 92,
-        "stageName": "93層"
+        "stageName": "L-092"
       },
       {
         "stageId": 93,
-        "stageName": "94層"
+        "stageName": "L-093"
       },
       {
         "stageId": 94,
-        "stageName": "95層"
+        "stageName": "L-094"
       },
       {
         "stageId": 95,
-        "stageName": "96層"
+        "stageName": "L-095"
       },
       {
         "stageId": 96,
-        "stageName": "97層"
+        "stageName": "L-096"
       },
       {
         "stageId": 97,
-        "stageName": "98層"
+        "stageName": "L-097"
       },
       {
         "stageId": 98,
-        "stageName": "99層"
+        "stageName": "L-098"
       },
       {
         "stageId": 99,
+        "stageName": "L-099"
+      },
+      {
+        "stageId": 100,
+        "stageName": "L-100"
+      },
+      {
+        "stageId": 101,
+        "stageName": "L-101"
+      },
+      {
+        "stageId": 102,
+        "stageName": "L-102"
+      },
+      {
+        "stageId": 103,
+        "stageName": "L-103"
+      },
+      {
+        "stageId": 104,
+        "stageName": "L-104"
+      },
+      {
+        "stageId": 105,
+        "stageName": "L-105"
+      },
+      {
+        "stageId": 106,
+        "stageName": "L-106"
+      },
+      {
+        "stageId": 107,
+        "stageName": "L-107"
+      },
+      {
+        "stageId": 108,
+        "stageName": "L-108"
+      },
+      {
+        "stageId": 109,
+        "stageName": "L-109"
+      },
+      {
+        "stageId": 110,
+        "stageName": "L-110"
+      },
+      {
+        "stageId": 111,
+        "stageName": "L-111"
+      },
+      {
+        "stageId": 112,
         "stageName": "最深部 100層"
       }
     ]
@@ -34477,205 +34885,6 @@
       {
         "stageId": 0,
         "stageName": "ハイスコアに挑戦！"
-      }
-    ]
-  },
-  {
-    "mapId": 16000,
-    "type": "レジェクエ",
-    "chapterName": "レジェンドクエスト",
-    "stages": [
-      {
-        "stageId": 0,
-        "stageName": "LEVEL1"
-      },
-      {
-        "stageId": 1,
-        "stageName": "LEVEL2"
-      },
-      {
-        "stageId": 2,
-        "stageName": "LEVEL3"
-      },
-      {
-        "stageId": 3,
-        "stageName": "LEVEL4"
-      },
-      {
-        "stageId": 4,
-        "stageName": "LEVEL5"
-      },
-      {
-        "stageId": 5,
-        "stageName": "LEVEL6"
-      },
-      {
-        "stageId": 6,
-        "stageName": "LEVEL7"
-      },
-      {
-        "stageId": 7,
-        "stageName": "LEVEL8"
-      },
-      {
-        "stageId": 8,
-        "stageName": "LEVEL9"
-      },
-      {
-        "stageId": 9,
-        "stageName": "LEVEL10"
-      },
-      {
-        "stageId": 10,
-        "stageName": "LEVEL11"
-      },
-      {
-        "stageId": 11,
-        "stageName": "LEVEL12"
-      },
-      {
-        "stageId": 12,
-        "stageName": "LEVEL13"
-      },
-      {
-        "stageId": 13,
-        "stageName": "LEVEL14"
-      },
-      {
-        "stageId": 14,
-        "stageName": "LEVEL15"
-      },
-      {
-        "stageId": 15,
-        "stageName": "LEVEL16"
-      },
-      {
-        "stageId": 16,
-        "stageName": "LEVEL17"
-      },
-      {
-        "stageId": 17,
-        "stageName": "LEVEL18"
-      },
-      {
-        "stageId": 18,
-        "stageName": "LEVEL19"
-      },
-      {
-        "stageId": 19,
-        "stageName": "LEVEL20"
-      },
-      {
-        "stageId": 20,
-        "stageName": "LEVEL21"
-      },
-      {
-        "stageId": 21,
-        "stageName": "LEVEL22"
-      },
-      {
-        "stageId": 22,
-        "stageName": "LEVEL23"
-      },
-      {
-        "stageId": 23,
-        "stageName": "LEVEL24"
-      },
-      {
-        "stageId": 24,
-        "stageName": "LEVEL25"
-      },
-      {
-        "stageId": 25,
-        "stageName": "LEVEL26"
-      },
-      {
-        "stageId": 26,
-        "stageName": "LEVEL27"
-      },
-      {
-        "stageId": 27,
-        "stageName": "LEVEL28"
-      },
-      {
-        "stageId": 28,
-        "stageName": "LEVEL29"
-      },
-      {
-        "stageId": 29,
-        "stageName": "LEVEL30"
-      },
-      {
-        "stageId": 30,
-        "stageName": "LEVEL31"
-      },
-      {
-        "stageId": 31,
-        "stageName": "LEVEL32"
-      },
-      {
-        "stageId": 32,
-        "stageName": "LEVEL33"
-      },
-      {
-        "stageId": 33,
-        "stageName": "LEVEL34"
-      },
-      {
-        "stageId": 34,
-        "stageName": "LEVEL35"
-      },
-      {
-        "stageId": 35,
-        "stageName": "LEVEL36"
-      },
-      {
-        "stageId": 36,
-        "stageName": "LEVEL37"
-      },
-      {
-        "stageId": 37,
-        "stageName": "LEVEL38"
-      },
-      {
-        "stageId": 38,
-        "stageName": "LEVEL39"
-      },
-      {
-        "stageId": 39,
-        "stageName": "LEVEL40"
-      },
-      {
-        "stageId": 40,
-        "stageName": "LEVEL41"
-      },
-      {
-        "stageId": 41,
-        "stageName": "LEVEL42"
-      },
-      {
-        "stageId": 42,
-        "stageName": "LEVEL43"
-      },
-      {
-        "stageId": 43,
-        "stageName": "LEVEL44"
-      },
-      {
-        "stageId": 44,
-        "stageName": "LEVEL45"
-      },
-      {
-        "stageId": 45,
-        "stageName": "LEVEL46"
-      },
-      {
-        "stageId": 46,
-        "stageName": "LEVEL47"
-      },
-      {
-        "stageId": 47,
-        "stageName": "LEVEL FINAL"
       }
     ]
   }
