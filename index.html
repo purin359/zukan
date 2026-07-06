@@ -1475,45 +1475,97 @@ function getKanjiSearchData(){
   lastMode = "stageRanking";
   openResult(addHistory);
 
+  renderStageRanking();
+}
+
+function renderStageRanking(){
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
-  const list = allKanji().map(c=>{
-    let count = 0;
+  const filterBox = document.createElement("div");
+  filterBox.style.marginBottom = "10px";
 
-    flatStage.forEach(f=>{
-      if(f.name.includes(c)) count++;
+  filterBox.innerHTML = `
+    <input id="stageRankingMapFilter"
+      placeholder="マップIDで絞り込み 例：N"
+      style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
+  `;
+
+  resultDiv.appendChild(filterBox);
+
+  const listDiv = document.createElement("div");
+  resultDiv.appendChild(listDiv);
+
+  function draw(){
+    const mapKey =
+      document.getElementById("stageRankingMapFilter").value.trim();
+
+    const targetStages = flatStage.filter(f=>{
+      const mapId = String(f.mapId ?? "");
+
+      if(!mapKey) return true;
+
+      if(mapKey === "N"){
+        return (
+          mapId.startsWith("N") ||
+          mapId.startsWith("NA") ||
+          mapId.startsWith("ND")
+        );
+      }
+
+      return mapId.includes(mapKey);
     });
 
-    return {char:c,count};
-  })
-  .filter(x=>x.count>0)
-  .sort((a,b)=>b.count-a.count);
+    listDiv.innerHTML = "";
 
-  let rank = 0;
-  let prev = -1;
+    const list = allKanji().map(c=>{
+      let count = 0;
 
-  list.forEach((item,i)=>{
-    if(item.count !== prev){
-      rank = i + 1;
-      prev = item.count;
-    }
+      targetStages.forEach(f=>{
+        if(f.name.includes(c)) count++;
+      });
 
-    const div = document.createElement("div");
-    div.className = "result";
-    div.innerHTML = `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
+      return {char:c,count};
+    })
+    .filter(x=>x.count>0)
+    .sort((a,b)=>b.count-a.count);
 
-    div.onclick = ()=>{
-      rankingScrollY = document.getElementById("result").scrollTop;
-      document.getElementById("searchInput").value = item.char;
-      search(item.char, "ranking");
-    };
+    let rank = 0;
+    let prev = -1;
 
-    resultDiv.appendChild(div);
-  });
+    list.forEach((item,i)=>{
+      if(item.count !== prev){
+        rank = i + 1;
+        prev = item.count;
+      }
 
-  document.getElementById("selectedText").innerText =
-    "使用率ランキング(ステージ)";
+      const div = document.createElement("div");
+      div.className = "result";
+      div.innerHTML =
+        `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
+
+      div.onclick = ()=>{
+        rankingScrollY =
+          document.getElementById("result").scrollTop;
+
+        document.getElementById("searchInput").value = item.char;
+        search(item.char, "ranking");
+      };
+
+      listDiv.appendChild(div);
+    });
+
+    document.getElementById("selectedText").innerText =
+      mapKey
+        ? `使用率ランキング(ステージ / ${mapKey})`
+        : "使用率ランキング(ステージ)";
+  }
+
+  document
+    .getElementById("stageRankingMapFilter")
+    .addEventListener("input", draw);
+
+  draw();
 }
 
   function showStageChecker(){
