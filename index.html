@@ -315,6 +315,8 @@ let flatOther = [];
 let usageTableScrollY = 0;
 let usageCountMap = null;
 let returningToUsageTable = false;
+let stageRankingMapFilterValue = "";
+let stageRankingScrollY = 0;
 
 
 const segmenter = new Intl.Segmenter("ja",{granularity:"grapheme"});
@@ -940,6 +942,17 @@ function openResult(addHistory = true){
 }
 
 function back(){
+　if(lastMode === "stageRankingDetail"){
+  showStageRanking(false);
+
+  setTimeout(()=>{
+    document.getElementById("result").scrollTop =
+      stageRankingScrollY;
+  },0);
+
+  return;
+}
+  
   if(lastMode === "usageDetail"){
     showUsageTable(true);
 
@@ -1474,8 +1487,21 @@ function getKanjiSearchData(){
   function showStageRanking(addHistory = true){
   lastMode = "stageRanking";
   openResult(addHistory);
-
   renderStageRanking();
+}
+
+function getStageRankingTargetStages(){
+  return flatStage.filter(f=>{
+    const mapId = String(f.mapId ?? "");
+
+    if(!stageRankingMapFilterValue) return true;
+
+    if(stageRankingMapFilterValue === "N"){
+      return mapId.startsWith("N");
+    }
+
+    return mapId.includes(stageRankingMapFilterValue);
+  });
 }
 
 function renderStageRanking(){
@@ -1488,6 +1514,7 @@ function renderStageRanking(){
   filterBox.innerHTML = `
     <input id="stageRankingMapFilter"
       placeholder="マップIDで絞り込み 例：N"
+      value="${stageRankingMapFilterValue}"
       style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:8px;font-size:16px;">
   `;
 
@@ -1497,24 +1524,10 @@ function renderStageRanking(){
   resultDiv.appendChild(listDiv);
 
   function draw(){
-    const mapKey =
+    stageRankingMapFilterValue =
       document.getElementById("stageRankingMapFilter").value.trim();
 
-    const targetStages = flatStage.filter(f=>{
-      const mapId = String(f.mapId ?? "");
-
-      if(!mapKey) return true;
-
-      if(mapKey === "N"){
-        return (
-          mapId.startsWith("N") ||
-          mapId.startsWith("NA") ||
-          mapId.startsWith("ND")
-        );
-      }
-
-      return mapId.includes(mapKey);
-    });
+    const targetStages = getStageRankingTargetStages();
 
     listDiv.innerHTML = "";
 
@@ -1545,19 +1558,18 @@ function renderStageRanking(){
         `${rank}位　<strong>${item.char}</strong>（${item.count}件）`;
 
       div.onclick = ()=>{
-        rankingScrollY =
+        stageRankingScrollY =
           document.getElementById("result").scrollTop;
 
-        document.getElementById("searchInput").value = item.char;
-        search(item.char, "ranking");
+        showStageRankingDetail(item.char);
       };
 
       listDiv.appendChild(div);
     });
 
     document.getElementById("selectedText").innerText =
-      mapKey
-        ? `使用率ランキング(ステージ / ${mapKey})`
+      stageRankingMapFilterValue
+        ? `使用率ランキング(ステージ / ${stageRankingMapFilterValue})`
         : "使用率ランキング(ステージ)";
   }
 
@@ -1566,6 +1578,34 @@ function renderStageRanking(){
     .addEventListener("input", draw);
 
   draw();
+}
+
+  function showStageRankingDetail(c){
+  lastMode = "stageRankingDetail";
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  const list = getStageRankingTargetStages()
+    .filter(f => f.name.includes(c))
+    .map(f => ({
+      text: f.type === "chapter"
+        ? f.name
+        : `${f.chapterName} - ${f.name}`
+    }));
+
+  list.forEach(item=>{
+    const div = document.createElement("div");
+    div.className = "result";
+    div.innerHTML =
+      `<strong>${highlight(item.text, c)}</strong>`;
+    resultDiv.appendChild(div);
+  });
+
+  document.getElementById("selectedText").innerText =
+    stageRankingMapFilterValue
+      ? `「${c}」の使用一覧：${list.length}件 / ${stageRankingMapFilterValue}`
+      : `「${c}」の使用一覧：${list.length}件`;
 }
 
   function showStageChecker(){
