@@ -1531,7 +1531,10 @@ function renderStageRanking(){
 
     listDiv.innerHTML = "";
 
-    const list = allKanji().map(c=>{
+    const rankingKanji =
+      allKanji().concat(getExtraKanjiList());
+
+    const list = rankingKanji.map(c=>{
       let count = 0;
 
       targetStages.forEach(f=>{
