@@ -197,17 +197,23 @@ function extractKanji(text){
 function maskNonKanji(text){
   return Array.from(String(text || ""))
     .map(c => {
+
       // 漢字はそのまま
       if(/[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/.test(c)){
         return c;
       }
 
-      // 改行は残す
+      // 改行はそのまま
       if(c === "\n"){
         return "\n";
       }
 
-      // それ以外は〇
+      // 記号・空白はそのまま
+      if(/[？！!?,，。、．・：:；;（）()「」『』【】［］\[\]〈〉《》＜＞<>…〜～ー\-＋+＝=％%＆&／\/・\s]/.test(c)){
+        return c;
+      }
+
+      // ひらがな・カタカナ・英数字などは〇
       return "〇";
     })
     .join("");
