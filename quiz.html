@@ -219,6 +219,12 @@ function maskNonKanji(text){
     .join("");
 }
 
+function revealDescription(){
+  if(!current) return;
+
+  document.getElementById("desc").innerText = current.desc;
+}
+
 // ===== ID生成 =====
 function getAllyIdString(ch, form, index){
   const idStr = String(ch.id ?? "").padStart(3, "0");
@@ -436,6 +442,8 @@ function check(){
       return;
     }
 
+    revealDescription();
+
     score++;
     document.getElementById("score").innerText = score;
 
@@ -453,6 +461,7 @@ function check(){
     setTimeout(nextQuestion, 500);
 
   }else{
+    revealDescription();
     const answers = sameDescList
   .map(q => q.name)
   .join(" / ");
