@@ -7947,6 +7947,37 @@
     ]
   },
   {
+    "mapId": "ND034",
+    "type": "レジェンド０",
+    "chapterName": "偏愛化学実験場",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "共依存化合物"
+      },
+      {
+        "stageId": 1,
+        "stageName": "スポイトで測る愛"
+      },
+      {
+        "stageId": 2,
+        "stageName": "推しロス・コープ"
+      },
+      {
+        "stageId": 3,
+        "stageName": "嫉妬の炎色反応"
+      },
+      {
+        "stageId": 4,
+        "stageName": "好き好きスキーム"
+      },
+      {
+        "stageId": 5,
+        "stageName": "ろ過された真心"
+      }
+    ]
+  },
+  {
     "mapId": "S000",
     "type": "曜日ステージ",
     "chapterName": "月曜ステージ",
@@ -21633,8 +21664,55 @@
   },
   {
     "mapId": "A074",
-    "type": "記念ステージ",
+    "type": "上書きステージ",
     "chapterName": "1億1111万ダウンロード記念 セレブレーション！",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "のろしで届いた招待状"
+      },
+      {
+        "stageId": 1,
+        "stageName": "レッドカーペット2km"
+      },
+      {
+        "stageId": 2,
+        "stageName": "延々と開会の挨拶"
+      },
+      {
+        "stageId": 3,
+        "stageName": "祝砲大乱射"
+      },
+      {
+        "stageId": 4,
+        "stageName": "弱肉強食ディナー"
+      },
+      {
+        "stageId": 5,
+        "stageName": "ご歓談ライブ"
+      },
+      {
+        "stageId": 6,
+        "stageName": "おみやげ争奪戦"
+      },
+      {
+        "stageId": 7,
+        "stageName": "笑いと涙の閉会式"
+      },
+      {
+        "stageId": 8,
+        "stageName": "みんなで仲良く記念撮影"
+      },
+      {
+        "stageId": 9,
+        "stageName": "これからもよろしくにゃ"
+      }
+    ]
+  },
+  {
+    "mapId": "A074",
+    "type": "記念ステージ",
+    "chapterName": "1億2000万ダウンロード記念 セレブレーション！",
     "stages": [
       {
         "stageId": 0,
@@ -32877,6 +32955,60 @@
     ]
   },
   {
+    "mapId": "SR026",
+    "type": "コロシアム",
+    "chapterName": "異次元コロシアム[超半額セット EX]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "Round 1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "Round 2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "Round 3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "Round 4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "Round 5"
+      }
+    ]
+  },
+  {
+    "mapId": "SR027",
+    "type": "コロシアム",
+    "chapterName": "異次元コロシアム[レア度選抜+1]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "Round 1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "Round 2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "Round 3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "Round 4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "Round 5"
+      }
+    ]
+  },
+  {
     "mapId": "G000",
     "type": "にゃんこ道検定",
     "chapterName": "にゃんこ道検定 一段",
@@ -33073,6 +33205,25 @@
       {
         "stageId": 2,
         "stageName": "昇段試験３"
+      }
+    ]
+  },
+  {
+    "mapId": "PR000",
+    "type": "？？？",
+    "chapterName": "開演！こねこライブ",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "押さないでください！"
+      },
+      {
+        "stageId": 1,
+        "stageName": "走らないでください！"
+      },
+      {
+        "stageId": 2,
+        "stageName": "暴れないでください！"
       }
     ]
   },
