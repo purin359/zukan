@@ -7978,6 +7978,68 @@
     ]
   },
   {
+    "mapId": "ND035",
+    "type": "レジェンド０",
+    "chapterName": "シュガーハイランド",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "別腹の入り口"
+      },
+      {
+        "stageId": 1,
+        "stageName": "バウム回転木馬"
+      },
+      {
+        "stageId": 2,
+        "stageName": "デンジャラスソルベ"
+      },
+      {
+        "stageId": 3,
+        "stageName": "甘いまどろみ"
+      },
+      {
+        "stageId": 4,
+        "stageName": "裏方菓子職人"
+      },
+      {
+        "stageId": 5,
+        "stageName": "カヌレ山コースター"
+      }
+    ]
+  },
+  {
+    "mapId": "ND036",
+    "type": "レジェンド０",
+    "chapterName": "理想郷ビバラメン",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "黄金スープ油田"
+      },
+      {
+        "stageId": 1,
+        "stageName": "トロリチャー州"
+      },
+      {
+        "stageId": 2,
+        "stageName": "メンマ大橋"
+      },
+      {
+        "stageId": 3,
+        "stageName": "混沌コーンゾーン"
+      },
+      {
+        "stageId": 4,
+        "stageName": "ナルー塔"
+      },
+      {
+        "stageId": 5,
+        "stageName": "一杯の幸せ"
+      }
+    ]
+  },
+  {
     "mapId": "S000",
     "type": "曜日ステージ",
     "chapterName": "月曜ステージ",
@@ -27369,6 +27431,106 @@
     ]
   },
   {
+    "mapId": "C273",
+    "type": "るろうに剣心",
+    "chapterName": "破戒僧・悠久山安慈",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "森の出会い"
+      },
+      {
+        "stageId": 1,
+        "stageName": "破壊の極意・二重の極み"
+      },
+      {
+        "stageId": 2,
+        "stageName": "救世のために編み出した秘伝"
+      },
+      {
+        "stageId": 3,
+        "stageName": "習得できねば死んでもらう"
+      },
+      {
+        "stageId": 4,
+        "stageName": "せめて供養はしてやる"
+      }
+    ]
+  },
+  {
+    "mapId": "C274",
+    "type": "るろうに剣心",
+    "chapterName": "天剣・瀬田宗次郎",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "新月村・志々雄の館"
+      },
+      {
+        "stageId": 1,
+        "stageName": "神速同士の対決"
+      },
+      {
+        "stageId": 2,
+        "stageName": "抜刀術の打ち合い"
+      },
+      {
+        "stageId": 3,
+        "stageName": "勝負あり、かな"
+      },
+      {
+        "stageId": 4,
+        "stageName": "できたらまた戦ってください"
+      }
+    ]
+  },
+  {
+    "mapId": "C275",
+    "type": "るろうに剣心",
+    "chapterName": "幕末の亡霊・志々雄真実",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "人斬り抜刀斎の後継者"
+      },
+      {
+        "stageId": 1,
+        "stageName": "燃える殺人奇剣・無限刃"
+      },
+      {
+        "stageId": 2,
+        "stageName": "信じれば裏切られる"
+      },
+      {
+        "stageId": 3,
+        "stageName": "俺は熱くてしょうがねえ"
+      },
+      {
+        "stageId": 4,
+        "stageName": "所詮この世は弱肉強食"
+      }
+    ]
+  },
+  {
+    "mapId": "C276",
+    "type": "るろうに剣心",
+    "chapterName": "挑戦！飛天御剣流修業",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "この俺から一本取ってみろ"
+      },
+      {
+        "stageId": 1,
+        "stageName": "本気で打ち込んで来い"
+      },
+      {
+        "stageId": 2,
+        "stageName": "俺が教えられるのはここまでだ"
+      }
+    ]
+  },
+  {
     "mapId": "CA000",
     "type": "消滅都市",
     "chapterName": "メシエ 強襲！",
@@ -31729,7 +31891,7 @@
   },
   {
     "mapId": "R027",
-    "type": "るろうに剣心",
+    "type": "廃止ステージ",
     "chapterName": "ランキングの間",
     "stages": [
       {
@@ -31773,8 +31935,19 @@
   },
   {
     "mapId": "R030",
-    "type": "極ランキング",
+    "type": "上書きステージ",
     "chapterName": "極ランキングの間[攻撃力低下]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "闘争本能大会"
+      }
+    ]
+  },
+  {
+    "mapId": "R030",
+    "type": "極ランキング",
+    "chapterName": "極ランキングの間[超ダメージ]",
     "stages": [
       {
         "stageId": 0,
@@ -31806,8 +31979,19 @@
   },
   {
     "mapId": "R033",
-    "type": "極ランキング",
+    "type": "上書きステージ",
     "chapterName": "極ランキングの間[ふっとばし]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "闘争本能大会"
+      }
+    ]
+  },
+  {
+    "mapId": "R033",
+    "type": "極ランキング",
+    "chapterName": "極ランキングの間[動きを遅くする]",
     "stages": [
       {
         "stageId": 0,
@@ -31828,11 +32012,22 @@
   },
   {
     "mapId": "R035",
-    "type": "極ランキング",
+    "type": "上書きステージ",
     "chapterName": "極ランキングの間[めっぽう強い]",
     "stages": [
       {
         "stageId": 0,
+        "stageName": "闘争本能大会"
+      }
+    ]
+  },
+  {
+    "mapId": "R035",
+    "type": "極ランキング",
+    "chapterName": "極ランキングの間[ふっとばす]",
+    "stages": [
+      {
+        "stageId": 1,
         "stageName": "闘争本能大会"
       }
     ]
@@ -31988,6 +32183,17 @@
       {
         "stageId": 0,
         "stageName": "乱闘！サーヴァント大襲来！"
+      }
+    ]
+  },
+  {
+    "mapId": "R049",
+    "type": "るろうに剣心",
+    "chapterName": "ランキングの間",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "明治剣客浪漫大会"
       }
     ]
   },
@@ -33009,6 +33215,52 @@
     ]
   },
   {
+    "mapId": "SR028",
+    "type": "コロシアム",
+    "chapterName": "異次元コロシアム[二束三文]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "Round 1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "Round 2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "Round 3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "Round 4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "Round 5"
+      }
+    ]
+  },
+  {
+    "mapId": "PR000",
+    "type": "ライブ",
+    "chapterName": "開演！こねこライブ",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "押さないでください！"
+      },
+      {
+        "stageId": 1,
+        "stageName": "走らないでください！"
+      },
+      {
+        "stageId": 2,
+        "stageName": "暴れないでください！"
+      }
+    ]
+  },
+  {
     "mapId": "G000",
     "type": "にゃんこ道検定",
     "chapterName": "にゃんこ道検定 一段",
@@ -33205,25 +33457,6 @@
       {
         "stageId": 2,
         "stageName": "昇段試験３"
-      }
-    ]
-  },
-  {
-    "mapId": "PR000",
-    "type": "？？？",
-    "chapterName": "開演！こねこライブ",
-    "stages": [
-      {
-        "stageId": 0,
-        "stageName": "押さないでください！"
-      },
-      {
-        "stageId": 1,
-        "stageName": "走らないでください！"
-      },
-      {
-        "stageId": 2,
-        "stageName": "暴れないでください！"
       }
     ]
   },
