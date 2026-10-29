@@ -784,15 +784,104 @@ function showAll(){
   const resultDiv = document.getElementById("result");
   resultDiv.innerHTML = "";
 
-  data.forEach(f=>{
-    const div = document.createElement("div");
-    div.className = `result ${mode === "integrated" ? f.type : ""}`;
-    div.innerHTML = `<strong>${f.name}</strong><br>${f.description.replace(/\n/g,"<br>")}`;
-    resultDiv.appendChild(div);
-  });
+  // チェックボックス
+  const filterBox = document.createElement("div");
+  filterBox.style.marginBottom = "10px";
 
-  document.getElementById("selectedText").innerText =
-    `全キャラ一覧：${data.length}件`;
+  filterBox.innerHTML = `
+    <label style="display:inline-block;margin-right:15px;">
+      <input type="checkbox" id="allFinalOnly">
+      最上位形態のみ表示
+    </label>
+
+    <label style="display:inline-block;">
+      <input type="checkbox" id="allNameOnly">
+      名前のみ表示
+    </label>
+  `;
+
+  resultDiv.appendChild(filterBox);
+
+  const listDiv = document.createElement("div");
+  resultDiv.appendChild(listDiv);
+
+  function draw(){
+
+    const finalOnly =
+      document.getElementById("allFinalOnly").checked;
+
+    const nameOnly =
+      document.getElementById("allNameOnly").checked;
+
+    let targetData = [];
+
+    // 最上位形態のみ
+    if(finalOnly){
+
+      const finalAlly = allyData
+        .map(ch => {
+          const forms = ch.forms || [];
+          if(!forms.length) return null;
+
+          const f = forms[forms.length - 1];
+
+          return {
+            name: f.name || "",
+            description: f.description || "",
+            type: "ally"
+          };
+        })
+        .filter(Boolean);
+
+      if(mode === "ally"){
+        targetData = finalAlly;
+      }
+      else if(mode === "enemy"){
+        targetData = flatEnemy;
+      }
+      else{
+        targetData = finalAlly.concat(flatEnemy);
+      }
+
+    }else{
+      targetData = data;
+    }
+
+    listDiv.innerHTML = "";
+
+    const fragment = document.createDocumentFragment();
+
+    targetData.forEach(f => {
+
+      const div = document.createElement("div");
+
+      div.className =
+        `result ${mode === "integrated" ? f.type : ""}`;
+
+      if(nameOnly){
+        div.innerHTML = `<strong>${f.name}</strong>`;
+      }else{
+        div.innerHTML =
+          `<strong>${f.name}</strong><br>` +
+          (f.description || "").replace(/\n/g, "<br>");
+      }
+
+      fragment.appendChild(div);
+    });
+
+    listDiv.appendChild(fragment);
+
+    document.getElementById("selectedText").innerText =
+      `全キャラ一覧：${targetData.length}件`;
+  }
+
+  document.getElementById("allFinalOnly")
+    .addEventListener("change", draw);
+
+  document.getElementById("allNameOnly")
+    .addEventListener("change", draw);
+
+  draw();
 }
 
 function showSingleOnly(addHistory = true){
