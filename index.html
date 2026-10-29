@@ -981,12 +981,22 @@ function runChecker(){
   unique.forEach(c=>{
     let count = 0;
     const targetList =
-      kanjiTarget === "stage"
-        ? flatStage
-        : data;
+      kanjiTarget === "both"
+        ? flatAlly.concat(flatEnemy, flatStage, flatOther)
+        : kanjiTarget === "stage"
+          ? flatStage
+          : data;
 
     targetList.forEach(f=>{
-      if(f.name.includes(c) || (f.description || "").includes(c)) count++;
+      if(
+        String(f.name || "").includes(c) ||
+        (
+          f.type !== "other" &&
+          String(f.description || "").includes(c)
+        )
+      ){
+        count++;
+      }
     });
 
     if(count) existing.push(`${c}(${count}回)`);
@@ -1006,9 +1016,18 @@ function clearChecker(){
 
 function showChecker(){
   document.getElementById("menu").style.display = "none";
+
+  document.getElementById("checkerTitle").innerText =
+    kanjiTarget === "both"
+      ? "新規文字チェッカー（全て）"
+      : kanjiTarget === "stage"
+        ? "新規文字チェッカー（ステージ）"
+        : "新規文字チェッカー（キャラ）";
+
   document.getElementById("searchScreen").style.display = "none";
   document.getElementById("resultScreen").style.display = "none";
   document.getElementById("checkerScreen").style.display = "block";
+
   history.pushState({screen:"checker"}, "");
 }
 
@@ -1422,6 +1441,7 @@ function getKanjiSearchData(){
   else if(kanjiTarget === "both"){
     menu.innerHTML = `
       <div onclick="showUsageTable()">使用回数表</div>
+      <div onclick="showChecker()">新規文字チェッカー</div>
     `;
   }
   else{
