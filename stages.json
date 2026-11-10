@@ -8040,6 +8040,37 @@
     ]
   },
   {
+    "mapId": "ND037",
+    "type": "レジェンド０",
+    "chapterName": "ダンシング解放区",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "ルンバ酒場"
+      },
+      {
+        "stageId": 1,
+        "stageName": "土下座のワルツ"
+      },
+      {
+        "stageId": 2,
+        "stageName": "酸欠の舞"
+      },
+      {
+        "stageId": 3,
+        "stageName": "ヒップホップ国会答弁"
+      },
+      {
+        "stageId": 4,
+        "stageName": "職質ステップ"
+      },
+      {
+        "stageId": 5,
+        "stageName": "徹夜明けのサンバ"
+      }
+    ]
+  },
+  {
     "mapId": "S000",
     "type": "曜日ステージ",
     "chapterName": "月曜ステージ",
@@ -16225,6 +16256,17 @@
     ]
   },
   {
+    "mapId": "S436",
+    "type": "周年イベント",
+    "chapterName": "バースデープレゼント！",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "祝！14周年！！"
+      }
+    ]
+  },
+  {
     "mapId": "B000",
     "type": "廃止ステージ",
     "chapterName": "進化の黄マタタビ",
@@ -19338,7 +19380,7 @@
   },
   {
     "mapId": "A036",
-    "type": "イベント",
+    "type": "記念ステージ",
     "chapterName": "ことよろにゃ強襲！(ΦωΦ)",
     "stages": [
       {
@@ -23849,7 +23891,7 @@
       },
       {
         "stageId": 1,
-        "stageName": "くるみ割りの魔女 極ムズ"
+        "stageName": "くるみ割りの魔女 超極ムズ"
       }
     ]
   },
@@ -32034,8 +32076,19 @@
   },
   {
     "mapId": "R036",
-    "type": "極ランキング",
+    "type": "上書きステージ",
     "chapterName": "極ランキングの間[停止]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "闘争本能大会"
+      }
+    ]
+  },
+  {
+    "mapId": "R036",
+    "type": "極ランキング",
+    "chapterName": "極ランキングの間[攻撃力ダウン]",
     "stages": [
       {
         "stageId": 0,
@@ -33242,8 +33295,35 @@
     ]
   },
   {
+    "mapId": "SR029",
+    "type": "コロシアム",
+    "chapterName": "異次元コロシアム[生産スピード統一+1]",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "Round 1"
+      },
+      {
+        "stageId": 1,
+        "stageName": "Round 2"
+      },
+      {
+        "stageId": 2,
+        "stageName": "Round 3"
+      },
+      {
+        "stageId": 3,
+        "stageName": "Round 4"
+      },
+      {
+        "stageId": 4,
+        "stageName": "Round 5"
+      }
+    ]
+  },
+  {
     "mapId": "PR000",
-    "type": "ライブ",
+    "type": "ポイントルール",
     "chapterName": "開演！こねこライブ",
     "stages": [
       {
@@ -33257,6 +33337,334 @@
       {
         "stageId": 2,
         "stageName": "暴れないでください！"
+      }
+    ]
+  },
+  {
+    "mapId": "PR001",
+    "type": "周年イベント",
+    "chapterName": "無実の監獄",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "脱走劇のはじまり"
+      },
+      {
+        "stageId": 1,
+        "stageName": "居眠り看守と鍵の束"
+      },
+      {
+        "stageId": 2,
+        "stageName": "鉄格子の向こう側"
+      },
+      {
+        "stageId": 3,
+        "stageName": "アドリブ脱獄計画"
+      },
+      {
+        "stageId": 4,
+        "stageName": "監視カメラの死角"
+      },
+      {
+        "stageId": 5,
+        "stageName": "壁を背にしてカニ歩き"
+      },
+      {
+        "stageId": 6,
+        "stageName": "ストップアンドゴー"
+      },
+      {
+        "stageId": 7,
+        "stageName": "ネコカントラップの誘惑"
+      },
+      {
+        "stageId": 8,
+        "stageName": "鳴り響く警戒音"
+      },
+      {
+        "stageId": 9,
+        "stageName": "あっちこっちチェイス"
+      },
+      {
+        "stageId": 10,
+        "stageName": "隠れやすい箱"
+      },
+      {
+        "stageId": 11,
+        "stageName": "囚人仲間の手引き"
+      },
+      {
+        "stageId": 12,
+        "stageName": "ポスター裏の抜け穴"
+      },
+      {
+        "stageId": 13,
+        "stageName": "暗闇キャットウォーク"
+      },
+      {
+        "stageId": 14,
+        "stageName": "光の差す方へ"
+      }
+    ]
+  },
+  {
+    "mapId": "PR002",
+    "type": "周年イベント",
+    "chapterName": "鉄壁の中庭",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "威圧感を放つ監視塔"
+      },
+      {
+        "stageId": 1,
+        "stageName": "張り巡らさせた警戒網"
+      },
+      {
+        "stageId": 2,
+        "stageName": "高くつく通行料"
+      },
+      {
+        "stageId": 3,
+        "stageName": "下見済み隠し通路"
+      },
+      {
+        "stageId": 4,
+        "stageName": "泥まみれのほふく前進"
+      },
+      {
+        "stageId": 5,
+        "stageName": "頭上通過ドローン"
+      },
+      {
+        "stageId": 6,
+        "stageName": "ゆるゆるフェンスゲート"
+      },
+      {
+        "stageId": 7,
+        "stageName": "サーチアンドデストロイ"
+      },
+      {
+        "stageId": 8,
+        "stageName": "襲い来る番犬の脅威"
+      },
+      {
+        "stageId": 9,
+        "stageName": "決死の逃避行"
+      },
+      {
+        "stageId": 10,
+        "stageName": "思い付きプランＢ"
+      },
+      {
+        "stageId": 11,
+        "stageName": "ダッシュ強行突破"
+      },
+      {
+        "stageId": 12,
+        "stageName": "もつれまくる足"
+      },
+      {
+        "stageId": 13,
+        "stageName": "隠していたはしご"
+      },
+      {
+        "stageId": 14,
+        "stageName": "壁を越えた先へ"
+      }
+    ]
+  },
+  {
+    "mapId": "PR003",
+    "type": "周年イベント",
+    "chapterName": "逃がさずの森",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "危険な予感"
+      },
+      {
+        "stageId": 1,
+        "stageName": "狂わされる方向感覚"
+      },
+      {
+        "stageId": 2,
+        "stageName": "遠くで聞こえる謎の声"
+      },
+      {
+        "stageId": 3,
+        "stageName": "まとわりつくツタ"
+      },
+      {
+        "stageId": 4,
+        "stageName": "視界を横切る何か"
+      },
+      {
+        "stageId": 5,
+        "stageName": "生暖かい風"
+      },
+      {
+        "stageId": 6,
+        "stageName": "様子のおかしい植物"
+      },
+      {
+        "stageId": 7,
+        "stageName": "突然の静寂"
+      },
+      {
+        "stageId": 8,
+        "stageName": "あるはずの無い影"
+      },
+      {
+        "stageId": 9,
+        "stageName": "止めた方が良い雰囲気"
+      },
+      {
+        "stageId": 10,
+        "stageName": "限界状態"
+      },
+      {
+        "stageId": 11,
+        "stageName": "諦めない心"
+      },
+      {
+        "stageId": 12,
+        "stageName": "火事場の猫力"
+      },
+      {
+        "stageId": 13,
+        "stageName": "魂の行進"
+      },
+      {
+        "stageId": 14,
+        "stageName": "爪先にかかった希望"
+      }
+    ]
+  },
+  {
+    "mapId": "PR004",
+    "type": "周年イベント",
+    "chapterName": "脱獄王への道",
+    "stages": [
+      {
+        "stageId": 0,
+        "stageName": "脱走劇のはじまり"
+      },
+      {
+        "stageId": 1,
+        "stageName": "居眠り看守と鍵の束"
+      },
+      {
+        "stageId": 2,
+        "stageName": "鉄格子の向こう側"
+      },
+      {
+        "stageId": 3,
+        "stageName": "アドリブ脱獄計画"
+      },
+      {
+        "stageId": 4,
+        "stageName": "監視カメラの死角"
+      },
+      {
+        "stageId": 5,
+        "stageName": "壁を背にしてカニ歩き"
+      },
+      {
+        "stageId": 6,
+        "stageName": "ストップアンドゴー"
+      },
+      {
+        "stageId": 7,
+        "stageName": "ネコカントラップの誘惑"
+      },
+      {
+        "stageId": 8,
+        "stageName": "鳴り響く警戒音"
+      },
+      {
+        "stageId": 9,
+        "stageName": "光の差す方へ"
+      },
+      {
+        "stageId": 10,
+        "stageName": "頭上通過ドローン"
+      },
+      {
+        "stageId": 11,
+        "stageName": "ゆるゆるフェンスゲート"
+      },
+      {
+        "stageId": 12,
+        "stageName": "サーチアンドデストロイ"
+      },
+      {
+        "stageId": 13,
+        "stageName": "襲い来る番犬の脅威"
+      },
+      {
+        "stageId": 14,
+        "stageName": "決死の逃避行"
+      },
+      {
+        "stageId": 15,
+        "stageName": "思い付きプランＢ"
+      },
+      {
+        "stageId": 16,
+        "stageName": "ダッシュ強行突破"
+      },
+      {
+        "stageId": 17,
+        "stageName": "もつれまくる足"
+      },
+      {
+        "stageId": 18,
+        "stageName": "隠していたはしご"
+      },
+      {
+        "stageId": 19,
+        "stageName": "壁を越えた先へ"
+      },
+      {
+        "stageId": 20,
+        "stageName": "生暖かい風"
+      },
+      {
+        "stageId": 21,
+        "stageName": "様子のおかしい植物"
+      },
+      {
+        "stageId": 22,
+        "stageName": "突然の静寂"
+      },
+      {
+        "stageId": 23,
+        "stageName": "あるはずの無い影"
+      },
+      {
+        "stageId": 24,
+        "stageName": "止めた方が良い雰囲気"
+      },
+      {
+        "stageId": 25,
+        "stageName": "限界状態"
+      },
+      {
+        "stageId": 26,
+        "stageName": "諦めない心"
+      },
+      {
+        "stageId": 27,
+        "stageName": "火事場の猫力"
+      },
+      {
+        "stageId": 28,
+        "stageName": "魂の行進"
+      },
+      {
+        "stageId": 29,
+        "stageName": "爪先にかかった希望"
       }
     ]
   },
